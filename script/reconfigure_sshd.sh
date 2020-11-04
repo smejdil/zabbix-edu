@@ -2,6 +2,9 @@
 #
 # Script change system post deploy configuration
 #
+
+./zabbix-edu/script/install_package.sh
+
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 
 sed -i 's/^PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config
