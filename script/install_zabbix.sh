@@ -45,7 +45,7 @@ diff -u /etc/php-fpm.d/zabbix.conf-orig /etc/php-fpm.d/zabbix.conf
 systemctl restart zabbix-server zabbix-agent httpd php-fpm
 systemctl enable zabbix-server zabbix-agent httpd php-fpm 
 
-cp ./zabbix.conf.php /etc/zabbix/web/zabbix.conf.php
+cp ./zabbix-edu/script/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php
 chmod 400 /etc/zabbix/web/zabbix.conf.php
 
 # http://server_ip_or_name/zabbix
