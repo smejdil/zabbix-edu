@@ -11,18 +11,20 @@ systemctl enable mariadb.service
 systemctl start mariadb.service
 
 openssl rand -base64 32 > /root/mysql-root.pw
-MYSQL_ROOT_PASS=`cat /root/mysql-root.pw`
+#MYSQL_ROOT_PASS=`cat /root/mysql-root.pw`
+MYSQL_ROOT_PASS="EDUZabbix"
 
-mysqladmin -u root password '${MYSQL_ROOT_PASS}'
+#mysqladmin -u root password '${MYSQL_ROOT_PASS}'
+mysqladmin -u root password 'EDUZabbix'
 
 openssl rand -base64 32 > /root/mysql-zabbix.pw
-ZABBIX_MYSQL_PASS=`cat /root/mysql-zabbix.pw`
+#ZABBIX_MYSQL_PASS=`cat /root/mysql-zabbix.pw`
+ZABBIX_MYSQL_PASS="EDUZabbix"
 
-#mysql -u root -p
-#create database zabbix character set utf8 collate utf8_bin;
-#grant all privileges on zabbix.* to zabbix@localhost identified by '${ZABBIX_MYSQL_PASS}';
-#FLUSH PRIVILEGES;
-#quit;
+# Create database and user
+mysql -uroot -pEDUZabbix -e "create database zabbix character set utf8 collate utf8_bin;"
+mysql -uroot -pEDUZabbix -e "grant all privileges on zabbix.* to zabbix@localhost identified by 'EDUZabbix';"
+mysql -uroot -pEDUZabbix -e "FLUSH PRIVILEGES;;"
 
 ### Zabbix
 rpm -Uvh https://repo.zabbix.com/zabbix/5.0/rhel/8/x86_64/zabbix-release-5.0-1.el8.noarch.rpm
