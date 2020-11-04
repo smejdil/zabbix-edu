@@ -47,6 +47,7 @@ systemctl enable zabbix-server zabbix-agent httpd php-fpm
 
 cp ./zabbix-edu/script/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php
 chmod 400 /etc/zabbix/web/zabbix.conf.php
+chown apache:apache /etc/zabbix/web/zabbix.conf.php
 
 # http://server_ip_or_name/zabbix
 
