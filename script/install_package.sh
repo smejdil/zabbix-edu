@@ -1,6 +1,10 @@
 #!/bin/sh
 
-yum -y install git
-yum -y install bash-completion
+dnf -y install git
+dnf -y install bash-completion
+dnf -y install epel-release
+dnf -y install joe
+
+dnf -y update
 
 # 
