@@ -31,7 +31,7 @@ rpm -Uvh https://repo.zabbix.com/zabbix/5.0/rhel/8/x86_64/zabbix-release-5.0-1.e
 dnf clean all
 dnf -y install zabbix-server-mysql zabbix-web-mysql zabbix-apache-conf zabbix-agent 
 
-zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -u zabbix -p${ZABBIX_MYSQL_PASS}
+zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -u zabbix -p${ZABBIX_MYSQL_PASS} zabbix
 
 # Zabbix configuration
 cp /etc/zabbix/zabbix_server.conf /etc/zabbix/zabbix_server.conf-orig
