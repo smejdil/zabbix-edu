@@ -1,4 +1,6 @@
-Example
+#
+# Example
+#
 
 ./create_zabbix_vm_machines.sh 01 02 03
 zbx01
@@ -25,3 +27,11 @@ Updated [https://www.googleapis.com/compute/v1/projects/polar-strata-258714/zone
 Updated [https://www.googleapis.com/compute/v1/projects/polar-strata-258714/zones/europe-west3-b/instances/zbx03].
 Updated [https://www.googleapis.com/compute/v1/projects/polar-strata-258714/zones/europe-west3-b/instances/zbx03].
 Updated [https://www.googleapis.com/compute/v1/projects/polar-strata-258714/zones/europe-west3-b/instances/zbx03].
+
+# List of IPv4
+gcloud compute instances list | awk '{print $1" - "$5}' | grep zbx
+zbx01 - 35.246.211.200
+zbx02 - 34.89.152.77
+zbx03 - 34.107.115.225
+
+# EOF
