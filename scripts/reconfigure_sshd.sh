@@ -5,7 +5,7 @@
 # Lukas Maly <Iam@LukasMaly.NET> 5.11.2020
 #
 
-./zabbix-edu/script/install_package.sh
+./zabbix-edu/scripts/install_package.sh
 
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 

@@ -51,7 +51,7 @@ systemctl restart zabbix-server zabbix-agent2 httpd php-fpm
 systemctl enable zabbix-server zabbix-agent2 httpd php-fpm
 
 # Copy frontend config file
-cp ./zabbix-edu/script/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php
+cp ./zabbix-edu/scripts/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php
 chmod 400 /etc/zabbix/web/zabbix.conf.php
 chown apache:apache /etc/zabbix/web/zabbix.conf.php
 
