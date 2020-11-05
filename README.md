@@ -1,11 +1,11 @@
 # Deploy zabbix servers on GCP
 
-This small project is used for install EDU servers with Zaabix 5 on CentOS-8.
+This small project is used for install EDU servers with Zabbix 5 on CentOS-8.
 
 # Dependencies
 
-- Package on dektop - google-cloud-sdk		Google Cloud SDK for Google Cloud Platform
-- Package on dektop - py37-cloudflare			Wrapper for the Cloudflare v4 API
+- Package on dektop - google-cloud-sdk - Google Cloud SDK for Google Cloud Platform
+- Package on dektop - py37-cloudflare - Wrapper for the Cloudflare v4 API
 
 # How it works
 

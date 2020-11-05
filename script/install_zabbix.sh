@@ -35,21 +35,28 @@ zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -u zabbix -p${ZAB
 
 # Zabbix configuration
 cp /etc/zabbix/zabbix_server.conf /etc/zabbix/zabbix_server.conf-orig
-sed -i "s/^# DBPassword=/DBPassword=${ZABBIX_MYSQL_PASS}/g" /etc/zabbix/zabbix_server.conf
+sed -i "s/# DBHost=localhost/DBHost=localhost/g" /etc/zabbix/zabbix_server.conf
+sed -i "s|^# DBPassword=|DBPassword=${ZABBIX_MYSQL_PASS}|g" /etc/zabbix/zabbix_server.conf
+sed -i "s/# Timeout=3/Timeout=30/g" /etc/zabbix/zabbix_server.conf
+sed -i "s/# CacheSize=8M/CacheSize=32M/g" /etc/zabbix/zabbix_server.conf
+sed -i "s/# DBSocket=/DBSocket=\/var\/lib\/mysql\/mysql.sock/g" /etc/zabbix/zabbix_server.conf
 diff -u /etc/zabbix/zabbix_server.conf-orig /etc/zabbix/zabbix_server.conf
 
 cp /etc/php-fpm.d/zabbix.conf /etc/php-fpm.d/zabbix.conf-orig 
-sed -i "s/^; php_value\[date.timezone\] = Europe\/Riga/php_value\[date.timezone\] = Europe\/Prague/g" /etc/php-fpm.d/zabbix.conf
+sed -i 's/^; php_value\[date.timezone\] = Europe\/Riga/php_value\[date.timezone\] = Europe\/Prague/g' /etc/php-fpm.d/zabbix.conf
 diff -u /etc/php-fpm.d/zabbix.conf-orig /etc/php-fpm.d/zabbix.conf
 
 # Restart services 
-systemctl restart zabbix-server zabbix-agent httpd php-fpm
-systemctl enable zabbix-server zabbix-agent httpd php-fpm 
+systemctl restart zabbix-server zabbix-agent2 httpd php-fpm
+systemctl enable zabbix-server zabbix-agent2 httpd php-fpm
 
-# Copy config file
+# Copy frontend config file
 cp ./zabbix-edu/script/zabbix.conf.php /etc/zabbix/web/zabbix.conf.php
 chmod 400 /etc/zabbix/web/zabbix.conf.php
 chown apache:apache /etc/zabbix/web/zabbix.conf.php
+
+sed -i "s|XXX|${ZABBIX_MYSQL_PASS}|g" /etc/zabbix/web/zabbix.conf.php
+sed -i "s|YYY|EDU Zabbix|g" /etc/zabbix/web/zabbix.conf.php
 
 # http://server_ip_or_name/zabbix
 

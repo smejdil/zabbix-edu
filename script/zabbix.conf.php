@@ -6,7 +6,7 @@ $DB['SERVER']			= 'localhost';
 $DB['PORT']				= '0';
 $DB['DATABASE']			= 'zabbix';
 $DB['USER']				= 'zabbix';
-$DB['PASSWORD']			= 'EDUZabbix';
+$DB['PASSWORD']			= 'XXX';
 
 // Schema name. Used for PostgreSQL.
 $DB['SCHEMA']			= '';
@@ -26,7 +26,7 @@ $DB['DOUBLE_IEEE754']	= true;
 
 $ZBX_SERVER				= 'localhost';
 $ZBX_SERVER_PORT		= '10051';
-$ZBX_SERVER_NAME		= 'EDU Zabbix';
+$ZBX_SERVER_NAME		= 'YYY';
 
 $IMAGE_FORMAT_DEFAULT	= IMAGE_FORMAT_PNG;
 
