@@ -1,6 +1,6 @@
 # Deploy zabbix servers on GCP
 
-This small project is used for install EDU servers with Zabbix 5 on CentOS-8.
+This small project is used for install EDU servers with Zabbix 5.0 LTS on CentOS 8.
 
 # Dependencies
 
@@ -10,6 +10,15 @@ This small project is used for install EDU servers with Zabbix 5 on CentOS-8.
 # How it works
 
 By google cloud api is intaled servers zbxXX. After instalation run script for reconfigure OS and install Zabbix.
+
+# Features
+
+- Install and configure mariadb
+- Install and configure zabbix_server
+- Install and configure zabbix_agent
+- Install and configure zabbix_agent2
+- Install and configure httpd and php
+- Install and configure odbc driver mariadb
 
 ### Installation
 
