@@ -2,6 +2,8 @@
 #
 # Script change system post deploy configuration
 #
+# Lukas Maly <Iam@LukasMaly.NET> 5.11.2020
+#
 
 ./zabbix-edu/script/install_package.sh
 

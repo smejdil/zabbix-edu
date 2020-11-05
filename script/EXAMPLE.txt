@@ -1,5 +1,6 @@
 #
 # Example
+# Lukas Maly <Iam@LukasMaly.NET> 5.11.2020
 #
 
 ./create_zabbix_vm_machines.sh 01 02 03
