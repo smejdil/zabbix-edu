@@ -2,7 +2,7 @@
 #
 # Zabbix install scpript
 #
-# Lukas Maly <Iam@LukasMaly.NET> 5.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 6.11.2020
 #
 
 ### MariaDB
@@ -80,9 +80,18 @@ mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
 cp -v ./zabbix-edu/zabbix/odbc.ini /etc/odbc.ini
 odbcinst -j
 
+# Test DB Size
+# isql -v zabbix zbx_probe ${ZBX_PROBE_MYSQL_PASS}
+# select SUM(data_length) from information_schema.tables where table_schema = 'zabbix'
+
 ## crontab
 echo "--- Cron ---"
 cp -v ./zabbix-edu/crontab/zabbix-training /etc/cron.d/
+
+## Zabbix external script's
+cp -v ./zabbix-edu/zabbix/externalscripts/*.sh /usr/lib/zabbix/externalscripts/
+chmod 700 /usr/lib/zabbix/externalscripts/*.sh
+chown zabbix:zabbix /usr/lib/zabbix/externalscripts/*.sh
 
 ## Zabbix agent a agent2
 echo "--- Zabbix Agent's ---"
@@ -114,6 +123,7 @@ MONITORING_MYSQL_PASS=`cat /root/mysql-monitoring.pw`
 mysql -u root -p${MYSQL_ROOT_PASS} -e "GRANT PROCESS, SUPER ON *.* TO monitoring@localhost IDENTIFIED BY '${MONITORING_MYSQL_PASS}';"
 mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
 
+sed -i 's/^mysql_inst_ports =/mysql_inst_ports = 3306/g' /etc/zabbix/zbx_module_mysql.conf
 sed -i 's/^mysql_inst_user =/mysql_inst_user = monitoring/g' /etc/zabbix/zbx_module_mysql.conf
 sed -i "s|^mysql_inst_password =|mysql_inst_password = ${MONITORING_MYSQL_PASS}|g" /etc/zabbix/zbx_module_mysql.conf
 
@@ -141,4 +151,12 @@ sed -i "s|^password => \"ZBXlab\"|password => \"${ZBX_PROBE_PASS}\"|g" /usr/shar
 # http://server_ip_or_name/zabbix/perl_auth.php
 # http://server_ip_or_name/zabbix/perl_hosts.php
 
-# EOF
+## System user for SSH check
+echo "--- System user for SSH ---"
+
+adduser --shell /bin/bash --home /home/zbx_probe zbx_probe
+echo ${ZBX_PROBE_PASS} | passwd zbx_probe --stdin
+
+# System user zbx_probe and the zabbix user have the same password. cat /root/zbx_probe.pw
+
+### EOF
