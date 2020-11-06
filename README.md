@@ -9,16 +9,18 @@ This small project is used for install EDU servers with Zabbix 5.0 LTS on CentOS
 
 ## How it works
 
-By google cloud api is intaled servers zbxXX. After instalation run script for reconfigure OS and install Zabbix.
+By Google Cloud SDK is intaled servers zbxXX. After instalation run scripts for reconfigure OS and install Zabbix for education.
 
 ## Features
 
-- Install and configure mariadb
+- Install and configure MariaDB
 - Install and configure zabbix_server
-- Install and configure zabbix_agent
+- Install and configure zabbix_agentd with mysql modul
 - Install and configure zabbix_agent2
-- Install and configure httpd and php
-- Install and configure odbc driver mariadb
+- Install and configure Apache httpd and PHP
+- Install and configure ODBC driver for MariaDB
+- Install and configure Zabbix API scripts Perl and CPAN modul
+- Install and configure crontab file
 
 ### Installation
 
@@ -61,4 +63,7 @@ cli4 --post name='zbx03' type=A content="34.107.115.225" /zones/:pfsense.cz/dns_
 ```
 ## To do
 
-...
+- Create Zabbix user by Zabbix API
+- Import training Tmplate by Zabbix API
+- Import media by Zabbix API
+- Other ...
