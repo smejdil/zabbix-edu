@@ -43,7 +43,6 @@ cd /home/malyl/work/zabbix-edu
 ```
 gcloud compute ssh zbx01
 sudo su -
-git clone https://github.com/smejdil/zabbix-edu
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 ```
 - Connect to VM and run scripts
