@@ -101,6 +101,7 @@ sed -i 's/# LoadModulePath=${libdir}\/modules/LoadModulePath=\/usr\/lib\/zabbix\
 sed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /etc/zabbix/zabbix_agentd.conf
 diff -u /etc/zabbix/zabbix_agentd.conf-orig /etc/zabbix/zabbix_agentd.conf
 
+cd
 cp -v ./zabbix-edu/zabbix/zabbix_agentd.d/libzbxmysql.conf /etc/zabbix/zabbix_agentd.d/libzbxmysql.conf
 cp -v ./zabbix-edu/zabbix/modules/module-mysql/zbx_module_mysql.conf /etc/zabbix/
 
@@ -115,7 +116,7 @@ mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
 sed -i 's/^mysql_inst_user =/mysql_inst_user = monitoring/g' /etc/zabbix/zbx_module_mysql.conf
 sed -i "s|^mysql_inst_password =|mysql_inst_password = ${MONITORING_MYSQL_PASS}|g" /etc/zabbix/zbx_module_mysql.conf
 
-rm /etc/zabbix/zabbix_agentd.d/userparameter_mysql.conf # old donfig
+#rm /etc/zabbix/zabbix_agentd.d/userparameter_mysql.conf # old zabbix config file
 
 # Manual change agent2 to agentd
 # systemctl stop zabbix-agent2.service
