@@ -15,4 +15,4 @@ dnf -y install net-snmp net-snmp-libs net-snmp-utils
 dnf -y install perl-App-cpanminus
 dnf -y update
 cd /root/ && git clone https://github.com/smejdil/zabbix-edu
-cpanm JSON::RPC::Client
+cpanm JSON::RPC::Client > /tmp/cpan.log
