@@ -17,12 +17,20 @@ By Google Cloud SDK is intaled servers zbxXX. After instalation run scripts for 
 - Install and configure zabbix_server
 - Install and configure zabbix_agentd with mysql modul
 - Install and configure zabbix_agent2
-- Install and configure Apache httpd and PHP
+- Install and configure Apache httpd and PHP7
 - Install and configure ODBC driver for MariaDB
 - Install and configure Zabbix API scripts Perl and CPAN modul
 - Install and configure crontab file
 
 ### Installation
+
+- Configure Google Cloud SDK
+
+```
+gcloud config set compute/zone [ZONE]
+gcloud config set compute/region [REGION]
+gcloud config set project [PROJECT]
+```
 
 - Create VM
 

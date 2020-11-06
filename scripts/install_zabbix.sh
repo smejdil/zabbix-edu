@@ -74,7 +74,7 @@ echo "--- ODBC ---"
 openssl rand -base64 32 > /root/mysql-zbx_probe.pw
 ZBX_PROBE_MYSQL_PASS=`cat /root/mysql-zbx_probe.pw`
 
-mysql -u root -p${MYSQL_ROOT_PASS} -e "GRANT select ON *.* TO 'zbx_probe'@'127.0.0.1' IDENTIFIED BY '${ZBX_PROBE_MYSQL_PASS}';"
+mysql -u root -p${MYSQL_ROOT_PASS} -e "GRANT select ON *.* TO zbx_probe@localhost IDENTIFIED BY '${ZBX_PROBE_MYSQL_PASS}';"
 mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
 
 cp -v ./zabbix-edu/zabbix/odbc.ini /etc/odbc.ini
@@ -110,13 +110,12 @@ openssl rand -base64 32 > /root/mysql-monitoring.pw
 MONITORING_MYSQL_PASS=`cat /root/mysql-monitoring.pw`
 
 # Create user for modul
-mysql -u root -p${MYSQL_ROOT_PASS} -e "GRANT PROCESS, SUPER ON *.* TO 'monitoring'@'127.0.0.1' IDENTIFIED BY '${MONITORING_MYSQL_PASS}';"
+
+mysql -u root -p${MYSQL_ROOT_PASS} -e "GRANT PROCESS, SUPER ON *.* TO monitoring@localhost IDENTIFIED BY '${MONITORING_MYSQL_PASS}';"
 mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
 
 sed -i 's/^mysql_inst_user =/mysql_inst_user = monitoring/g' /etc/zabbix/zbx_module_mysql.conf
 sed -i "s|^mysql_inst_password =|mysql_inst_password = ${MONITORING_MYSQL_PASS}|g" /etc/zabbix/zbx_module_mysql.conf
-
-#rm /etc/zabbix/zabbix_agentd.d/userparameter_mysql.conf # old zabbix config file
 
 # Manual change agent2 to agentd
 # systemctl stop zabbix-agent2.service
