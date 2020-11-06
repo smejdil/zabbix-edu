@@ -43,7 +43,6 @@ cd /home/malyl/work/zabbix-edu
 ```
 gcloud compute ssh zbx01
 sudo su -
-yum -y install git
 git clone https://github.com/smejdil/zabbix-edu
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 ```

@@ -2,10 +2,8 @@
 #
 # Script change system post deploy configuration
 #
-# Lukas Maly <Iam@LukasMaly.NET> 5.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 6.11.2020
 #
-
-./zabbix-edu/scripts/install_package.sh
 
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 
@@ -23,6 +21,9 @@ cp /etc/selinux/config /etc/selinux/config-orig
 sed -i 's/^SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 
 diff -u /etc/selinux/config-orig /etc/selinux/config
+
+# Install CPAN Perl modul
+#./zabbix-edu/zabbix/api/install_cpan_modul.sh
 
 reboot
 
