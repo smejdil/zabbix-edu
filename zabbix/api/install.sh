@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# Install package and extra repo
+#
+# Lukas Maly <Iam@LukasMaly.NET> 6.11.2020
+#
 
 INSTALL_DIR='/usr/share/zabbix';
 
