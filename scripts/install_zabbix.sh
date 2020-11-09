@@ -2,12 +2,11 @@
 #
 # Zabbix install scpript
 #
-# Lukas Maly <Iam@LukasMaly.NET> 6.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 9.11.2020
 #
 
 ### MariaDB
 echo "--- MariaDB ---"
-dnf -y install mariadb-server
 
 systemctl enable mariadb.service
 systemctl start mariadb.service
@@ -29,10 +28,6 @@ mysql -u root -p${MYSQL_ROOT_PASS} -e "grant all privileges on zabbix.* to zabbi
 mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
 
 ### Zabbix
-echo "--- Zabbix Repo ---"
-rpm -Uvh https://repo.zabbix.com/zabbix/5.0/rhel/8/x86_64/zabbix-release-5.0-1.el8.noarch.rpm
-dnf clean all
-dnf -y install zabbix-server-mysql zabbix-web-mysql zabbix-apache-conf zabbix-agent zabbix-agent2 zabbix-sender zabbix-get
 
 # Import db schema
 echo "--- Import DB schema ---"
