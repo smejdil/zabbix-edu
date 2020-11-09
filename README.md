@@ -4,12 +4,12 @@ This small project is used for install EDU servers with Zabbix 5.0 LTS on CentOS
 
 ## Dependencies
 
-- Package on dektop - google-cloud-sdk - Google Cloud SDK for Google Cloud Platform
-- Package on dektop - py37-cloudflare - Wrapper for the Cloudflare v4 API
+- Package on desktop - google-cloud-sdk - Google Cloud SDK for Google Cloud Platform
+- Package on desktop - py37-cloudflare - Wrapper for the Cloudflare v4 API
 
 ## How it works
 
-By Google Cloud SDK is intaled servers zbxXX. After instalation run scripts for reconfigure OS and install Zabbix for education.
+By Google Cloud SDK is intalled servers zbxXX. After instalation run scripts for reconfigure OS and install Zabbix for education.
 
 ## Features
 
