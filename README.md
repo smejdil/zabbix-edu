@@ -52,13 +52,13 @@ gcloud compute ssh zbx01
 sudo su -
 ./zabbix-edu/scripts/install_zabbix.sh
 ```
-- List VM and external IPv4
+- List Zabbix VM and external IPv4
 
-```
-gcloud compute instances list | awk '{print $1" - "$5}' | grep zbx
-zbx01 - 35.246.211.200
-zbx02 - 34.89.152.77
-zbx03 - 34.107.115.225
+```console
+gcloud compute instances list | awk '{print $1" - http://"$5"/zabbix/"}' | grep zbx0
+zbx01 - http://35.246.211.200/zabbix/
+zbx02 - http://34.89.152.77/zabbix/
+zbx03 - http://34.107.115.225/zabbix/
 ```
 - Create DNS records
 
