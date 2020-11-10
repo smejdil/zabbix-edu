@@ -1,4 +1,4 @@
-## Deploy zabbix servers on GCP
+## Deploy 7zabbix servers on GCP
 
 This small project is used for install EDU servers with Zabbix 5.0 LTS on CentOS 8.
 
@@ -26,7 +26,7 @@ By Google Cloud SDK is intalled servers zbxXX. After instalation run scripts for
 
 - Configure Google Cloud SDK
 
-```
+```console
 gcloud config set compute/zone [ZONE]
 gcloud config set compute/region [REGION]
 gcloud config set project [PROJECT]
@@ -34,20 +34,20 @@ gcloud config set project [PROJECT]
 
 - Create VM
 
-```
+```console
 cd /home/malyl/work/zabbix-edu
 ./scripts/create_zabbix_vm_machines.sh 01 02 03
 ```
 - Connect to VM and run scripts
 
-```
+```console
 gcloud compute ssh zbx01
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 ```
 - Connect to VM and run scripts
 
-```
+```console
 gcloud compute ssh zbx01
 sudo su -
 ./zabbix-edu/scripts/install_zabbix.sh
@@ -62,7 +62,7 @@ zbx03 - http://34.107.115.225/zabbix/
 ```
 - Create DNS records
 
-```
+```console
 cli4 --post name='zbx01' type=A content="35.246.211.200" /zones/:pfsense.cz/dns_records
 cli4 --post name='zbx02' type=A content="34.89.152.77" /zones/:pfsense.cz/dns_records
 cli4 --post name='zbx03' type=A content="34.107.115.225" /zones/:pfsense.cz/dns_records
