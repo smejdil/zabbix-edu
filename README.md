@@ -46,12 +46,7 @@ cd /home/malyl/work/zabbix-edu
 gcloud compute ssh zbx01
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
-```
-- Connect to VM Zabbix EDU and run scripts
-
-```console
-gcloud compute ssh zbx01
-sudo su -
+rebbot
 ./zabbix-edu/scripts/install_zabbix.sh
 ```
 - List Zabbix EDU VM and external IPv4
@@ -61,6 +56,12 @@ gcloud compute instances list | awk '{print $1" - http://"$5"/zabbix/"}' | grep 
 zbx01 - http://35.246.211.200/zabbix/
 zbx02 - http://34.89.152.77/zabbix/
 zbx03 - http://34.107.115.225/zabbix/
+```
+- Create VM Linux + Tomcat other
+
+```console
+cd /home/malyl/work/zabbix-edu
+./scripts/create_tomcat_vm_machine.sh 01
 ```
 - Create VM Windows server 2019
 
