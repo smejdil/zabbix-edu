@@ -33,7 +33,7 @@ gcloud config set compute/zone [ZONE]
 gcloud config set compute/region [REGION]
 gcloud config set project [PROJECT]
 ```
-
+## Zabbix servers
 - Create VM Zabbix EDU
 
 ```console
@@ -57,18 +57,30 @@ zbx01 - http://35.246.211.200/zabbix/
 zbx02 - http://34.89.152.77/zabbix/
 zbx03 - http://34.107.115.225/zabbix/
 ```
+## Linux server for EDU
 - Create VM Linux + Tomcat other
 
 ```console
 cd /home/malyl/work/zabbix-edu
 ./scripts/create_tomcat_vm_machine.sh 01
 ```
+- Connect to VM Linux + Tomcat and run scripts + reboot SELinux disable
+
+```console
+gcloud compute ssh linsrv01
+sudo su -
+./zabbix-edu/scripts/reconfigure_sshd.sh
+rebbot
+./zabbix-edu/scripts/install_configure_app.sh
+```
+## Windows server for EDU
 - Create VM Windows server 2019
 
 ```console
 cd /home/malyl/work/zabbix-edu
 ./scripts/create_windows_vm_machine.sh 01
 ```
+## DNS A records for EDU
 - Create DNS records
 
 ```console
@@ -77,11 +89,11 @@ cli4 --post name='zbx02' type=A content="34.89.152.77" /zones/:pfsense.cz/dns_re
 cli4 --post name='zbx03' type=A content="34.107.115.225" /zones/:pfsense.cz/dns_records
 
 cli4 --post name='winsrv01' type=A content="34.107.108.40" /zones/:pfsense.cz/dns_records
-cli4 --post name='tomcatsrv01' type=A content="34.107.28.86" /zones/:pfsense.cz/dns_records
+cli4 --post name='linsrv01' type=A content="34.107.28.86" /zones/:pfsense.cz/dns_records
 ```
 ## To do
 
-- Create VM script for tomcatsrv01 with Tomcat, PostgreSQL, Docker, atd.
+- Create VM script for linsrv01 with Tomcat, PostgreSQL, Docker, atd.
 - Create Zabbix user by Zabbix API
 - Import training Tmplate by Zabbix API
 - Import media Email by Zabbix API
