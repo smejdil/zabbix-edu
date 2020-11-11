@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2020-11-11T10:04:42Z</date>
+    <groups>
+        <group>
+            <name>Linux servers</name>
+        </group>
+    </groups>
+    <hosts>
+        <host>
+            <host>WINSRV01</host>
+            <name>WINSRV01</name>
+            <description>winsrv01   europe-west3-b   n1-standard-1   10.156.0.56  34.89.152.77</description>
+            <templates>
+                <template>
+                    <name>Template OS Windows by Zabbix agent</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Linux servers</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <useip>NO</useip>
+                    <ip>34.89.152.77</ip>
+                    <dns>winsrv01.pfsense.cz</dns>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <tags>
+                <tag>
+                    <tag>OS</tag>
+                    <value>Windows</value>
+                </tag>
+            </tags>
+            <inventory>
+                <name>WINSRV01</name>
+            </inventory>
+            <inventory_mode>AUTOMATIC</inventory_mode>
+        </host>
+    </hosts>
+</zabbix_export>
