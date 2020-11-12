@@ -2,8 +2,12 @@
 #
 # Tomcat install scpript and Other SW
 #
-# Lukas Maly <Iam@LukasMaly.NET> 11.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 12.11.2020
 #
+
+### Firewall
+systemctl stop iptables.service
+systemctl disable iptables.service
 
 ### Zabbix
 
@@ -14,10 +18,9 @@ systemctl enable zabbix-agent2 httpd
 ## Zabbix agent and agent2
 echo "--- Zabbix Agent's ---"
 
-cp -v /etc/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf-orig
-sed -i 's/# LoadModulePath=${libdir}\/modules/LoadModulePath=\/usr\/lib\/zabbix\/modules/g' /etc/zabbix/zabbix_agentd.conf
+cp -v /etc/zabbix/zabbix_agent2.conf /etc/zabbix/zabbix_agent2.conf-orig
 sed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /etc/zabbix/zabbix_agentd.conf
-diff -u /etc/zabbix/zabbix_agentd.conf-orig /etc/zabbix/zabbix_agentd.conf
+diff -u /etc/zabbix/zabbix_agent2.conf-orig /etc/zabbix/zabbix_agent2.conf
 
 systemctl restart zabbix-agent2
 
@@ -47,17 +50,17 @@ make
 libtool --finish /usr/lib64/httpd/modules
 make install
 
-cd /etc/httpd
-cp -v ./zabbix-edu/files/00-jk.conf ./conf.modules.d/
-cp -v ./zabbix-edu/files/workers.properties ./conf/
-cp -v ./zabbix-edu/files/mod_jk.conf ./conf.d/
+cd
+cp -v ./zabbix-edu/files/00-jk.conf /etc/httpd/conf.modules.d/
+cp -v ./zabbix-edu/files/workers.properties /etc/httpd/conf/
+cp -v ./zabbix-edu/files/mod_jk.conf /etc/httpd/conf.d/
 
 systemctl restart httpd
 
 # Tomcat
 
 systemctl enable tomcat.service
-systemctl start tomcat.service
+systemctl restart tomcat.service
 
 # JMX enable
 
