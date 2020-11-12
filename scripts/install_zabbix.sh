@@ -50,8 +50,8 @@ diff -u /etc/php-fpm.d/zabbix.conf-orig /etc/php-fpm.d/zabbix.conf
 
 # Restart services
 echo "--- Restart and enable services ---"
-systemctl restart zabbix-server zabbix-agent2 httpd php-fpm
-systemctl enable zabbix-server zabbix-agent2 httpd php-fpm
+systemctl restart zabbix-server zabbix-agent httpd php-fpm
+systemctl enable zabbix-server zabbix-agent httpd php-fpm
 
 # Copy frontend config file
 echo "--- Zabbix frontend config ---"
@@ -129,6 +129,10 @@ sed -i "s|^mysql_inst_password =|mysql_inst_password = ${MONITORING_MYSQL_PASS}|
 # Test modulu
 #zabbix_get -s 127.0.0.1 -I 127.0.0.1 -k mysql.discovery
 #{"data":[{"{#MYSQLHOST}":"127.0.0.1","{#MYSQLPORT}":"3306"}]}
+
+systemctl stop zabbix-agent2
+systemctl disable zabbix-agent2
+systemctl restart zabbix-agent.service
 
 ### API user nad Perl example
 echo "--- API ---"
