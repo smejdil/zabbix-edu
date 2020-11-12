@@ -29,7 +29,7 @@ echo ${ZBX_PROBE_PASS} | passwd zbx_probe --stdin
 
 # System user zbx_probe and the zabbix user have the same password. cat /root/zbx_probe.pw
 
-# Tomcat
+### Tomcat
 
 # mod_jk for Apache
 
@@ -48,22 +48,9 @@ libtool --finish /usr/lib64/httpd/modules
 make install
 
 cd /etc/httpd
-#joe conf.modules.d/00-jk.conf
-#LoadModule jk_module modules/mod_jk.so
-
-#joe /etc/httpd/conf/workers.properties
-#worker.list=worker1
-#worker.worker1.type=ajp13
-#worker.worker1.port=8009
-#worker.worker1.host=localhost
-#worker.worker1.lbfactor=1
-
-#joe conf.d/mod_jk.conf
-
-#JkWorkersFile /etc/httpd/conf/workers.properties
-#JkLogFile     /var/log/httpd/mod_jk_log
-#JkLogLevel    info
-#JkMount       /* worker1
+cp -v ./zabbix-edu/files/00-jk.conf ./conf.modules.d/
+cp -v ./zabbix-edu/files/workers.properties ./conf/
+cp -v ./zabbix-edu/files/mod_jk.conf ./conf.d/
 
 systemctl restart httpd
 
@@ -80,6 +67,7 @@ cd /etc/tomcat
 
 systemctl restart tomcat
 
+# Manual test JMX
 #grep -i jmx /var/log/tomcat/catalina.2020-11-11.log 
 #INFO: Command line argument: -Dcom.sun.management.jmxremote
 #INFO: Command line argument: -Dcom.sun.management.jmxremote.port=10059
