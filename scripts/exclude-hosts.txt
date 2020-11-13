@@ -1,0 +1,1 @@
+isds-pre-zabbix|zbx-fbsd-tsdb
