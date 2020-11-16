@@ -37,8 +37,7 @@ gcloud config set project [PROJECT]
 - Create VM Zabbix EDU
 
 ```console
-cd /home/malyl/work/zabbix-edu
-./scripts/create_zabbix_vm_machines.sh 01 02 03
+./zabbix-edu/scripts/create_zabbix_vm_machines.sh 01 02 03
 ```
 - Connect to VM Zabbix EDU and run scripts + reboot SELinux disable
 
@@ -61,8 +60,7 @@ zbx03 - http://34.107.115.225/zabbix/
 - Create VM Linux + Tomcat other
 
 ```console
-cd /home/malyl/work/zabbix-edu
-./scripts/create_tomcat_vm_machine.sh 01
+./zabbix-edu/scripts/create_tomcat_vm_machine.sh 01
 ```
 - Connect to VM Linux + Tomcat and run scripts + reboot SELinux disable
 
@@ -77,8 +75,7 @@ rebbot
 - Create VM Windows server 2019
 
 ```console
-cd /home/malyl/work/zabbix-edu
-./scripts/create_windows_vm_machine.sh 01
+./zabbix-edu/scripts/create_windows_vm_machine.sh 01
 ```
 ## DNS A records for EDU
 - Create DNS records
@@ -93,8 +90,9 @@ cli4 --post name='linsrv01' type=A content="34.107.28.86" /zones/:pfsense.cz/dns
 ```
 ## To do
 
-- Create VM script for linsrv01 with Tomcat, PostgreSQL, Docker, atd.
 - Create Zabbix user by Zabbix API
 - Import training Tmplate by Zabbix API
 - Import media Email by Zabbix API
+- Download and Install Zabbix Agent 2 on winsrv01 by PowerShell
+- Install - Web Server and IIS Management Scripts and Tools on winsrv01 by PowerShell
 - Other ...

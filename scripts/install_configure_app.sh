@@ -2,7 +2,7 @@
 #
 # Tomcat install scpript and Other SW
 #
-# Lukas Maly <Iam@LukasMaly.NET> 12.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 16.11.2020
 #
 
 ### Firewall
@@ -74,15 +74,13 @@ systemctl restart httpd
 # Tomcat
 
 systemctl enable tomcat.service
-systemctl restart tomcat.service
 
 # JMX enable
 
 cd /etc/tomcat
-#joe tomcat.conf
-#CATALINA_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=10059 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
+echo "CATALINA_OPTS=\"-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=10059 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false\"" >> tomcat.conf
 
-systemctl restart tomcat
+systemctl restart tomcat.service
 
 # Manual test JMX
 #grep -i jmx /var/log/tomcat/catalina.2020-11-11.log 

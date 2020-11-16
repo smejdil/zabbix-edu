@@ -5,7 +5,7 @@
 # Lukas Maly <Iam@LukasMaly.NET> 12.11.2020
 #
 
-EXCLUDE=`cat exclude-hosts.txt`
+EXCLUDE=`cat ./zabbix-edu/scripts/exclude-hosts.txt`
 
 clear
 for i in `gcloud compute instances list | grep -v NAME | awk '{print $1";"$5}'| egrep -v "${EXCLUDE}"`;
@@ -16,5 +16,7 @@ do
 	echo "-----------------------------------------------------------------------------------------------"
 	echo "cli4 --post name='${NAME}' type=A content=\"${IPV4}\" /zones/:pfsense.cz/dns_records"
 	echo "-----------------------------------------------------------------------------------------------"
-	/usr/local/bin/cli4 --post name='${NAME}' type=A content="${IPV4}" /zones/:pfsense.cz/dns_records
+	cli4 --post name='${NAME}' type=A content="${IPV4}" /zones/:pfsense.cz/dns_records
 done
+
+# EOF
