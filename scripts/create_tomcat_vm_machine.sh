@@ -12,7 +12,7 @@ argv=("$@");
 
 for (( j=0; j<argc; j++ )); do
     echo "linsrv${argv[j]}";
-    gcloud compute instances create linsrv${argv[j]} --image ${IMAGE_LIN} --image-project=centos-cloud  --metadata-from-file startup-script=scripts/install-tomcat-server.sh
+    gcloud compute instances create linsrv${argv[j]} --image ${IMAGE_LIN} --image-project=centos-cloud  --metadata-from-file startup-script=./zabbix-edu/scripts/install-tomcat-server.sh
     gcloud compute instances add-tags linsrv${argv[j]} --tags=http-server
     gcloud compute instances add-tags linsrv${argv[j]} --tags=https-server
     gcloud compute instances add-tags linsrv${argv[j]} --tags=zabbix-agent
