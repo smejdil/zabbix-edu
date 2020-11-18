@@ -1,0 +1,473 @@
+<?xml version="1.0"?>
+<pfsense>
+	<version>19.1</version>
+	<lastchange></lastchange>
+	<system>
+		<optimization>normal</optimization>
+		<hostname>pfSense-gcp</hostname>
+		<domain>pfsense.cz</domain>
+		<dnsallowoverride>on</dnsallowoverride>
+		<group>
+			<name>all</name>
+			<description><![CDATA[All Users]]></description>
+			<scope>system</scope>
+			<gid>1998</gid>
+		</group>
+		<group>
+			<name>admins</name>
+			<description><![CDATA[System Administrators]]></description>
+			<scope>system</scope>
+			<gid>1999</gid>
+			<member>0</member>
+			<priv>page-all</priv>
+		</group>
+		<user>
+			<name>admin</name>
+			<descr><![CDATA[System Administrator]]></descr>
+			<scope>system</scope>
+			<groupname>admins</groupname>
+			<bcrypt-hash>$2y$10$SgEFP.u23BgEu.xMRchRgOLWUEnJDBTCPAowDf8hj.uYUhGUrOpZu</bcrypt-hash>
+			<uid>0</uid>
+			<priv>user-shell-access</priv>
+			<expires></expires>
+			<dashboardcolumns>2</dashboardcolumns>
+			<authorizedkeys></authorizedkeys>
+			<ipsecpsk></ipsecpsk>
+			<webguicss>pfSense.css</webguicss>
+		</user>
+		<nextuid>2000</nextuid>
+		<nextgid>2000</nextgid>
+		<timeservers>2.pfsense.pool.ntp.org</timeservers>
+		<webgui>
+			<protocol>https</protocol>
+			<loginautocomplete></loginautocomplete>
+			<ssl-certref>5fb558f2d2303</ssl-certref>
+			<nohttpreferercheck></nohttpreferercheck>
+			<dashboardcolumns>2</dashboardcolumns>
+			<port></port>
+			<max_procs>2</max_procs>
+			<nodnsrebindcheck></nodnsrebindcheck>
+			<pagenamefirst></pagenamefirst>
+		</webgui>
+		<disablenatreflection>yes</disablenatreflection>
+		<disablesegmentationoffloading></disablesegmentationoffloading>
+		<disablelargereceiveoffloading></disablelargereceiveoffloading>
+		<ipv6allow></ipv6allow>
+		<maximumtableentries>400000</maximumtableentries>
+		<powerd_ac_mode>hadp</powerd_ac_mode>
+		<powerd_battery_mode>hadp</powerd_battery_mode>
+		<powerd_normal_mode>hadp</powerd_normal_mode>
+		<bogons>
+			<interval>monthly</interval>
+		</bogons>
+		<enableserial></enableserial>
+		<already_run_config_upgrade></already_run_config_upgrade>
+		<ssh>
+			<enable>enabled</enable>
+		</ssh>
+		<timezone>Europe/Prague</timezone>
+		<serialspeed>115200</serialspeed>
+		<sshguard_threshold></sshguard_threshold>
+		<sshguard_blocktime></sshguard_blocktime>
+		<sshguard_detection_time></sshguard_detection_time>
+		<sshguard_whitelist></sshguard_whitelist>
+		<disablefilter>enabled</disablefilter>
+		<maximumstates></maximumstates>
+		<aliasesresolveinterval></aliasesresolveinterval>
+		<maximumfrags></maximumfrags>
+		<reflectiontimeout></reflectiontimeout>
+	</system>
+	<interfaces>
+		<wan>
+			<enable></enable>
+			<if>vtnet0</if>
+			<descr><![CDATA[WAN]]></descr>
+			<ipaddr>dhcp</ipaddr>
+			<dhcphostname></dhcphostname>
+			<alias-address></alias-address>
+			<alias-subnet>32</alias-subnet>
+			<dhcprejectfrom></dhcprejectfrom>
+			<adv_dhcp_pt_timeout></adv_dhcp_pt_timeout>
+			<adv_dhcp_pt_retry></adv_dhcp_pt_retry>
+			<adv_dhcp_pt_select_timeout></adv_dhcp_pt_select_timeout>
+			<adv_dhcp_pt_reboot></adv_dhcp_pt_reboot>
+			<adv_dhcp_pt_backoff_cutoff></adv_dhcp_pt_backoff_cutoff>
+			<adv_dhcp_pt_initial_interval></adv_dhcp_pt_initial_interval>
+			<adv_dhcp_pt_values>SavedCfg</adv_dhcp_pt_values>
+			<adv_dhcp_send_options></adv_dhcp_send_options>
+			<adv_dhcp_request_options></adv_dhcp_request_options>
+			<adv_dhcp_required_options></adv_dhcp_required_options>
+			<adv_dhcp_option_modifiers></adv_dhcp_option_modifiers>
+			<adv_dhcp_config_advanced></adv_dhcp_config_advanced>
+			<adv_dhcp_config_file_override></adv_dhcp_config_file_override>
+			<adv_dhcp_config_file_override_path></adv_dhcp_config_file_override_path>
+			<spoofmac></spoofmac>
+		</wan>
+	</interfaces>
+	<staticroutes></staticroutes>
+	<dhcpd></dhcpd>
+	<dhcpdv6></dhcpdv6>
+	<snmpd>
+		<syslocation>Frankfurt, Germany Europe - europe-west3-b</syslocation>
+		<syscontact>maly@datasys.cz</syscontact>
+		<rocommunity>public</rocommunity>
+		<modules>
+			<mibii></mibii>
+			<netgraph></netgraph>
+			<pf></pf>
+			<hostres></hostres>
+			<ucd></ucd>
+			<regex></regex>
+		</modules>
+		<enable></enable>
+		<pollport>161</pollport>
+		<trapserver></trapserver>
+		<trapserverport>162</trapserverport>
+		<trapstring></trapstring>
+		<bindip>wan</bindip>
+	</snmpd>
+	<diag>
+		<ipv6nat>
+			<ipaddr></ipaddr>
+		</ipv6nat>
+	</diag>
+	<syslog>
+		<filterdescriptions>1</filterdescriptions>
+	</syslog>
+	<filter>
+		<rule>
+			<id></id>
+			<tracker>1605721631</tracker>
+			<type>pass</type>
+			<interface>wan</interface>
+			<ipprotocol>inet</ipprotocol>
+			<tag></tag>
+			<tagged></tagged>
+			<max></max>
+			<max-src-nodes></max-src-nodes>
+			<max-src-conn></max-src-conn>
+			<max-src-states></max-src-states>
+			<statetimeout></statetimeout>
+			<statetype><![CDATA[keep state]]></statetype>
+			<os></os>
+			<protocol>icmp</protocol>
+			<icmptype>echorep,echoreq</icmptype>
+			<source>
+				<any></any>
+			</source>
+			<destination>
+				<any></any>
+			</destination>
+			<descr><![CDATA[ICMPv4 Allow from All]]></descr>
+			<updated>
+				<time>1605721631</time>
+				<username><![CDATA[admin@89.111.88.10 (Local Database)]]></username>
+			</updated>
+			<created>
+				<time>1605721631</time>
+				<username><![CDATA[admin@89.111.88.10 (Local Database)]]></username>
+			</created>
+		</rule>
+		<rule>
+			<id></id>
+			<tracker>1605721503</tracker>
+			<type>pass</type>
+			<interface>wan</interface>
+			<ipprotocol>inet</ipprotocol>
+			<tag></tag>
+			<tagged></tagged>
+			<max></max>
+			<max-src-nodes></max-src-nodes>
+			<max-src-conn></max-src-conn>
+			<max-src-states></max-src-states>
+			<statetimeout></statetimeout>
+			<statetype><![CDATA[keep state]]></statetype>
+			<os></os>
+			<protocol>tcp</protocol>
+			<source>
+				<any></any>
+			</source>
+			<destination>
+				<network>wanip</network>
+				<port>p_ADMIN</port>
+			</destination>
+			<descr><![CDATA[Allow ADMINs from All]]></descr>
+			<created>
+				<time>1605721503</time>
+				<username><![CDATA[admin@89.111.88.10 (Local Database)]]></username>
+			</created>
+			<updated>
+				<time>1605722151</time>
+				<username><![CDATA[admin@89.111.88.10 (Local Database)]]></username>
+			</updated>
+		</rule>
+		<rule>
+			<type>pass</type>
+			<ipprotocol>inet</ipprotocol>
+			<descr><![CDATA[Default allow LAN to any rule]]></descr>
+			<interface>lan</interface>
+			<tracker>0100000101</tracker>
+			<source>
+				<network>lan</network>
+			</source>
+			<destination>
+				<any></any>
+			</destination>
+		</rule>
+		<rule>
+			<type>pass</type>
+			<ipprotocol>inet6</ipprotocol>
+			<descr><![CDATA[Default allow LAN IPv6 to any rule]]></descr>
+			<interface>lan</interface>
+			<tracker>0100000102</tracker>
+			<source>
+				<network>lan</network>
+			</source>
+			<destination>
+				<any></any>
+			</destination>
+		</rule>
+		<separator>
+			<wan></wan>
+		</separator>
+	</filter>
+	<ipsec></ipsec>
+	<aliases>
+		<alias>
+			<name>ip_ADMIN</name>
+			<type>host</type>
+			<address>89.111.88.84 89.111.88.10</address>
+			<descr><![CDATA[Admin Destination]]></descr>
+			<detail><![CDATA[Office||Home]]></detail>
+		</alias>
+		<alias>
+			<name>p_ADMIN</name>
+			<type>port</type>
+			<address>443 22</address>
+			<descr><![CDATA[Admin ports]]></descr>
+			<detail><![CDATA[Entry added Wed, 18 Nov 2020 18:42:01 +0100||Entry added Wed, 18 Nov 2020 18:42:01 +0100]]></detail>
+		</alias>
+		<alias>
+			<name>p_ZABBIX</name>
+			<type>port</type>
+			<address>10050 10051</address>
+			<descr><![CDATA[Zabbxi Agent and Proxy Port]]></descr>
+			<detail><![CDATA[Entry added Wed, 18 Nov 2020 18:43:00 +0100||Entry added Wed, 18 Nov 2020 18:43:00 +0100]]></detail>
+		</alias>
+	</aliases>
+	<proxyarp></proxyarp>
+	<cron>
+		<item>
+			<minute>1,31</minute>
+			<hour>0-5</hour>
+			<mday>*</mday>
+			<month>*</month>
+			<wday>*</wday>
+			<who>root</who>
+			<command>/usr/bin/nice -n20 adjkerntz -a</command>
+		</item>
+		<item>
+			<minute>1</minute>
+			<hour>3</hour>
+			<mday>1</mday>
+			<month>*</month>
+			<wday>*</wday>
+			<who>root</who>
+			<command>/usr/bin/nice -n20 /etc/rc.update_bogons.sh</command>
+		</item>
+		<item>
+			<minute>1</minute>
+			<hour>1</hour>
+			<mday>*</mday>
+			<month>*</month>
+			<wday>*</wday>
+			<who>root</who>
+			<command>/usr/bin/nice -n20 /etc/rc.dyndns.update</command>
+		</item>
+		<item>
+			<minute>*/60</minute>
+			<hour>*</hour>
+			<mday>*</mday>
+			<month>*</month>
+			<wday>*</wday>
+			<who>root</who>
+			<command>/usr/bin/nice -n20 /usr/local/sbin/expiretable -v -t 3600 virusprot</command>
+		</item>
+		<item>
+			<minute>30</minute>
+			<hour>12</hour>
+			<mday>*</mday>
+			<month>*</month>
+			<wday>*</wday>
+			<who>root</who>
+			<command>/usr/bin/nice -n20 /etc/rc.update_urltables</command>
+		</item>
+		<item>
+			<minute>1</minute>
+			<hour>0</hour>
+			<mday>*</mday>
+			<month>*</month>
+			<wday>*</wday>
+			<who>root</who>
+			<command>/usr/bin/nice -n20 /etc/rc.update_pkg_metadata</command>
+		</item>
+	</cron>
+	<wol></wol>
+	<rrd>
+		<enable></enable>
+	</rrd>
+	<load_balancer>
+		<monitor_type>
+			<name>ICMP</name>
+			<type>icmp</type>
+			<descr><![CDATA[ICMP]]></descr>
+			<options></options>
+		</monitor_type>
+		<monitor_type>
+			<name>TCP</name>
+			<type>tcp</type>
+			<descr><![CDATA[Generic TCP]]></descr>
+			<options></options>
+		</monitor_type>
+		<monitor_type>
+			<name>HTTP</name>
+			<type>http</type>
+			<descr><![CDATA[Generic HTTP]]></descr>
+			<options>
+				<path>/</path>
+				<host></host>
+				<code>200</code>
+			</options>
+		</monitor_type>
+		<monitor_type>
+			<name>HTTPS</name>
+			<type>https</type>
+			<descr><![CDATA[Generic HTTPS]]></descr>
+			<options>
+				<path>/</path>
+				<host></host>
+				<code>200</code>
+			</options>
+		</monitor_type>
+		<monitor_type>
+			<name>SMTP</name>
+			<type>send</type>
+			<descr><![CDATA[Generic SMTP]]></descr>
+			<options>
+				<send></send>
+				<expect>220 *</expect>
+			</options>
+		</monitor_type>
+	</load_balancer>
+	<widgets>
+		<sequence>system_information:col1:open:0,interfaces:col2:open:0,gateways:col2:open:0,traffic_graphs:col2:open:0</sequence>
+		<period>10</period>
+	</widgets>
+	<openvpn></openvpn>
+	<dnshaper></dnshaper>
+	<unbound>
+		<enable></enable>
+		<dnssec></dnssec>
+		<active_interface></active_interface>
+		<outgoing_interface></outgoing_interface>
+		<custom_options></custom_options>
+		<hideidentity></hideidentity>
+		<hideversion></hideversion>
+		<dnssecstripped></dnssecstripped>
+	</unbound>
+	<revision>
+		<time>1605722460</time>
+		<description><![CDATA[(system): Installed nmap package.]]></description>
+		<username><![CDATA[(system)]]></username>
+	</revision>
+	<shaper></shaper>
+	<cert>
+		<refid>5fb558f2d2303</refid>
+		<descr><![CDATA[webConfigurator default (5fb558f2d2303)]]></descr>
+		<type>server</type>
+		<crt>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVoRENDQTJ5Z0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREJhTVRnd05nWURWUVFLRXk5d1psTmwKYm5ObElIZGxZa052Ym1acFozVnlZWFJ2Y2lCVFpXeG1MVk5wWjI1bFpDQkRaWEowYVdacFkyRjBaVEVlTUJ3RwpBMVVFQXhNVmNHWlRaVzV6WlMwMVptSTFOVGhtTW1ReU16QXpNQjRYRFRJd01URXhPREUzTWpVd05sb1hEVEl4Ck1USXlNVEUzTWpVd05sb3dXakU0TURZR0ExVUVDaE12Y0daVFpXNXpaU0IzWldKRGIyNW1hV2QxY21GMGIzSWcKVTJWc1ppMVRhV2R1WldRZ1EyVnlkR2xtYVdOaGRHVXhIakFjQmdOVkJBTVRGWEJtVTJWdWMyVXROV1ppTlRVNApaakprTWpNd016Q0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQUxkNlBTa1haTzlEClFUbVF1TWRpa2YraXRySHJhUFFidFB6WVVlSkhJVTZKQzZmS0Z6VXRqTG1hdGl6eFJIcHBqTUNkVmVyNUIrQVoKNWpVNGtTcjFUUGxDOXlEZ09rTFA3d25DL2FreFArWDJEWkRkTmRObGNDQnhNUXNGWjQ3eDdYdFdrRHZqeGxjbAo3UTVkNGtUSkpwQ0NwMzhTV1lzcjJZUy9YZ012bjZxR01ad0hMNE5kU1lCNnFMTEVKcVB0TnNwN3pqZDBWeFJECjNXZUZ1b2MxUVZ0WUV2Z0ZDWG5Bc2NySm0yMkdFMXVidm5jZlFJOFhkK29lc3lvbzd1d2JrS0lsem1QMkc1WUMKMitsY0NIc2h1T0ZacnNONFlKbGUwZEREelJ0d1hTOWVqZnkxMDBlclhmR0grVFlGdWE5N0J5cTFTMkR2ZGF5OQpGcy9VbGdKUWpHVUNBd0VBQWFPQ0FWTXdnZ0ZQTUFrR0ExVWRFd1FDTUFBd0VRWUpZSVpJQVliNFFnRUJCQVFECkFnWkFNQXNHQTFVZER3UUVBd0lGb0RBekJnbGdoa2dCaHZoQ0FRMEVKaFlrVDNCbGJsTlRUQ0JIWlc1bGNtRjAKWldRZ1UyVnlkbVZ5SUVObGNuUnBabWxqWVhSbE1CMEdBMVVkRGdRV0JCU1BJS3ViMHhETWpiblF5VDdGY0RUOQp0cUYwMFRDQmdnWURWUjBqQkhzd2VZQVVqeUNybTlNUXpJMjUwTWsreFhBMC9iYWhkTkdoWHFSY01Gb3hPREEyCkJnTlZCQW9UTDNCbVUyVnVjMlVnZDJWaVEyOXVabWxuZFhKaGRHOXlJRk5sYkdZdFUybG5ibVZrSUVObGNuUnAKWm1sallYUmxNUjR3SEFZRFZRUURFeFZ3WmxObGJuTmxMVFZtWWpVMU9HWXlaREl6TURPQ0FRQXdKd1lEVlIwbApCQ0F3SGdZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ0JnZ3JCZ0VGQlFnQ0FqQWdCZ05WSFJFRUdUQVhnaFZ3ClpsTmxibk5sTFRWbVlqVTFPR1l5WkRJek1ETXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBSW8xYU9jQzllT00KbVFIZGRFL01YRm81d1JGaTFzNGEydXYxMTY5L3MwQlRhZ1hVVDdMTDdWS2xOamMrR3Z1OG9LU3JwOTZoa0RZdAp3TW9aVTdKVlFvNmp3ZVBhK2tRMVN4TUdzUTRvdHJHS211V2VWR3ltVnhYOEtYRk5tWkNyeUxteHB0S05CZ1kvCklhVVJ6Q1ZpMTQvRUhacnNrTkEvNDAzdlR0bUF5TG4vM2FLcGU2Q3lhUkJweDB5Q0FUdGlCR01JV29xK2lVdmYKV0pUYVZSenB6WEtRYlptM0Z6aEtwcXdSRXV2V3VDdjZPdjdHaDViQjNuZkNoRVQveVBRMzZxT2FSaHdHL3A1Zwo2N2ZQaEt0NzQ1c0pVRDIvbzV6dmhrTGx2MXFYb1BEU0NEL04yY0J0R01hS2hzTVV3eUFtaGZEU1dRNG45N3RaCnZGMEdUODZuaFE0PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==</crt>
+		<prv>LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2Z0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktnd2dnU2tBZ0VBQW9JQkFRQzNlajBwRjJUdlEwRTUKa0xqSFlwSC9vcmF4NjJqMEc3VDgyRkhpUnlGT2lRdW55aGMxTFl5NW1yWXM4VVI2YVl6QW5WWHErUWZnR2VZMQpPSkVxOVV6NVF2Y2c0RHBDeis4Snd2MnBNVC9sOWcyUTNUWFRaWEFnY1RFTEJXZU84ZTE3VnBBNzQ4WlhKZTBPClhlSkV5U2FRZ3FkL0VsbUxLOW1FdjE0REw1K3FoakdjQnkrRFhVbUFlcWl5eENhajdUYktlODQzZEZjVVE5MW4KaGJxSE5VRmJXQkw0QlFsNXdMSEt5WnR0aGhOYm03NTNIMENQRjNmcUhyTXFLTzdzRzVDaUpjNWo5aHVXQXR2cApYQWg3SWJqaFdhN0RlR0NaWHRIUXc4MGJjRjB2WG8zOHRkTkhxMTN4aC9rMkJibXZld2NxdFV0ZzczV3N2UmJQCjFKWUNVSXhsQWdNQkFBRUNnZ0VCQUpvOUMyOGd1SHdlaUpWUTROVFVPekd3WW03ZEhBU2h5aHNINm9ZVEQ1L0sKdTE2WkY3dGZpRDU3SFl4WVloMlozM1lJamJLVEdKaStqUFRPa2RLUUZkNHcrampMNW81RjZJZkhRS0JidzRDWQp3THk0Q1VpbHJJWEpRZFltKy9DQjFnYnFOU1B6amNlekhUNEhsSEFJdlArY3BodS9uRURQWXZNaVFIRGpOeEVNCmd5Y1RyRWg5OWh6T2M0dFdCQ1RnOC9oazFsbGZzRUs4eGRkUGREU1B2aGtVUEl3K3M1eU5XRHVkR1cwclV6MzgKRU1rVytZRmpKa1Z0RlVyTnBWajNRWHpMbzMwaVpjVUlxQmF1clhzaCtrYUt3WWNCb0FrRFlOMStTaFpEZkNFSgpkaUZkK0RnWjk0VXlYR0VBRUFrNklKSDEvU0t2eFBqUnFZd2xveXlMSWowQ2dZRUE2Q2dzSzltVXlRbitJTmFlCjFYcVB6Q1BZbzhkN3BrRktMRjhyekhCT1V3czJTTHBUckZndDMyVXc4NnlsSVB2TC8zMWFnMm5icktBbERuQngKZ0tFdjRGYkhhOWxaRzB4ai83dC9wRGl2a0RYeGoxNVJxNGhxd3V0TlRGSVh4SlFubng0M2d6Nk1TenpmL2FJSQpzaEgzT05zOFJua0hNdHRaTWVUVjdWaGRBSnNDZ1lFQXlsSXlHd01XTndFaHVBWWJmeEVUZ3dDcStBQlNGZDFJCkZCY2dXdXlUWEo4Zng1dlZaUmI1Z1dDZEQyYTErMGtCRHNiMEZNanlnaFBsTnBsMjBwUk1ZU1dxTlZENHZic20KcnFVSkhZRmNKbmJ3MmVMc0lyWU92RUtlZGo3SXFKSGxMYkJBOWE0eHNiRDlrVUZxS1dVMi8wRHIzY09CYkEzMwpWUGxGN3RMSTl2OENnWUF6bG5HeVVNZ3FJRWxUUEwzUXpFcFYzNFZOWjQrSGN5eXJUWDZyRUMybmNHOWdtOTdxCkJqSXpXUVlXcjcrRjQ4NEIrUFg3QzdQZjJUcEN5aU8rcEpMQjlDYWVSWTd5YlBndnBKZUpnM3NudllUdkNkTjIKSFhzejB4dTdJT2JkTE5yZEZkYmFHRFVPcHZsVElBVjBwRjllU0FGTjI2a0kyUXNwOWlLL2VnbzRqd0tCZ1FDZwozZndqQ0RCSXFlaXlsb0NVWnZKNXJqVkNuWmFtOWR3U3hWU2ZsdzJRanFGSktEbmplQUlKQWRXLzRpMytVRXk4CkFDc2d2Nm83RFRDcVdobGxWQzdxNjNUTGtjZEZyS0lVS1ByM2I5emlaSjRhME5ocXZSRTRWVXdEdnVYelNwWEwKM3lHM2RycmlpMVVDZ3QyemJsdnRWeVJ6bnJpd1B1YVN0T1VMQUtSejV3S0JnREpDeUZMdlExK3E0bVdBQ0h0WApqWkI4T0ZaNnNoaWRYMlZqQlQzK1pUY2Fsc0k3SCtPMGhNeDc1Y0RJT0RsdjRhbHgyUGhsNG55a2xEMHJjMzhrCmVCYmFTUGJ0TEkwMUYxYmZSOGs1cUFCbGlkUVluSFczMnFZR09DbXZrMXFTQWxHdVlUemVuL0lGaWVtdzFuNkoKUCtkd1o0MGU5b3VobDNLcG1pNkFRTklkCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K</prv>
+	</cert>
+	<ppps></ppps>
+	<installedpackages>
+		<package>
+			<name>Zabbix Agent 5.0</name>
+			<internal_name>zabbix-agent5</internal_name>
+			<descr><![CDATA[LTS (Long Term Support) release. Zabbix LTS releases are supported for 
+			Zabbix customers during five (5) years i.e. 3 years of Full Support (general, critical and security issues) 
+			and 2 additional years of Limited Support (critical and security issues only). Zabbix LTS version release 
+			will result in change of the first version number.&lt;br /&gt;
+			Standard release. Standard Zabbix releases are supported for Zabbix customers during
+			six (6) months of Full Support (general, critical and security issues) until the next
+			Zabbix stable release, plus one (1) additional month of Limited Support (critical and
+			security issues only). Zabbix Standard version release will result in change of the
+			second version number.&lt;br /&gt;
+			More info in &lt;a href=&quot;http://www.zabbix.com/life_cycle_and_release_policy.php&quot;&gt;Zabbix Life Cycle and Release Policy&lt;/a&gt;.]]></descr>
+			<website>http://www.zabbix.com/product.php</website>
+			<version>1.0.4_6</version>
+			<configurationfile>zabbix-agent.xml</configurationfile>
+			<logging>
+				<logfilename>zabbix-agent/zabbix_agentd.log</logfilename>
+			</logging>
+			<tabs>
+				<tab>
+					<text><![CDATA[Agent]]></text>
+					<url>/pkg_edit.php?xml=zabbix-agent.xml&amp;id=0</url>
+					<active></active>
+				</tab>
+			</tabs>
+			<include_file>/usr/local/pkg/zabbix-agent.inc</include_file>
+		</package>
+		<package>
+			<name>acme</name>
+			<pkginfolink>https://doc.pfsense.org/index.php/pfsense-pkg-acme</pkginfolink>
+			<descr><![CDATA[Automated Certificate Management Environment, for automated use of LetsEncrypt certificates.]]></descr>
+			<website>https://letsencrypt.org/</website>
+			<version>0.6.9_2</version>
+			<configurationfile>acme.xml</configurationfile>
+			<include_file>/usr/local/pkg/acme/acme.inc</include_file>
+			<plugins>
+				<item>
+					<type>plugin_certificates</type>
+				</item>
+			</plugins>
+		</package>
+		<package>
+			<name>nmap</name>
+			<descr><![CDATA[NMap is a utility for network exploration or security auditing.&lt;br/&gt;
+			It supports ping scanning (determine which hosts are up), many port scanning techniques (determine what services the hosts are offering), version detection (determine what application/service is running on a port), and TCP/IP fingerprinting (remote host OS or device identification).
+			It also offers flexible target and port specification, decoy/stealth scanning, SunRPC scanning, and more.]]></descr>
+			<version>1.4.4_1</version>
+			<pkginfolink>https://doc.pfsense.org/index.php/Nmap_package</pkginfolink>
+			<configurationfile>nmap.xml</configurationfile>
+			<include_file>/usr/local/pkg/nmap.inc</include_file>
+		</package>
+		<menu>
+			<name>Zabbix Agent 5.0</name>
+			<section>Services</section>
+			<url>/pkg_edit.php?xml=zabbix-agent.xml&amp;id=0</url>
+		</menu>
+		<menu>
+			<name>Acme Certificates</name>
+			<tooltiptext></tooltiptext>
+			<section>Services</section>
+			<url>/acme/acme_certificates.php</url>
+		</menu>
+		<menu>
+			<name>NMap</name>
+			<section>Diagnostics</section>
+			<configfile>nmap.xml</configfile>
+		</menu>
+		<service>
+			<name>zabbix_agentd</name>
+			<rcfile>zabbix_agentd.sh</rcfile>
+			<executable>zabbix_agentd</executable>
+			<description><![CDATA[Zabbix Agent Host Monitor Daemon]]></description>
+		</service>
+		<acme>
+			<certificates></certificates>
+			<accountkeys></accountkeys>
+		</acme>
+	</installedpackages>
+	<gateways></gateways>
+</pfsense>
