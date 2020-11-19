@@ -52,7 +52,6 @@
 		<disablenatreflection>yes</disablenatreflection>
 		<disablesegmentationoffloading></disablesegmentationoffloading>
 		<disablelargereceiveoffloading></disablelargereceiveoffloading>
-		<ipv6allow></ipv6allow>
 		<maximumtableentries>400000</maximumtableentries>
 		<powerd_ac_mode>hadp</powerd_ac_mode>
 		<powerd_battery_mode>hadp</powerd_battery_mode>
@@ -76,6 +75,7 @@
 		<aliasesresolveinterval></aliasesresolveinterval>
 		<maximumfrags></maximumfrags>
 		<reflectiontimeout></reflectiontimeout>
+		<pkg_repo_conf_path>/usr/local/share/pfSense/pkg/repos/pfSense-repo.conf</pkg_repo_conf_path>
 	</system>
 	<interfaces>
 		<wan>
@@ -127,9 +127,7 @@
 		<bindip>wan</bindip>
 	</snmpd>
 	<diag>
-		<ipv6nat>
-			<ipaddr></ipaddr>
-		</ipv6nat>
+		<ipv6nat></ipv6nat>
 	</diag>
 	<syslog>
 		<filterdescriptions>1</filterdescriptions>
@@ -376,9 +374,9 @@
 		<dnssecstripped></dnssecstripped>
 	</unbound>
 	<revision>
-		<time>1605722460</time>
-		<description><![CDATA[(system): Installed nmap package.]]></description>
-		<username><![CDATA[(system)]]></username>
+		<time>1605811021</time>
+		<description><![CDATA[admin@89.111.88.10 (Local Database): Zabbix Agent has been created/modified.]]></description>
+		<username><![CDATA[admin@89.111.88.10 (Local Database)]]></username>
 	</revision>
 	<shaper></shaper>
 	<cert>
@@ -468,6 +466,40 @@
 			<certificates></certificates>
 			<accountkeys></accountkeys>
 		</acme>
+		<zabbixagentlts>
+			<config>
+				<agentenabled>on</agentenabled>
+				<server>zbx01.pfsense.cz, zbx02.pfsense.cz, zbx03.pfsense.cz</server>
+				<serveractive>zbx01.pfsense.cz, zbx02.pfsense.cz, zbx03.pfsense.cz</serveractive>
+				<hostname>pfsense01.pfsense.cz</hostname>
+				<listenip>0.0.0.0</listenip>
+				<listenport>10050</listenport>
+				<refreshactchecks>120</refreshactchecks>
+				<timeout>3</timeout>
+				<buffersend>5</buffersend>
+				<buffersize>100</buffersize>
+				<startagents>3</startagents>
+				<tlsconnect>unencrypted</tlsconnect>
+				<tlsaccept>unencrypted</tlsaccept>
+				<tlscafile>none</tlscafile>
+				<tlscaso></tlscaso>
+				<tlscrlfile>none</tlscrlfile>
+				<tlscertfile>none</tlscertfile>
+				<tlspskidentity></tlspskidentity>
+				<tlspskfile></tlspskfile>
+				<userparams></userparams>
+			</config>
+		</zabbixagentlts>
 	</installedpackages>
-	<gateways></gateways>
+	<gateways>
+		<gateway_item>
+			<interface>wan</interface>
+			<gateway>dynamic</gateway>
+			<name>WAN_DHCP</name>
+			<weight>1</weight>
+			<ipprotocol>inet</ipprotocol>
+			<descr><![CDATA[Interface WAN_DHCP Gateway]]></descr>
+			<monitor_disable></monitor_disable>
+		</gateway_item>
+	</gateways>
 </pfsense>
