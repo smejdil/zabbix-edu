@@ -1,0 +1,56 @@
+#
+# pfSense CE on GCP - Google Cloud Platform
+#
+
+https://blog.kylemanna.com/cloud/pfsense-on-google-cloud/
+
+curl https://frafiles.pfsense.org/mirror/downloads/pfSense-CE-memstick-serial-2.4.5-RELEASE-p1-amd64.img.gz | gunzip > disk.raw
+
+tar -Sczf pfSense-CE-memstick-serial-2.4.5-RELEASE-amd64.img.tar.gz disk.raw
+
+gsutil mb gs://pfsense-lab
+gsutil cp pfSense-CE-memstick-serial-2.4.5-RELEASE-amd64.img.tar.gz gs://pfsense-lab
+
+Navigate to GCP Console -> Compute Engine -> Create an image.
+
+    Name: pfsense-245-installer
+    Source: “Cloud Storage file” and specify the path to YOUR_BUCKET/pfSense-CE-memstick-serial-2.4.5-RELEASE-amd64.img.tar.gz
+
+gcloud compute images list | grep pfsense
+pfsense-245-installer                                 polar-strata-258714                                                READY
+
+Navigate to GCP Console -> Compute Engine -> Create an instance.
+    Name: pfsense-install-1
+    Boot disk: pfsense-245-installer
+    Create a additional disk using the advanced drop down.
+        Name: pfsense-245-clean-install
+        Source Type: None (blank disk)
+        Size: 20GB
+
+#gcloud compute instances create pfsense01 --image pfsense-245-installer
+#gcloud compute instances add-metadata --project=polar-strata-258714 --zone=europe-west3-b --metadata=serial-port-enable=1 pfsense01
+#gcloud compute connect-to-serial-port --project=polar-strata-258714 --zone=europe-west3-b pfsense01
+
+Navigate to GCP Console -> Compute Engine -> Create an instance.
+    Name: pfsense01
+    Machine type: Pick something applicable to the work load.
+    Boot disk:
+        Snapshots: pfsense-245-image
+        Size: 20GB (or something applicable for work load, typically only needed for logging).
+
+gcloud compute instances add-tags pfsense01 --tags=http-server
+gcloud compute instances add-tags pfsense01 --tags=https-server
+gcloud compute instances add-tags pfsense01 --tags=zabbix-agent
+gcloud compute instances add-tags pfsense01 --tags=snmp
+gcloud compute instances add-tags pfsense01 --tags=zabbix-server
+gcloud compute instances add-metadata --metadata=serial-port-enable=1 pfsense01
+gcloud compute connect-to-serial-port pfsense01
+
+ifconfig vtnet0 mtu 1460
+pfSsh.php playback disablereferercheck
+pfSsh.php playback enablesshd
+pfctl -d
+
+SNMP
+Zabbix agent package
+
