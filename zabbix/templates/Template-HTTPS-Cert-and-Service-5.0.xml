@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2020-11-20T15:27:45Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template App HTTPS Cert</template>
+            <name>Template App HTTPS Cert</name>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>HTTPS service and cert</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>HTTPS service is running</name>
+                    <type>SIMPLE</type>
+                    <key>net.tcp.service[https]</key>
+                    <delay>60</delay>
+                    <history>7d</history>
+                    <status>DISABLED</status>
+                    <applications>
+                        <application>
+                            <name>HTTPS service and cert</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>Service state</name>
+                    </valuemap>
+                    <request_method>POST</request_method>
+                    <triggers>
+                        <trigger>
+                            <expression>{max(#3)}=0</expression>
+                            <name>HTTPS service is down on {HOST.NAME}</name>
+                            <status>DISABLED</status>
+                            <priority>AVERAGE</priority>
+                            <tags>
+                                <tag>
+                                    <tag>Proto</tag>
+                                    <value>HTTPS</value>
+                                </tag>
+                            </tags>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>SSL HTTPS certificate digest mode</name>
+                    <type>EXTERNAL</type>
+                    <key>ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,digestmode]</key>
+                    <delay>3600</delay>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <applications>
+                        <application>
+                            <name>HTTPS service and cert</name>
+                        </application>
+                    </applications>
+                    <request_method>POST</request_method>
+                    <triggers>
+                        <trigger>
+                            <expression>{str(sha1)}=1</expression>
+                            <name>HTTPS certificate is using sha1</name>
+                            <priority>INFO</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>HTTPS certificate on {HOST.NAME} is using sha1 and expires after 1.Jan.2017</name>
+                                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,digestmode].str(sha1)}=1 and ( {Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,enddate].str(2017)}=1 or  {Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,enddate].str(2018)}=1 or  {Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,enddate].str(2019)}=1 or  {Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,enddate].str(2020)}=1)</expression>
+                                </dependency>
+                                <dependency>
+                                    <name>HTTPS SSL not running on host {HOST.NAME}</name>
+                                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,simple].last()}=0</expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>SSL HTTPS certificate end date</name>
+                    <type>EXTERNAL</type>
+                    <key>ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,enddate]</key>
+                    <delay>3600</delay>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <applications>
+                        <application>
+                            <name>HTTPS service and cert</name>
+                        </application>
+                    </applications>
+                    <request_method>POST</request_method>
+                </item>
+                <item>
+                    <name>SSL HTTPS certificate issuer</name>
+                    <type>EXTERNAL</type>
+                    <key>ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,issuer]</key>
+                    <delay>86400</delay>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <applications>
+                        <application>
+                            <name>HTTPS service and cert</name>
+                        </application>
+                    </applications>
+                    <request_method>POST</request_method>
+                </item>
+                <item>
+                    <name>SSL HTTPS certificate time until expire</name>
+                    <type>EXTERNAL</type>
+                    <key>ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,lifetime]</key>
+                    <delay>3600</delay>
+                    <units>s</units>
+                    <applications>
+                        <application>
+                            <name>HTTPS service and cert</name>
+                        </application>
+                    </applications>
+                    <request_method>POST</request_method>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&lt;0</expression>
+                            <name>HTTPS certificate on {HOSTNAME} expired  (Since {ITEM.LASTVALUE}d)</name>
+                            <priority>DISASTER</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>HTTPS SSL not running on host {HOST.NAME}</name>
+                                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,simple].last()}=0</expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}&lt;5d</expression>
+                            <name>HTTPS certificate on {HOSTNAME} less than 5 days  (Remaing {ITEM.LASTVALUE}d)</name>
+                            <priority>HIGH</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>HTTPS certificate on {HOSTNAME} expired  (Since {ITEM.LASTVALUE}d)</name>
+                                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,lifetime].last()}&lt;0</expression>
+                                </dependency>
+                                <dependency>
+                                    <name>HTTPS SSL not running on host {HOST.NAME}</name>
+                                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,simple].last()}=0</expression>
+                                </dependency>
+                            </dependencies>
+                            <tags>
+                                <tag>
+                                    <tag>Cert</tag>
+                                    <value>Expire</value>
+                                </tag>
+                                <tag>
+                                    <tag>SSL</tag>
+                                    <value>Cert</value>
+                                </tag>
+                            </tags>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}&lt;10d</expression>
+                            <name>HTTPS certificate on {HOSTNAME} less than 10 days  (Remaing {ITEM.LASTVALUE}d)</name>
+                            <priority>AVERAGE</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>HTTPS certificate on {HOSTNAME} less than 5 days  (Remaing {ITEM.LASTVALUE}d)</name>
+                                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,lifetime].last()}&lt;5d</expression>
+                                </dependency>
+                                <dependency>
+                                    <name>HTTPS SSL not running on host {HOST.NAME}</name>
+                                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,simple].last()}=0</expression>
+                                </dependency>
+                            </dependencies>
+                            <tags>
+                                <tag>
+                                    <tag>Cert</tag>
+                                    <value>Expire</value>
+                                </tag>
+                                <tag>
+                                    <tag>SSL</tag>
+                                    <value>Cert</value>
+                                </tag>
+                            </tags>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}&lt;20d</expression>
+                            <name>HTTPS certificate on {HOSTNAME} less than 20 days (Remaing {ITEM.LASTVALUE}d)</name>
+                            <priority>WARNING</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>HTTPS certificate on {HOSTNAME} less than 10 days  (Remaing {ITEM.LASTVALUE}d)</name>
+                                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,lifetime].last()}&lt;10d</expression>
+                                </dependency>
+                                <dependency>
+                                    <name>HTTPS SSL not running on host {HOST.NAME}</name>
+                                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,simple].last()}=0</expression>
+                                </dependency>
+                            </dependencies>
+                            <tags>
+                                <tag>
+                                    <tag>Cert</tag>
+                                    <value>Expire</value>
+                                </tag>
+                                <tag>
+                                    <tag>SSL</tag>
+                                    <value>Cert</value>
+                                </tag>
+                            </tags>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>SSL HTTPS certificate running</name>
+                    <type>EXTERNAL</type>
+                    <key>ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,simple]</key>
+                    <delay>360</delay>
+                    <applications>
+                        <application>
+                            <name>HTTPS service and cert</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>BOOL_TO_DECIMAL</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                    <request_method>POST</request_method>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=0</expression>
+                            <name>HTTPS SSL not running on host {HOST.NAME}</name>
+                            <priority>HIGH</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>HTTPS service is down on {HOST.NAME}</name>
+                                    <expression>{Template App HTTPS Cert:net.tcp.service[https].max(#3)}=0</expression>
+                                </dependency>
+                            </dependencies>
+                            <tags>
+                                <tag>
+                                    <tag>Proc</tag>
+                                    <value>HTTPS</value>
+                                </tag>
+                            </tags>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>SSL HTTPS sslv3 poodle vulnerable</name>
+                    <type>EXTERNAL</type>
+                    <key>ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,ssl3]</key>
+                    <delay>360</delay>
+                    <applications>
+                        <application>
+                            <name>HTTPS service and cert</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>BOOL_TO_DECIMAL</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                    <request_method>POST</request_method>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=1</expression>
+                            <name>SSL certificate on {HOSTNAME} HTTPS ssl3 poodle vulnerable</name>
+                            <status>DISABLED</status>
+                            <priority>WARNING</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>HTTPS SSL not running on host {HOST.NAME}</name>
+                                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,simple].last()}=0</expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>SSL HTTPS certificate start date</name>
+                    <type>EXTERNAL</type>
+                    <key>ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,startdate]</key>
+                    <delay>3600</delay>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <applications>
+                        <application>
+                            <name>HTTPS service and cert</name>
+                        </application>
+                    </applications>
+                    <request_method>POST</request_method>
+                </item>
+                <item>
+                    <name>SSL HTTPS certificate subject</name>
+                    <type>EXTERNAL</type>
+                    <key>ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,subject]</key>
+                    <delay>86400</delay>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <applications>
+                        <application>
+                            <name>HTTPS service and cert</name>
+                        </application>
+                    </applications>
+                    <request_method>POST</request_method>
+                </item>
+            </items>
+            <macros>
+                <macro>
+                    <macro>{$HOST_SSL_PORT}</macro>
+                    <value>443</value>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+    <triggers>
+        <trigger>
+            <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,digestmode].str(sha1)}=1 and ( {Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,enddate].str(2017)}=1 or  {Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,enddate].str(2018)}=1 or  {Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,enddate].str(2019)}=1 or  {Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,enddate].str(2020)}=1)</expression>
+            <name>HTTPS certificate on {HOST.NAME} is using sha1 and expires after 1.Jan.2017</name>
+            <url>http://googleonlinesecurity.blogspot.ch/2014/09/gradually-sunsetting-sha-1.html</url>
+            <priority>WARNING</priority>
+            <dependencies>
+                <dependency>
+                    <name>HTTPS SSL not running on host {HOST.NAME}</name>
+                    <expression>{Template App HTTPS Cert:ssltls.check[{HOST.CONN}:{$HOST_SSL_PORT},native,simple].last()}=0</expression>
+                </dependency>
+            </dependencies>
+        </trigger>
+    </triggers>
+    <value_maps>
+        <value_map>
+            <name>Service state</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Down</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Up</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>
