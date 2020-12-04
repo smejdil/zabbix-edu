@@ -125,7 +125,6 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | gr
 - Create DNS records via cloudflare API
 
 ```console
-
 ./zabbix-edu/scripts/create_dns_records.sh
 
 cli4 --post name='zbx01' type=A content="35.246.211.200" /zones/:pfsense.cz/dns_records
@@ -134,8 +133,14 @@ cli4 --post name='zbx03' type=A content="34.107.115.225" /zones/:pfsense.cz/dns_
 cli4 --post name='winsrv01' type=A content="34.107.108.40" /zones/:pfsense.cz/dns_records
 cli4 --post name='linsrv01' type=A content="34.107.28.86" /zones/:pfsense.cz/dns_records
 cli4 --post name='pfsense01' type=A content="34.90.171.187" /zones/:pfsense.cz/dns_records
-
 ```
+## HTML list of VM
+- Create HTML list of running EDU VM
+
+```console
+./zabbix-edu/scripts/create_html_list.sh
+```
+
 ## To do
 
 - Create Zabbix user by Zabbix API

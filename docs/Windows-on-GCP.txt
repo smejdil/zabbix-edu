@@ -1,0 +1,45 @@
+#
+# Manual configure Window$ server
+#
+
+# RDP connect
+From win desktop Win https://cloud.google.com/
+Right Console
+Compute Engines / VM instances
+winsrv01 - Set Windows password
+******************
+Download RDP file
+Open by mstsc (asociate .rdp)
+Connect
+Password
+Yes :-)
+
+# Zabbix agent
+Server Manager
+Local Server (v levo)
+IE Enhanced Security Configuration Off :-( Fuck Off !!!
+Run IE - Dont Use recomended
+firefox download - install
+total commander download 64bit - install
+firefox download zabbix agent2 - https://www.zabbix.com/
+Install zabbix_agent2-5.0.6-windows-amd64-openssl
+	zbx01.pfsense.cz
+Run total commander As Adminnistrator
+"c:\Program Files\Zabbix Agent 2\.." 
+	edit zabbix_agent2.conf
+Server=zbx01.pfsense.cz,zbx02.pfsense.cz,zbx03.pfsense.cz,zbx04.pfsense.cz,zbx05.pfsense.cz,zbx06.pfsense.cz,zbx07.pfsense.cz,zbx08.pfsense.cz,zbx09.pfsense.cz
+Server Manager - Tools - Computer Management
+	Services
+	Zabbix Agent 2
+		Restart
+		
+# IIS install
+# https://www.zabbix.com/integrations/iis
+Server Manager
+	All Servers
+		WINSRV01
+			Add Role and Features
+			Web Server
+			IIS Management Scripts and Tools
+
+# EOF
