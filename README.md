@@ -101,6 +101,11 @@ winsrv01 - http://34.89.189.246
 gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | grep winsrv0
 34.89.189.246 - http://winsrv01.pfsense.cz
 ```
+Manual configure Win server and install IIS and Zabbix agent 2.
+
+```console
+less ./zabbix-edu/docs/Windows-on-GCP.txt
+```
 
 ## pfSense CE on GCP for EDU
 - Create VM firewall pfSense
