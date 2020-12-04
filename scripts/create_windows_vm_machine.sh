@@ -12,7 +12,7 @@ argv=("$@");
 
 for (( j=0; j<argc; j++ )); do
     echo "winsrv${argv[j]}";
-    gcloud compute instances create winsrv${argv[j]} --image ${IMAGE_WIN} --image-project=windows-cloud --zone=europe-west4-c --metadata-from-file startup-script=./zabbix-edu/scripts/firewall-zabbix-agent.ps1
+    gcloud compute instances create winsrv${argv[j]} --image ${IMAGE_WIN} --image-project=windows-cloud --zone=europe-west4-c --metadata-from-file startup-script=./zabbix-edu/scripts/windows-configure.ps1
     gcloud compute instances add-tags winsrv${argv[j]} --tags=http-server --zone=europe-west4-c
     gcloud compute instances add-tags winsrv${argv[j]} --tags=https-server --zone=europe-west4-c
     gcloud compute instances add-tags winsrv${argv[j]} --tags=zabbix-agent --zone=europe-west4-c
