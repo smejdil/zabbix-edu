@@ -45,7 +45,7 @@ gcloud config set project [PROJECT]
 gcloud compute ssh zbx01
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
-rebbot
+reboot
 ./zabbix-edu/scripts/install_zabbix.sh
 ```
 - List Zabbix EDU VM and external IPv4
@@ -73,7 +73,7 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz/zabbix/
 gcloud compute ssh linsrv01
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
-rebbot
+reboot
 ./zabbix-edu/scripts/install_configure_app.sh
 ```
 - List Linux servers EDU VM and external IPv4
@@ -149,7 +149,7 @@ cli4 --post name='pfsense01' type=A content="34.90.171.187" /zones/:pfsense.cz/d
 ## To do
 
 - Create Zabbix user by Zabbix API
-- Import training Tmplate by Zabbix API
+- Import training Template by Zabbix API
 - Import media Email by Zabbix API
 - Download and Install Zabbix Agent 2 on winsrv01 by PowerShell
 - Install - Web Server and IIS Management Scripts and Tools on winsrv01 by PowerShell
