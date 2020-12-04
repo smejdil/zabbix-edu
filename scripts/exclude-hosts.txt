@@ -1,1 +1,1 @@
-isds-pre-zabbix|zbx-fbsd-tsdb
+isds-pre-zabbix|zbx-fbsd-tsdb|centos7-mzv-off-inst|rhel7-mzv-off-inst

@@ -38,18 +38,25 @@ Navigate to GCP Console -> Compute Engine -> Create an instance.
         Snapshots: pfsense-245-image
         Size: 20GB (or something applicable for work load, typically only needed for logging).
 
-gcloud compute instances add-tags pfsense01 --tags=http-server
-gcloud compute instances add-tags pfsense01 --tags=https-server
-gcloud compute instances add-tags pfsense01 --tags=zabbix-agent
-gcloud compute instances add-tags pfsense01 --tags=snmp
-gcloud compute instances add-tags pfsense01 --tags=zabbix-server
-gcloud compute instances add-metadata --metadata=serial-port-enable=1 pfsense01
-gcloud compute connect-to-serial-port pfsense01
+gcloud compute instances add-tags pfsense01 --tags=http-server --zone=europe-west4-a
+gcloud compute instances add-tags pfsense01 --tags=https-server --zone=europe-west4-a
+gcloud compute instances add-tags pfsense01 --tags=zabbix-agent --zone=europe-west4-a
+gcloud compute instances add-tags pfsense01 --tags=snmp --zone=europe-west4-a
+gcloud compute instances add-tags pfsense01 --tags=zabbix-server --zone=europe-west4-a
+gcloud compute instances add-metadata --metadata=serial-port-enable=1 pfsense01 --zone=europe-west4-a
+gcloud compute connect-to-serial-port pfsense01 --zone=europe-west4-a
 
+# Console pfSense 8
+
+pkg install bash
+rehash
+bash
 ifconfig vtnet0 mtu 1460
 pfSsh.php playback disablereferercheck
 pfSsh.php playback enablesshd
 pfctl -d
+
+# Upload EDU config
 
 SNMP
 Zabbix agent package

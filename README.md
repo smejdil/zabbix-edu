@@ -55,6 +55,11 @@ gcloud compute instances list | awk '{print $1" - http://"$5"/zabbix/"}' | grep 
 zbx01 - http://35.246.211.200/zabbix/
 zbx02 - http://34.89.152.77/zabbix/
 zbx03 - http://34.107.115.225/zabbix/
+
+gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz/zabbix/"}' | grep zbx0
+34.89.152.77 - http://zbx01.pfsense.cz/zabbix/
+35.198.167.115 - http://zbx02.pfsense.cz/zabbix/
+34.107.115.225 - http://zbx03.pfsense.cz/zabbix/
 ```
 ## Linux server for EDU
 - Create VM Linux + Tomcat other
@@ -71,22 +76,65 @@ sudo su -
 rebbot
 ./zabbix-edu/scripts/install_configure_app.sh
 ```
+- List Linux servers EDU VM and external IPv4
+
+```console
+gcloud compute instances list | awk '{print $1" - http://"$5}' | grep linsrv0
+linsrv01 - http://34.107.114.128
+
+gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | grep linsrv0
+34.107.114.128 - http://linsrv01.pfsense.cz
+```
+
 ## Windows server for EDU
 - Create VM Windows server 2019
 
 ```console
 ./zabbix-edu/scripts/create_windows_vm_machine.sh 01
 ```
-## DNS A records for EDU
-- Create DNS records
+- List Windows servers EDU VM and external IPv4
 
 ```console
+gcloud compute instances list | awk '{print $1" - http://"$5}' | grep winsrv0
+winsrv01 - http://34.89.189.246
+
+gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | grep winsrv0
+34.89.189.246 - http://winsrv01.pfsense.cz
+```
+
+## pfSense CE on GCP for EDU
+- Create VM firewall pfSense
+
+Manual deploy on GCP web console.
+
+```console
+less ./zabbix-edu/docs/pfSense-CE-on-GCP.txt
+```
+
+- List pfSense firewall EDU VM and external IPv4
+
+```console
+gcloud compute instances list | awk '{print $1" - http://"$5}' | grep pfsense0
+pfsense01 - http://34.90.171.187
+
+gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | grep pfsense0
+34.90.171.187 - http://pfsense01.pfsense.cz
+```
+
+## DNS A records for EDU
+- Create DNS records via cloudflare API
+
+```console
+
+./zabbix-edu/scripts/create_dns_records.sh
+
 cli4 --post name='zbx01' type=A content="35.246.211.200" /zones/:pfsense.cz/dns_records
 cli4 --post name='zbx02' type=A content="34.89.152.77" /zones/:pfsense.cz/dns_records
 cli4 --post name='zbx03' type=A content="34.107.115.225" /zones/:pfsense.cz/dns_records
-
 cli4 --post name='winsrv01' type=A content="34.107.108.40" /zones/:pfsense.cz/dns_records
 cli4 --post name='linsrv01' type=A content="34.107.28.86" /zones/:pfsense.cz/dns_records
+cli4 --post name='pfsense01' type=A content="34.90.171.187" /zones/:pfsense.cz/dns_records
+
 ```
 ## To do
 
