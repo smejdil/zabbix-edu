@@ -42,7 +42,7 @@ gcloud config set project [PROJECT]
 - Connect to VM Zabbix EDU and run scripts + reboot SELinux disable
 
 ```console
-gcloud compute ssh zbx01
+gcloud compute ssh zbx01 --zone=europe-west1-c
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 reboot
@@ -70,7 +70,7 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz/zabbix/
 - Connect to VM Linux + Tomcat and run scripts + reboot SELinux disable
 
 ```console
-gcloud compute ssh linsrv01
+gcloud compute ssh linsrv01 --zone=europe-west4-c
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 reboot
