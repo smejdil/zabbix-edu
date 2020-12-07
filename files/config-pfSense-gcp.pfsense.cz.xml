@@ -108,7 +108,7 @@
 	<dhcpd></dhcpd>
 	<dhcpdv6></dhcpdv6>
 	<snmpd>
-		<syslocation>Frankfurt, Germany Europe - europe-west3-b</syslocation>
+		<syslocation>Eemshaven, Netherlands, Europe - europe-west4-a</syslocation>
 		<syscontact>maly@datasys.cz</syscontact>
 		<rocommunity>public</rocommunity>
 		<modules>
@@ -374,9 +374,9 @@
 		<dnssecstripped></dnssecstripped>
 	</unbound>
 	<revision>
-		<time>1605811021</time>
-		<description><![CDATA[admin@89.111.88.10 (Local Database): Zabbix Agent has been created/modified.]]></description>
-		<username><![CDATA[admin@89.111.88.10 (Local Database)]]></username>
+		<time>1607333794</time>
+		<description><![CDATA[admin@89.111.88.84 (Local Database): /services_snmp.php made unknown change]]></description>
+		<username><![CDATA[admin@89.111.88.84 (Local Database)]]></username>
 	</revision>
 	<shaper></shaper>
 	<cert>

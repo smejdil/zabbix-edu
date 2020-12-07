@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2020-11-19T18:55:18Z</date>
+    <date>2020-12-07T09:37:34Z</date>
     <groups>
         <group>
             <name>Network devices</name>
@@ -11,15 +11,6 @@
         <host>
             <host>pfsense01</host>
             <name>pfsense01</name>
-            <description>pfsense01 europe-west3-b e2-micro 10.156.15.202 35.198.167.115</description>
-            <templates>
-                <template>
-                    <name>Template Module Generic SNMP</name>
-                </template>
-                <template>
-                    <name>Template Module Interfaces SNMP</name>
-                </template>
-            </templates>
             <groups>
                 <group>
                     <name>Network devices</name>
@@ -28,14 +19,14 @@
             <interfaces>
                 <interface>
                     <useip>NO</useip>
-                    <ip>35.198.167.115</ip>
+                    <ip/>
                     <dns>pfsense01.pfsense.cz</dns>
                     <interface_ref>if1</interface_ref>
                 </interface>
                 <interface>
                     <type>SNMP</type>
                     <useip>NO</useip>
-                    <ip>35.198.167.115</ip>
+                    <ip/>
                     <dns>pfsense01.pfsense.cz</dns>
                     <port>161</port>
                     <details>
@@ -46,6 +37,10 @@
             </interfaces>
             <tags>
                 <tag>
+                    <tag>Firewall</tag>
+                    <value>pfSense</value>
+                </tag>
+                <tag>
                     <tag>OS</tag>
                     <value>FreeBSD</value>
                 </tag>
@@ -53,7 +48,7 @@
             <inventory>
                 <name>pfSense-gcp.pfsense.cz</name>
                 <contact>maly@datasys.cz</contact>
-                <location>Frankfurt, Germany Europe - europe-west3-b</location>
+                <location>Eemshaven, Netherlands, Europe - europe-west4-a</location>
             </inventory>
             <inventory_mode>AUTOMATIC</inventory_mode>
         </host>
