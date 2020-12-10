@@ -2,7 +2,7 @@
 #
 # Zabbix install scpript
 #
-# Lukas Maly <Iam@LukasMaly.NET> 9.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 10.12.2020
 #
 
 ### MariaDB
@@ -41,7 +41,13 @@ sed -i "s|^# DBPassword=|DBPassword=${ZABBIX_MYSQL_PASS}|g" /etc/zabbix/zabbix_s
 sed -i "s/# Timeout=3/Timeout=30/g" /etc/zabbix/zabbix_server.conf
 sed -i "s/# CacheSize=8M/CacheSize=32M/g" /etc/zabbix/zabbix_server.conf
 sed -i "s/# DBSocket=/DBSocket=\/var\/lib\/mysql\/mysql.sock/g" /etc/zabbix/zabbix_server.conf
+sed -i "s/# StartVMwareCollectors=0/StartVMwareCollectors=1/g" /etc/zabbix/zabbix_server.conf
 diff -u /etc/zabbix/zabbix_server.conf-orig /etc/zabbix/zabbix_server.conf
+
+## Zabbix Java Gateway
+sed -i "s/# JavaGateway=/JavaGateway=127.0.0.1/g" /etc/zabbix/zabbix_server.conf
+sed -i "s/# JavaGatewayPort=10052/JavaGatewayPort=10052/g" /etc/zabbix/zabbix_server.conf
+sed -i "s/# StartJavaPollers=0/StartJavaPollers=1/g" /etc/zabbix/zabbix_server.conf
 
 echo "--- Configure PHP config ---"
 cp -v /etc/php-fpm.d/zabbix.conf /etc/php-fpm.d/zabbix.conf-orig 
@@ -50,8 +56,8 @@ diff -u /etc/php-fpm.d/zabbix.conf-orig /etc/php-fpm.d/zabbix.conf
 
 # Restart services
 echo "--- Restart and enable services ---"
-systemctl restart zabbix-server zabbix-agent httpd php-fpm
-systemctl enable zabbix-server zabbix-agent httpd php-fpm
+systemctl restart zabbix-server zabbix-java-gateway zabbix-agent httpd php-fpm
+systemctl enable zabbix-server zabbix-java-gateway zabbix-agent httpd php-fpm
 
 # Copy frontend config file
 echo "--- Zabbix frontend config ---"
@@ -103,6 +109,8 @@ cd ./zabbix-edu/zabbix/modules
 cp -v /etc/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf-orig
 sed -i 's/# LoadModulePath=${libdir}\/modules/LoadModulePath=\/usr\/lib\/zabbix\/modules/g' /etc/zabbix/zabbix_agentd.conf
 sed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /etc/zabbix/zabbix_agentd.conf
+sed -i 's/# LogRemoteCommands=0/LogRemoteCommands=1/g' /etc/zabbix/zabbix_agentd.conf
+sed -i 's/# DenyKey=system.run\[\*\]/AllowKey=system.run\[\*\]/g' /etc/zabbix/zabbix_agentd.conf
 diff -u /etc/zabbix/zabbix_agentd.conf-orig /etc/zabbix/zabbix_agentd.conf
 
 cd
