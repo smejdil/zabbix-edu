@@ -3,6 +3,7 @@ dnf -y install git
 dnf -y install bash-completion
 dnf -y install epel-release
 dnf -y install joe vim mc wget
+dnf -y install bind-utils
 dnf -y install gcc pcre-devel make libtool autoconf automake dbus-devel
 dnf -y install mariadb-server mariadb-devel mariadb-connector-odbc
 dnf -y install postgresql-odbc

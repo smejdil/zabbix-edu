@@ -9,6 +9,7 @@ yum -y install git
 yum -y install bash-completion
 yum -y install epel-release
 yum -y install joe vim mc wget
+dnf -y install bind-utils
 yum -y install httpd
 yum -y install tomcat tomcat-native tomcat-webapps tomcat-admin-webapps tomcat-docs-webapp
 yum -y install docker
