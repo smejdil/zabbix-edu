@@ -2,7 +2,7 @@
 #
 # Tomcat install scpript and Other SW
 #
-# Lukas Maly <Iam@LukasMaly.NET> 16.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 22.12.2020
 #
 
 ### Firewall
@@ -68,6 +68,7 @@ cd
 cp -v ./zabbix-edu/files/00-jk.conf /etc/httpd/conf.modules.d/
 cp -v ./zabbix-edu/files/workers.properties /etc/httpd/conf/
 cp -v ./zabbix-edu/files/mod_jk.conf /etc/httpd/conf.d/
+cp -v ./zabbix-edu/files/server-status.conf /etc/httpd/conf.d/
 
 systemctl restart httpd
 
