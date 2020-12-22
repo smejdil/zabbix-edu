@@ -98,8 +98,18 @@ systemctl restart tomcat.service
 
 # Docker
 groupmems -a zabbix -g root
+groupmems -a zabbix -g docker
 systemctl enable docker.service
 systemctl start docker.service
+
+# Dockerized PostgreSQL
+# https://hub.docker.com/_/postgres
+docker run --name postgres -e POSTGRES_PASSWORD=123456 -d postgres
+
+#cd /root/zabbix-docker
+#docker-compose -f docker-compose_v3_centos_mysql_latest.yaml up -d
+
+#zabbix_get -s linsrv01.pfsense.cz -p 10050 -k "docker.images.discovery"
 
 # Emulace IPMI
 #https://github.com/vapor-ware/ipmi-simulator
