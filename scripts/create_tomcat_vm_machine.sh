@@ -17,6 +17,8 @@ for (( j=0; j<argc; j++ )); do
     gcloud compute instances add-tags linsrv${argv[j]} --tags=https-server --zone=europe-west4-c
     gcloud compute instances add-tags linsrv${argv[j]} --tags=zabbix-agent --zone=europe-west4-c
     gcloud compute instances add-tags linsrv${argv[j]} --tags=zabbix-server --zone=europe-west4-c
+    gcloud compute instances add-tags linsrv${argv[j]} --tags=snmp --zone=europe-west4-c
+    gcloud compute instances add-tags linsrv${argv[j]} --tags=ipmi --zone=europe-west4-c
 done
 
 # gcloud compute regions list | grep europe-west

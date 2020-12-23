@@ -13,6 +13,7 @@ dnf -y install python3-systemd
 dnf -y install net-snmp net-snmp-libs net-snmp-utils
 rpm -Uvh https://repo.zabbix.com/zabbix/5.0/rhel/8/x86_64/zabbix-release-5.0-1.el8.noarch.rpm
 dnf clean all
+dnf -y install ipmitool
 dnf -y install zabbix-server-mysql zabbix-web-mysql zabbix-apache-conf zabbix-agent zabbix-agent2 zabbix-sender zabbix-get zabbix-java-gateway
 dnf -y install perl-App-cpanminus
 dnf -y update

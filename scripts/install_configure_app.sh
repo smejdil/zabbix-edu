@@ -2,7 +2,7 @@
 #
 # Tomcat install scpript and Other SW
 #
-# Lukas Maly <Iam@LukasMaly.NET> 22.12.2020
+# Lukas Maly <Iam@LukasMaly.NET> 23.12.2020
 #
 
 ### Firewall
@@ -108,9 +108,11 @@ docker run --name postgres -e POSTGRES_PASSWORD=123456 -d postgres
 
 #docker run --name httpd -p 80:80 -d httpd
 
+## Zabbix Docker
 #cd /root/zabbix-docker
 #docker-compose -f docker-compose_v3_centos_mysql_latest.yaml up -d
 
+# Test Docker by Agnet 2
 #zabbix_get -s linsrv01.pfsense.cz -p 10050 -k "docker.images.discovery"
 
 # Emulace IPMI
@@ -134,5 +136,12 @@ docker run --name postgres -e POSTGRES_PASSWORD=123456 -d postgres
 #Front-Panel Lockout  : inactive
 #Drive Fault          : false
 #Cooling/Fan Fault    : false
+
+# SNMPd
+systemctl enable snmpd.service
+cp /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf-inst
+systemctl restart snmpd.service
+
+#snmpwalk -Os -c public -v 2c linsrv01.pfsense.cz system
 
 # EOF
