@@ -106,6 +106,8 @@ systemctl start docker.service
 # https://hub.docker.com/_/postgres
 docker run --name postgres -e POSTGRES_PASSWORD=123456 -d postgres
 
+#docker run --name httpd -p 80:80 -d httpd
+
 #cd /root/zabbix-docker
 #docker-compose -f docker-compose_v3_centos_mysql_latest.yaml up -d
 
