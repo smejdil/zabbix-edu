@@ -2,7 +2,7 @@
 #
 # Zabbix install scpript
 #
-# Lukas Maly <Iam@LukasMaly.NET> 10.12.2020
+# Lukas Maly <Iam@LukasMaly.NET> 11.1.2021
 #
 
 ### MariaDB
@@ -163,6 +163,7 @@ echo "--- System user for SSH ---"
 
 adduser --shell /bin/bash --home /home/zbx_probe zbx_probe
 echo ${ZBX_PROBE_PASS} | passwd zbx_probe --stdin
+
 
 # System user zbx_probe and the zabbix user have the same password. cat /root/zbx_probe.pw
 
