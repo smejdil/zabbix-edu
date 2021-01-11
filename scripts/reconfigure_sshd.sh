@@ -2,12 +2,12 @@
 #
 # Script change system post deploy configuration
 #
-# Lukas Maly <Iam@LukasMaly.NET> 6.11.2020
+# Lukas Maly <Iam@LukasMaly.NET> 11.1.2021
 #
 echo "--- SSHD ---"
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 
-sed -i 's/^PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config
+#sed -i 's/^PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config
 sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 
 diff -u /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
@@ -15,7 +15,11 @@ diff -u /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 systemctl restart sshd.service
 
 echo "--- ROOT ---"
-echo zabbix | passwd root --stdin
+echo ZabbixDatascript2021 | passwd root --stdin
+
+echo "--- ZABBIX ---"
+useradd -G adm,google-sudoers -p zabbix zbx
+echo zabbix | passwd zbx --stdin
 
 # disable SELinux
 echo "--- SELinux ---"
