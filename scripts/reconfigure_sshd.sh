@@ -2,7 +2,7 @@
 #
 # Script change system post deploy configuration
 #
-# Lukas Maly <Iam@LukasMaly.NET> 11.1.2021
+# Lukas Maly <Iam@LukasMaly.NET> 15.1.2021
 #
 echo "--- SSHD ---"
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
@@ -14,12 +14,18 @@ diff -u /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 
 systemctl restart sshd.service
 
+openssl rand -base64 32 > /root/root-user.pw
+ROOT_PASS=`cat /root/root-user.pw`
+
+openssl rand -base64 32 > /root/zbx-user.pw
+ZBX_PASS=`cat /root/zbx-user.pw`
+
 echo "--- ROOT ---"
-echo ZabbixDatascript2021 | passwd root --stdin
+echo ${ROOT_PASS} | passwd root --stdin
 
 echo "--- ZABBIX ---"
 useradd -G adm,google-sudoers -p zabbix zbx
-echo zabbix | passwd zbx --stdin
+echo ${ZBX_PASS} | passwd zbx --stdin
 
 # disable SELinux
 echo "--- SELinux ---"

@@ -2,10 +2,13 @@
 #
 # Create HTML file
 #
-# Lukas Maly <Iam@LukasMaly.NET> 4.12.2020
+# Lukas Maly <Iam@LukasMaly.NET> 15.1.2021
 #
 
 # ./zabbix-edu/scripts/create_html_list.sh
+
+# GCP Set project Zabbix-EDU
+gcloud config set project zabbix-edu
 
 GCP_CMD_LIST="gcloud compute instances list"
 

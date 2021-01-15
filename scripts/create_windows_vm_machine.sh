@@ -2,8 +2,11 @@
 #
 # Create GCP Windows server VM
 #
-# Lukas Maly <Iam@LukasMaly.NET> 4.12.2020
+# Lukas Maly <Iam@LukasMaly.NET> 15.1.2021
 #
+
+# GCP Set project Zabbix-EDU
+gcloud config set project zabbix-edu
 
 IMAGE_WIN=`gcloud compute images list --project windows-cloud --no-standard-images | grep dc-v | grep 2019 | awk '{print $1}'`
 
