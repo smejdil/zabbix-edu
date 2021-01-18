@@ -1,4 +1,14 @@
 #!/bin/bash
+
+# Fix problem
+# Error: Failed to download metadata for repo 'baseos': repomd.xml parser error: Element <repomd> was not found - Bad repomd file
+dnf clean all
+rm -rf /var/cache/dnf
+cp /etc/yum.repos.d/CentOS-Linux-BaseOS.repo /etc/yum.repos.d/CentOS-Linux-BaseOS.repo-orig
+sed -i 's/mirrorlist=/#mirrorlist=/g' /etc/yum.repos.d/CentOS-Linux-BaseOS.repo
+sed -i 's/#baseurl=/baseurl=/g' /etc/yum.repos.d/CentOS-Linux-BaseOS.repo
+
+# Post deploy commands
 dnf -y install git
 dnf -y install bash-completion
 dnf -y install epel-release
@@ -19,3 +29,5 @@ dnf -y install perl-App-cpanminus
 dnf -y update
 cd /root/ && git clone https://github.com/smejdil/zabbix-edu
 cpanm JSON::RPC::Client > /tmp/cpan.log
+
+# EOF
