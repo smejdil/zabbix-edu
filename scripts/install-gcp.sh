@@ -26,8 +26,16 @@ dnf clean all
 dnf -y install ipmitool
 dnf -y install zabbix-server-mysql zabbix-web-mysql zabbix-apache-conf zabbix-agent zabbix-agent2 zabbix-sender zabbix-get zabbix-java-gateway
 dnf -y install perl-App-cpanminus
+dnf -y install ansible
+pip3 install zabbix-api
 dnf -y update
 cd /root/ && git clone https://github.com/smejdil/zabbix-edu
+ansible-galaxy collection install -r /root/zabbix-edu/zabbix/requirements.yml
 cpanm JSON::RPC::Client > /tmp/cpan.log
+
+# Ansile Zabbix
+export ZABBIX_USER=Admin
+export ZABBIX_PASSWORD=zabbix
+ansible-playbook /root/zabbix-edu/zabbix/ansible/add-host-group-training.yml
 
 # EOF

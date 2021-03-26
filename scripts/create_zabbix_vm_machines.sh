@@ -15,11 +15,11 @@ argv=("$@");
 
 for (( j=0; j<argc; j++ )); do
     echo "zbx${argv[j]}";
-    gcloud compute instances create zbx${argv[j]} --image ${IMAGE_CENTOS8} --image-project=centos-cloud --zone=europe-west1-c --metadata-from-file startup-script=./zabbix-edu/scripts/install-gcp.sh
-    gcloud compute instances add-tags zbx${argv[j]} --tags=http-server --zone=europe-west1-c
-    gcloud compute instances add-tags zbx${argv[j]} --tags=https-server --zone=europe-west1-c
-    gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-agent --zone=europe-west1-c
-    gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-server --zone=europe-west1-c
+    gcloud compute instances create zbx${argv[j]} --image ${IMAGE_CENTOS8} --image-project=centos-cloud --zone=europe-west3-a --metadata-from-file startup-script=./zabbix-edu/scripts/install-gcp.sh
+    gcloud compute instances add-tags zbx${argv[j]} --tags=http-server --zone=europe-west3-a
+    gcloud compute instances add-tags zbx${argv[j]} --tags=https-server --zone=europe-west3-a
+    gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-agent --zone=europe-west3-a
+    gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-server --zone=europe-west3-a
 done 
 
 # gcloud compute regions list | grep europe-west

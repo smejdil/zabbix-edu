@@ -20,6 +20,7 @@ By Google Cloud SDK is intalled servers zbx01-0X. After instalation run scripts 
 - Install and configure Apache httpd and PHP7
 - Install and configure ODBC driver for MariaDB
 - Install and configure Zabbix API scripts Perl and CPAN modul
+- Install and configure Ansible collection zabbix
 - Install and configure crontab file
 - Install and configure Windows server 2019
 - Install and configure Tomcat, PostgreSQL, Memcached, Docker ...
@@ -42,7 +43,7 @@ gcloud config set project [PROJECT]
 - Connect to VM Zabbix EDU and run scripts + reboot SELinux disable
 
 ```console
-gcloud compute ssh zbx01 --zone=europe-west1-c
+gcloud compute ssh zbx01 --zone=europe-west3-a
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 reboot
@@ -148,9 +149,9 @@ cli4 --post name='pfsense01' type=A content="34.90.171.187" /zones/:pfsense.cz/d
 
 ## To do
 
-- Create Zabbix user by Zabbix API
-- Import training Template by Zabbix API
-- Import media Email by Zabbix API
+- Create Zabbix user by Zabbix API - Anslible
+- Import training Template by Zabbix API - Ansible
+- Import media Email by Zabbix API - Anslible
 - Download and Install Zabbix Agent 2 on winsrv01 by PowerShell
 - Install - Web Server and IIS Management Scripts and Tools on winsrv01 by PowerShell
 - Other ...

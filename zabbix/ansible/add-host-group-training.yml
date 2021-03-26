@@ -1,0 +1,14 @@
+- name: Using Zabbix collection
+  hosts: localhost
+  collections:
+    - community.zabbix
+  tasks:
+    - name: Create host groups
+      zabbix_group:
+        server_url: http://localhost/zabbix/
+        login_user: "{{ lookup('env','ZABBIX_USER') }}"
+        login_password: "{{ lookup('env','ZABBIX_PASSWORD') }}"
+        state: present
+        host_groups:
+          - Training          
+      
