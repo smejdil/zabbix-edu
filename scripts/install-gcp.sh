@@ -33,9 +33,4 @@ cd /root/ && git clone https://github.com/smejdil/zabbix-edu
 ansible-galaxy collection install -r /root/zabbix-edu/zabbix/requirements.yml
 cpanm JSON::RPC::Client > /tmp/cpan.log
 
-# Ansile Zabbix
-export ZABBIX_USER=Admin
-export ZABBIX_PASSWORD=zabbix
-ansible-playbook /root/zabbix-edu/zabbix/ansible/add-host-group-training.yml
-
 # EOF

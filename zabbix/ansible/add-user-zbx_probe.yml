@@ -1,0 +1,24 @@
+- name: Using Zabbix collection
+  hosts: localhost
+  collections:
+    - community.zabbix
+  tasks:
+    - name: create a new zabbix user.
+      zabbix_user:
+        server_url: http://localhost/zabbix/
+        login_user: "{{ lookup('env','ZABBIX_USER') }}"
+        login_password: "{{ lookup('env','ZABBIX_PASSWORD') }}"
+        alias: zbx_probe
+        name: Zabbix
+        surname: Probe
+        usrgrps:
+          - Zabbix administrators
+        passwd: "{{ lookup('env','ZBX_PROBE_PASS') }}"
+        lang: en_GB
+        theme: dark-theme
+        autologin: no
+        autologout: '0'
+        refresh: '30'
+        rows_per_page: '50'
+        after_login_url: ''
+        type: Zabbix super admin

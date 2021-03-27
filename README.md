@@ -149,8 +149,6 @@ cli4 --post name='pfsense01' type=A content="34.90.171.187" /zones/:pfsense.cz/d
 
 ## To do
 
-- Create Zabbix user by Zabbix API - Anslible
-- Import training Template by Zabbix API - Ansible
 - Import media Email by Zabbix API - Anslible
 - Download and Install Zabbix Agent 2 on winsrv01 by PowerShell
 - Install - Web Server and IIS Management Scripts and Tools on winsrv01 by PowerShell

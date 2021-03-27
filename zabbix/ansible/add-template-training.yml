@@ -1,0 +1,12 @@
+- name: Using Zabbix collection
+  hosts: localhost
+  collections:
+    - community.zabbix
+  tasks:
+    - name: Import Zabbix Training from XML
+      zabbix_template:
+        server_url: http://localhost/zabbix/
+        login_user: "{{ lookup('env','ZABBIX_USER') }}"
+        login_password: "{{ lookup('env','ZABBIX_PASSWORD') }}"
+        template_xml: "{{ lookup('file', '../templates/Templates-Training-Zabbix-5.0.xml') }}"
+        state: present

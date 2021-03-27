@@ -165,7 +165,14 @@ echo "--- System user for SSH ---"
 adduser --shell /bin/bash --home /home/zbx_probe zbx_probe
 echo ${ZBX_PROBE_PASS} | passwd zbx_probe --stdin
 
-
 # System user zbx_probe and the zabbix user have the same password. cat /root/zbx_probe.pw
+
+# Ansile Zabbix
+export ZABBIX_USER=Admin
+export ZABBIX_PASSWORD=zabbix
+export ZBX_PROBE_PASS
+ansible-playbook /root/zabbix-edu/zabbix/ansible/add-host-group-training.yml
+ansible-playbook /root/zabbix-edu/zabbix/ansible/add-user-zbx_probe.yml
+ansible-playbook /root/zabbix-edu/zabbix/ansible/add-template-training.yml
 
 ### EOF
