@@ -2,11 +2,11 @@
 #
 # Create DNS record for Zabbix EDU
 #
-# Lukas Maly <Iam@LukasMaly.NET> 15.1.2021
+# Lukas Maly <Iam@LukasMaly.NET> 1.9.2021
 #
 
 # GCP Set project Zabbix-EDU
-gcloud config set project zabbix-edu
+gcloud config set project datascript-zabbix-edu
 
 EXCLUDE=`cat ./zabbix-edu/scripts/exclude-hosts.txt`
 

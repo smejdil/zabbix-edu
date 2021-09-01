@@ -8,7 +8,7 @@
 # ./zabbix-edu/scripts/create_html_list.sh
 
 # GCP Set project Zabbix-EDU
-gcloud config set project zabbix-edu
+gcloud config set project datascript-zabbix-edu
 
 GCP_CMD_LIST="gcloud compute instances list"
 
