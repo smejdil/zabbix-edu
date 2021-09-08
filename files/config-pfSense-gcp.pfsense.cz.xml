@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pfsense>
-	<version>19.1</version>
+	<version>21.7</version>
 	<lastchange></lastchange>
 	<system>
 		<optimization>normal</optimization>
@@ -75,6 +75,7 @@
 		<aliasesresolveinterval></aliasesresolveinterval>
 		<maximumfrags></maximumfrags>
 		<reflectiontimeout></reflectiontimeout>
+		<hn_altq_enable></hn_altq_enable>
 		<pkg_repo_conf_path>/usr/local/share/pfSense/pkg/repos/pfSense-repo.conf</pkg_repo_conf_path>
 	</system>
 	<interfaces>
@@ -108,8 +109,8 @@
 	<dhcpd></dhcpd>
 	<dhcpdv6></dhcpdv6>
 	<snmpd>
-		<syslocation>Eemshaven, Netherlands, Europe - europe-west4-a</syslocation>
-		<syscontact>maly@datasys.cz</syscontact>
+		<syslocation>Warsaw, Poland, Europe - europe-central2-c</syslocation>
+		<syscontact>lukas.maly@seznam.cz</syscontact>
 		<rocommunity>public</rocommunity>
 		<modules>
 			<mibii></mibii>
@@ -229,7 +230,9 @@
 			<wan></wan>
 		</separator>
 	</filter>
-	<ipsec></ipsec>
+	<ipsec>
+		<vtimaps></vtimaps>
+	</ipsec>
 	<aliases>
 		<alias>
 			<name>ip_ADMIN</name>
@@ -309,54 +312,47 @@
 			<who>root</who>
 			<command>/usr/bin/nice -n20 /etc/rc.update_pkg_metadata</command>
 		</item>
+		<item>
+			<minute>*/1</minute>
+			<hour>*</hour>
+			<mday>*</mday>
+			<month>*</month>
+			<wday>*</wday>
+			<who>root</who>
+			<command>/usr/sbin/newsyslog</command>
+		</item>
+		<item>
+			<minute>1</minute>
+			<hour>3</hour>
+			<mday>*</mday>
+			<month>*</month>
+			<wday>*</wday>
+			<who>root</who>
+			<command>/etc/rc.periodic daily</command>
+		</item>
+		<item>
+			<minute>15</minute>
+			<hour>4</hour>
+			<mday>*</mday>
+			<month>*</month>
+			<wday>6</wday>
+			<who>root</who>
+			<command>/etc/rc.periodic weekly</command>
+		</item>
+		<item>
+			<minute>30</minute>
+			<hour>5</hour>
+			<mday>1</mday>
+			<month>*</month>
+			<wday>*</wday>
+			<who>root</who>
+			<command>/etc/rc.periodic monthly</command>
+		</item>
 	</cron>
 	<wol></wol>
 	<rrd>
 		<enable></enable>
 	</rrd>
-	<load_balancer>
-		<monitor_type>
-			<name>ICMP</name>
-			<type>icmp</type>
-			<descr><![CDATA[ICMP]]></descr>
-			<options></options>
-		</monitor_type>
-		<monitor_type>
-			<name>TCP</name>
-			<type>tcp</type>
-			<descr><![CDATA[Generic TCP]]></descr>
-			<options></options>
-		</monitor_type>
-		<monitor_type>
-			<name>HTTP</name>
-			<type>http</type>
-			<descr><![CDATA[Generic HTTP]]></descr>
-			<options>
-				<path>/</path>
-				<host></host>
-				<code>200</code>
-			</options>
-		</monitor_type>
-		<monitor_type>
-			<name>HTTPS</name>
-			<type>https</type>
-			<descr><![CDATA[Generic HTTPS]]></descr>
-			<options>
-				<path>/</path>
-				<host></host>
-				<code>200</code>
-			</options>
-		</monitor_type>
-		<monitor_type>
-			<name>SMTP</name>
-			<type>send</type>
-			<descr><![CDATA[Generic SMTP]]></descr>
-			<options>
-				<send></send>
-				<expect>220 *</expect>
-			</options>
-		</monitor_type>
-	</load_balancer>
 	<widgets>
 		<sequence>system_information:col1:open:0,interfaces:col2:open:0,gateways:col2:open:0,traffic_graphs:col2:open:0</sequence>
 		<period>10</period>
@@ -374,8 +370,8 @@
 		<dnssecstripped></dnssecstripped>
 	</unbound>
 	<revision>
-		<time>1607333794</time>
-		<description><![CDATA[admin@89.111.88.84 (Local Database): /services_snmp.php made unknown change]]></description>
+		<time>1631110556</time>
+		<description><![CDATA[admin@89.111.88.84 (Local Database): SNMP settings saved]]></description>
 		<username><![CDATA[admin@89.111.88.84 (Local Database)]]></username>
 	</revision>
 	<shaper></shaper>
@@ -402,26 +398,31 @@
 			second version number.&lt;br /&gt;
 			More info in &lt;a href=&quot;http://www.zabbix.com/life_cycle_and_release_policy.php&quot;&gt;Zabbix Life Cycle and Release Policy&lt;/a&gt;.]]></descr>
 			<website>http://www.zabbix.com/product.php</website>
-			<version>1.0.4_6</version>
-			<configurationfile>zabbix-agent.xml</configurationfile>
+			<version>1.0.4_11</version>
+			<configurationfile>zabbixagent.xml</configurationfile>
 			<logging>
 				<logfilename>zabbix-agent/zabbix_agentd.log</logfilename>
 			</logging>
 			<tabs>
 				<tab>
 					<text><![CDATA[Agent]]></text>
-					<url>/pkg_edit.php?xml=zabbix-agent.xml&amp;id=0</url>
+					<url>/pkg_edit.php?xml=zabbixagent.xml&amp;id=0</url>
 					<active></active>
 				</tab>
 			</tabs>
 			<include_file>/usr/local/pkg/zabbix-agent.inc</include_file>
+			<plugins>
+				<item>
+					<type>plugin_certificates</type>
+				</item>
+			</plugins>
 		</package>
 		<package>
 			<name>acme</name>
-			<pkginfolink>https://doc.pfsense.org/index.php/pfsense-pkg-acme</pkginfolink>
+			<pkginfolink>https://docs.netgate.com/pfsense/en/latest/packages/acme/index.html</pkginfolink>
 			<descr><![CDATA[Automated Certificate Management Environment, for automated use of LetsEncrypt certificates.]]></descr>
 			<website>https://letsencrypt.org/</website>
-			<version>0.6.9_2</version>
+			<version>0.6.10</version>
 			<configurationfile>acme.xml</configurationfile>
 			<include_file>/usr/local/pkg/acme/acme.inc</include_file>
 			<plugins>
@@ -435,15 +436,15 @@
 			<descr><![CDATA[NMap is a utility for network exploration or security auditing.&lt;br/&gt;
 			It supports ping scanning (determine which hosts are up), many port scanning techniques (determine what services the hosts are offering), version detection (determine what application/service is running on a port), and TCP/IP fingerprinting (remote host OS or device identification).
 			It also offers flexible target and port specification, decoy/stealth scanning, SunRPC scanning, and more.]]></descr>
-			<version>1.4.4_1</version>
-			<pkginfolink>https://doc.pfsense.org/index.php/Nmap_package</pkginfolink>
+			<version>1.4.4_2</version>
+			<pkginfolink>https://docs.netgate.com/pfsense/en/latest/packages/nmap.html</pkginfolink>
 			<configurationfile>nmap.xml</configurationfile>
 			<include_file>/usr/local/pkg/nmap.inc</include_file>
 		</package>
 		<menu>
 			<name>Zabbix Agent 5.0</name>
 			<section>Services</section>
-			<url>/pkg_edit.php?xml=zabbix-agent.xml&amp;id=0</url>
+			<url>/pkg_edit.php?xml=zabbixagent.xml&amp;id=0</url>
 		</menu>
 		<menu>
 			<name>Acme Certificates</name>
@@ -456,12 +457,6 @@
 			<section>Diagnostics</section>
 			<configfile>nmap.xml</configfile>
 		</menu>
-		<service>
-			<name>zabbix_agentd</name>
-			<rcfile>zabbix_agentd.sh</rcfile>
-			<executable>zabbix_agentd</executable>
-			<description><![CDATA[Zabbix Agent Host Monitor Daemon]]></description>
-		</service>
 		<acme>
 			<certificates></certificates>
 			<accountkeys></accountkeys>
@@ -490,6 +485,12 @@
 				<userparams></userparams>
 			</config>
 		</zabbixagentlts>
+		<service>
+			<name>zabbix_agentd</name>
+			<rcfile>zabbix_agentd.sh</rcfile>
+			<executable>zabbix_agentd</executable>
+			<description><![CDATA[Zabbix Agent Host Monitor Daemon]]></description>
+		</service>
 	</installedpackages>
 	<gateways>
 		<gateway_item>

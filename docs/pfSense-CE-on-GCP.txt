@@ -4,49 +4,61 @@
 
 https://blog.kylemanna.com/cloud/pfsense-on-google-cloud/
 
-curl https://frafiles.pfsense.org/mirror/downloads/pfSense-CE-memstick-serial-2.4.5-RELEASE-p1-amd64.img.gz | gunzip > disk.raw
+#curl https://frafiles.pfsense.org/mirror/downloads/pfSense-CE-memstick-serial-2.5.2-RELEASE-amd64.img.gz | gunzip > disk.raw
 
-tar -Sczf pfSense-CE-memstick-serial-2.4.5-RELEASE-amd64.img.tar.gz disk.raw
+gunzip pfSense-CE-memstick-serial-2.5.2-RELEASE-amd64.img.gz
+mv pfSense-CE-memstick-serial-2.5.2-RELEASE-amd64.img disk.raw
 
-gsutil mb gs://pfsense-lab
-gsutil cp pfSense-CE-memstick-serial-2.4.5-RELEASE-amd64.img.tar.gz gs://pfsense-lab
+tar -Sczf pfSense-CE-memstick-serial-2.5.2-RELEASE-amd64.img.tar.gz disk.raw
+
+gsutil mb gs://zabbix-edu
+gsutil cp pfSense-CE-memstick-serial-2.5.2-RELEASE-amd64.img.tar.gz gs://zabbix-edu
+\ [1 files][359.4 MiB/359.4 MiB]    1.1 MiB/s                                   
+Operation completed over 1 objects/359.4 MiB.
 
 Navigate to GCP Console -> Compute Engine -> Create an image.
 
-    Name: pfsense-245-installer
-    Source: “Cloud Storage file” and specify the path to YOUR_BUCKET/pfSense-CE-memstick-serial-2.4.5-RELEASE-amd64.img.tar.gz
+    Name: pfsense-252-installer
+    Source: “Cloud Storage file” and specify the path to YOUR_BUCKET/pfSense-CE-memstick-serial-2.5.2-RELEASE-amd64.img.tar.gz
 
 gcloud compute images list | grep pfsense
-pfsense-245-installer                                 polar-strata-258714                                                READY
+pfsense-252-installer                                 datascript-zabbix-edu  pfsense                                       READY
 
 Navigate to GCP Console -> Compute Engine -> Create an instance.
-    Name: pfsense-install-1
+    Name: pfsense-install-252
     Boot disk: pfsense-245-installer
     Create a additional disk using the advanced drop down.
-        Name: pfsense-245-clean-install
+        Name: pfsense-252-clean-install
         Source Type: None (blank disk)
         Size: 20GB
 
-#gcloud compute instances create pfsense01 --image pfsense-245-installer
-#gcloud compute instances add-metadata --project=polar-strata-258714 --zone=europe-west3-b --metadata=serial-port-enable=1 pfsense01
-#gcloud compute connect-to-serial-port --project=polar-strata-258714 --zone=europe-west3-b pfsense01
+#gcloud compute instances create pfsense-install-252 --project=datascript-zabbix-edu --zone=europe-central2-c --image pfsense-252-installer
+
+gcloud compute instances add-metadata --project=datascript-zabbix-edu --zone=europe-central2-c --metadata=serial-port-enable=1 pfsense-install-252
+gcloud compute connect-to-serial-port --project=datascript-zabbix-edu --zone=europe-central2-c pfsense-install-252
+
+Navigate to GCP Console -> Compute Engine -> Create snapshot
+    Name: pfsense-252-image
+    Source disk: pfsense-252-clean-install
 
 Navigate to GCP Console -> Compute Engine -> Create an instance.
-    Name: pfsense01
+    Name: pfsense-edu
     Machine type: Pick something applicable to the work load.
     Boot disk:
-        Snapshots: pfsense-245-image
+        Snapshots: pfsense-252-image
         Size: 20GB (or something applicable for work load, typically only needed for logging).
 
-gcloud compute instances add-tags pfsense01 --tags=http-server --zone=europe-west4-a
-gcloud compute instances add-tags pfsense01 --tags=https-server --zone=europe-west4-a
-gcloud compute instances add-tags pfsense01 --tags=zabbix-agent --zone=europe-west4-a
-gcloud compute instances add-tags pfsense01 --tags=snmp --zone=europe-west4-a
-gcloud compute instances add-tags pfsense01 --tags=zabbix-server --zone=europe-west4-a
-gcloud compute instances add-metadata --metadata=serial-port-enable=1 pfsense01 --zone=europe-west4-a
-gcloud compute connect-to-serial-port pfsense01 --zone=europe-west4-a
+gcloud compute instances add-tags pfsense-edu --tags=http-server --zone=europe-central2-c
+gcloud compute instances add-tags pfsense-edu --tags=https-server --zone=europe-central2-c
+gcloud compute instances add-tags pfsense-edu --tags=zabbix-agent --zone=europe-central2-c
+gcloud compute instances add-tags pfsense-edu --tags=snmp --zone=europe-central2-c
+gcloud compute instances add-tags pfsense-edu --tags=zabbix-server --zone=europe-central2-c
+gcloud compute instances add-metadata --metadata=serial-port-enable=1 pfsense-edu --zone=europe-central2-c
+gcloud compute connect-to-serial-port pfsense-edu --zone=europe-central2-c
 
 # Console pfSense 8
+
+install wizard, WAN - vtnet0
 
 pkg install bash
 rehash
@@ -60,4 +72,3 @@ pfctl -d
 
 SNMP
 Zabbix agent package
-
