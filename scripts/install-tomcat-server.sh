@@ -10,6 +10,7 @@ yum -y install bash-completion
 yum -y install epel-release
 yum -y install joe vim mc wget
 yum -y install bind-utils
+yum -y install openssl
 yum -y install httpd
 yum -y install tomcat tomcat-native tomcat-webapps tomcat-admin-webapps tomcat-docs-webapp
 yum -y install yum-utils device-mapper-persistent-data 
