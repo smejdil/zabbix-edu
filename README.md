@@ -43,7 +43,7 @@ gcloud config set project [PROJECT]
 - Connect to VM Zabbix EDU and run scripts + reboot SELinux disable
 
 ```console
-gcloud compute ssh zbx01 --zone=europe-central2-c
+gcloud compute ssh zbx01 --zone=europe-west3-a
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 reboot
@@ -71,7 +71,7 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz/zabbix/
 - Connect to VM Linux + Tomcat and run scripts + reboot SELinux disable
 
 ```console
-gcloud compute ssh linsrv01 --zone=europe-west4-c
+gcloud compute ssh linsrv01 --zone=europe-central2-c
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 reboot
@@ -120,11 +120,11 @@ less ./zabbix-edu/docs/pfSense-CE-on-GCP.txt
 - List pfSense firewall EDU VM and external IPv4
 
 ```console
-gcloud compute instances list | awk '{print $1" - http://"$5}' | grep pfsense0
-pfsense01 - http://34.90.171.187
+gcloud compute instances list | awk '{print $1" - http://"$5}' | grep pfsense
+pfsense-edu - http://34.90.171.187
 
-gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | grep pfsense0
-34.90.171.187 - http://pfsense01.pfsense.cz
+gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | grep pfsense
+34.90.171.187 - http://pfsense-edu.pfsense.cz
 ```
 
 ## DNS A records for EDU
