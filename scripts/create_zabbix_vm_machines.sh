@@ -9,7 +9,7 @@
 gcloud config set project datascript-zabbix-edu
 
 IMAGE_CENTOS8=`gcloud compute images list | grep centos-8 | awk '{print $1}'`
-ZONE="europe-central2-a"
+ZONE="europe-west3-a"
 
 argc=$#;
 argv=("$@");

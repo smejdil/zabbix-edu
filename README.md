@@ -43,7 +43,7 @@ gcloud config set project [PROJECT]
 - Connect to VM Zabbix EDU and run scripts + reboot SELinux disable
 
 ```console
-gcloud compute ssh zbx01 --zone=europe-west3-a
+gcloud compute ssh zbx01 --zone=europe-central2-c
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 reboot
