@@ -109,7 +109,7 @@ cd ./zabbix-edu/zabbix/modules
 cp -v /etc/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf-orig
 sed -i 's/# LoadModulePath=${libdir}\/modules/LoadModulePath=\/usr\/lib\/zabbix\/modules/g' /etc/zabbix/zabbix_agentd.conf
 sed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /etc/zabbix/zabbix_agentd.conf
-sed -i 's/Server=127.0.0.1/Server=127.0.0.1,zabbix-gcp.pfsense.cz/g' /etc/zabbix/zabbix_agentd.conf
+sed -i 's/Server=127.0.0.1/Server=127.0.0.1,zabbix.pfsense.cz/g' /etc/zabbix/zabbix_agentd.conf
 sed -i 's/# LogRemoteCommands=0/LogRemoteCommands=1/g' /etc/zabbix/zabbix_agentd.conf
 sed -i 's/# DenyKey=system.run\[\*\]/AllowKey=system.run\[\*\]/g' /etc/zabbix/zabbix_agentd.conf
 diff -u /etc/zabbix/zabbix_agentd.conf-orig /etc/zabbix/zabbix_agentd.conf
