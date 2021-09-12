@@ -140,6 +140,16 @@ cli4 --post name='winsrv01' type=A content="34.107.108.40" /zones/:pfsense.cz/dn
 cli4 --post name='linsrv01' type=A content="34.107.28.86" /zones/:pfsense.cz/dns_records
 cli4 --post name='pfsense01' type=A content="34.90.171.187" /zones/:pfsense.cz/dns_records
 ```
+
+List of Zabbix server domain and IPv4
+
+```console
+for i in {01..12}; do host zbx$i.pfsense.cz; done
+zbx01.pfsense.cz has address 35.246.211.200
+zbx02.pfsense.cz has address 34.89.152.77
+zbx03.pfsense.cz has address 34.107.115.225
+```
+
 ## HTML list of VM
 - Create HTML list of running EDU VM
 
