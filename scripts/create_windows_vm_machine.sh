@@ -9,7 +9,7 @@
 gcloud config set project datascript-zabbix-edu
 
 IMAGE_WIN=`gcloud compute images list --project windows-cloud --no-standard-images | grep dc-v | grep 2019 | awk '{print $1}'`
-ZONE="europe-central2-a"
+ZONE="europe-central2-c"
 
 argc=$#;
 argv=("$@");
