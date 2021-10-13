@@ -144,4 +144,12 @@ systemctl restart snmpd.service
 
 #snmpwalk -Os -c public -v 2c linsrv01.pfsense.cz system
 
+# Prometeus - Node exporter
+
+# curl localhost:9100/metrics | grep -v '#'
+# http://linsrv01.pfsense.cz:9100/metrics
+
+systemctl enable node_exporter.service
+systemctl start node_exporter.service
+
 # EOF

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-10-13T16:36:07Z</date>
+    <groups>
+        <group>
+            <name>Linux servers</name>
+        </group>
+    </groups>
+    <hosts>
+        <host>
+            <host>linsrv01-prom</host>
+            <name>linsrv01-prom</name>
+            <templates>
+                <template>
+                    <name>Template OS Linux by Prom</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Linux servers</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <useip>NO</useip>
+                    <ip/>
+                    <dns>linsrv01.pfsense.cz</dns>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <tags>
+                <tag>
+                    <tag>Metrics</tag>
+                    <value>Prom</value>
+                </tag>
+                <tag>
+                    <tag>OS</tag>
+                    <value>Linux</value>
+                </tag>
+            </tags>
+            <inventory>
+                <name>linsrv01</name>
+                <os>Linux version: 3.10.0-1160.42.2.el7.x86_64 #1 SMP Tue Sep 7 14:49:57 UTC 2021</os>
+            </inventory>
+            <inventory_mode>AUTOMATIC</inventory_mode>
+        </host>
+    </hosts>
+</zabbix_export>

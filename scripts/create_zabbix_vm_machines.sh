@@ -21,6 +21,7 @@ for (( j=0; j<argc; j++ )); do
     gcloud compute instances add-tags zbx${argv[j]} --tags=https-server --zone=${ZONE}
     gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-agent --zone=${ZONE}
     gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-server --zone=${ZONE}
+    gcloud compute instances add-tags zbx${argv[j]} --tags=node-exporter --zone=${ZONE}
 done 
 
 # gcloud compute regions list | grep europe-west

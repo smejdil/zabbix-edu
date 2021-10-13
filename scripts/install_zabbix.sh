@@ -175,4 +175,12 @@ ansible-playbook /root/zabbix-edu/zabbix/ansible/add-host-group-training.yml
 ansible-playbook /root/zabbix-edu/zabbix/ansible/add-user-zbx_probe.yml
 ansible-playbook /root/zabbix-edu/zabbix/ansible/add-template-training.yml
 
+# Prometeus - Node exporter
+
+# curl localhost:9100/metrics | grep -v '#'
+# http://zbx01.pfsense.cz:9100/metrics
+
+systemctl enable node_exporter.service
+systemctl start node_exporter.service
+
 ### EOF

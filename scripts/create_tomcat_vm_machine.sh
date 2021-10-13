@@ -23,6 +23,7 @@ for (( j=0; j<argc; j++ )); do
     gcloud compute instances add-tags linsrv${argv[j]} --tags=zabbix-server --zone=${ZONE}
     gcloud compute instances add-tags linsrv${argv[j]} --tags=snmp --zone=${ZONE}
     gcloud compute instances add-tags linsrv${argv[j]} --tags=ipmi --zone=${ZONE}
+    gcloud compute instances add-tags linsrv${argv[j]} --tags=node-exporter --zone=${ZONE}
 done
 
 # gcloud compute regions list | grep europe-west

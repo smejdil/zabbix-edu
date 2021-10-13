@@ -2,7 +2,7 @@
 #
 # Install Tomcat package and extra repo
 #
-# Lukas Maly <Iam@LukasMaly.NET> 10.9.2021
+# Lukas Maly <Iam@LukasMaly.NET> 13.10.2021
 #
 
 yum -y install git
@@ -17,6 +17,7 @@ yum -y install yum-utils device-mapper-persistent-data
 yum -y install httpd-devel apr apr-devel apr-util apr-util-devel gcc make libtool autoconf libtool-ltdl-devel
 yum -y install ipmitool
 yum -y install net-snmp net-snmp-utils
+yum -y install golang-github-prometheus-node-exporter
 rpm -Uvh https://repo.zabbix.com/zabbix/5.0/rhel/7/x86_64/zabbix-release-5.0-1.el7.noarch.rpm
 yum clean all
 yum -y install zabbix-agent zabbix-agent2 zabbix-sender zabbix-get

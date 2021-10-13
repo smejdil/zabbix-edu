@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# Install package and extra repo
+#
+# Lukas Maly <Iam@LukasMaly.NET> 13.10.2021
+#
 
 # Fix problem
 # Error: Failed to download metadata for repo 'baseos': repomd.xml parser error: Element <repomd> was not found - Bad repomd file
@@ -27,6 +32,7 @@ dnf -y install ipmitool
 dnf -y install zabbix-server-mysql zabbix-web-mysql zabbix-apache-conf zabbix-agent zabbix-agent2 zabbix-sender zabbix-get zabbix-java-gateway
 dnf -y install perl-App-cpanminus
 dnf -y install ansible
+dnf -y install golang-github-prometheus-node-exporter
 pip3 install zabbix-api
 dnf -y update
 cd /root/ && git clone https://github.com/smejdil/zabbix-edu
