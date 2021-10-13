@@ -56,6 +56,7 @@ diff -u /etc/php-fpm.d/zabbix.conf-orig /etc/php-fpm.d/zabbix.conf
 
 # Restart services
 echo "--- Restart and enable services ---"
+cp -v ./zabbix-edu/files/server-status.conf /etc/httpd/conf.d/
 systemctl restart zabbix-server zabbix-java-gateway zabbix-agent httpd php-fpm
 systemctl enable zabbix-server zabbix-java-gateway zabbix-agent httpd php-fpm
 
