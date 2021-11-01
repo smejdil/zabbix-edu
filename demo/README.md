@@ -10,16 +10,15 @@ Table of Content:
 # Introduction
 
 This repository contains a basic setup working in a Vagrant setup that is able to run the following Zabbix components:
-* [Installing the Zabbix Server with Ansible](https://blog.zabbix.com/installing-the-zabbix-server-with-ansible/13317/)
-* [Installing and configuring the Zabbix Proxy](https://blog.zabbix.com/installing-and-configuring-the-zabbix-proxy/13319/)
-* [Finalizing the installation of Zabbix Agent with Ansible](https://blog.zabbix.com/finalizing-the-installation-of-zabbix-agent-with-ansible/13321/)
-
 * Zabbix Server
 * Zabbix Frontend
 * Zabbix Proxy
 * Zabbix Agent
 
 Ansible will be used and this repository contains the code for a 3 blogposts for Zabbix.com.
+* [Installing the Zabbix Server with Ansible](https://blog.zabbix.com/installing-the-zabbix-server-with-ansible/13317/)
+* [Installing and configuring the Zabbix Proxy](https://blog.zabbix.com/installing-and-configuring-the-zabbix-proxy/13319/)
+* [Finalizing the installation of Zabbix Agent with Ansible](https://blog.zabbix.com/finalizing-the-installation-of-zabbix-agent-with-ansible/13321/)
 
 # Files
 
