@@ -69,3 +69,16 @@ This is the playbook which will be used for installing and configuring the Zabbi
 ## ansible/zabbix-agent.yml
 
 This is the playbook which will be used for installing and configuring the Zabbix Agent on all of the nodes.
+
+# Example
+
+```console
+cd demo
+vagrant up
+vagrant ssh bastion
+cd /ansible
+ansible-galaxy install -r requirements.yml
+ansible-playbook -i hosts zabbix-server.yml
+ansible-playbook -i hosts zabbix-proxy.yml
+ansible-playbook -i hosts zabbix-agent.yml
+```
