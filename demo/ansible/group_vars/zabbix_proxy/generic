@@ -12,7 +12,7 @@ zabbix_proxy_mysql_login_user: root
 zabbix_proxy_mysql_login_port: 3306
 
 zabbix_link_templates_append:
-  - 'Zabbix proxy health'
+  - 'Template App Zabbix Proxy'
 
 zabbix_server_host: "{{ hostvars['node-1']['ansible_host'] }}"
 zabbix_agent_hostname: "node-3"
