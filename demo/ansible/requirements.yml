@@ -10,4 +10,4 @@ roles:
 collections:
   - name: https://github.com/ansible-collections/community.zabbix.git
     type: git
-    version: 1.4.0
+    version: 1.5.0
