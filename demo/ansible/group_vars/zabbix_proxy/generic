@@ -15,7 +15,8 @@ zabbix_link_templates_append:
   - 'Zabbix proxy health'
 
 zabbix_server_host: "{{ hostvars['node-1']['ansible_host'] }}"
-zabbix_agent_hostname: "Zabbix proxy"
+zabbix_agent_hostname: "{{ hostvars['node-3']['ansible_host'] }}"
+zabbix_agent_visible_hostname: "Zabbix proxy"
 zabbix_api_create_proxy: true
 zabbix_proxy_name: node-3
 zabbix_proxy_configfrequency: 60
