@@ -101,14 +101,14 @@
         server_url: "{{ zabbix_url }}"
         login_user: "{{ zabbix_api_user }}"
         login_password: "{{ zabbix_api_pass }}"
-        alias: wdijkerman
-        name: Werner
-        surname: Dijkerman
+        alias: malyl
+        name: Lukas
+        surname: Maly
         usrgrps:
           - ops
           - Zabbix administrators
         passwd: password
-        lang: en_GB
+        lang: en_US
         theme: blue-theme
         autologin: no
         autologout: '0'
@@ -117,7 +117,7 @@
         after_login_url: ''
         user_medias:
           - mediatype: Email
-            sendto: wdijkerman@example.com
+            sendto: lukas.maly@example.com
             period: 1-7,00:00-24:00
             severity:
               not_classified: no
