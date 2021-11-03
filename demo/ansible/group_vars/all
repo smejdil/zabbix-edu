@@ -33,5 +33,9 @@ zabbix_agent_interfaces:
     dns: "{{ ansible_fqdn }}"
     port: "10050"
 
+zabbix_agent_description: Zabbix Demo Zabbix-EDU
+zabbix_agent_inventory_mode: automatic
+zabbix_agent2: True
+
 zabbix_macros:
   - "{{ zabbix_macros_append if zabbix_macros_append is defined else [] }}"
