@@ -3,4 +3,4 @@ zabbix_proxy: null
 zabbix_agent_server: "{{ hostvars['node-1']['ansible_host'] }}"
 zabbix_agent_serveractive: "{{ hostvars['node-1']['ansible_host'] }}"
 zabbix_agent_hostname: "node-2"
-zabbix_agent_visible_hostname: "Zabbix database"
+zabbix_visible_hostname: "Zabbix database"
