@@ -82,3 +82,9 @@ ansible-playbook -i hosts zabbix-server.yml
 ansible-playbook -i hosts zabbix-proxy.yml
 ansible-playbook -i hosts zabbix-agent.yml
 ```
+
+# asciinema
+
+![Install Zabbix enviroment by Vagrant](https://asciinema.org/a/447077.svg)
+[Install Zabbix enviroment by Vagrant](https://asciinema.org/a/447077)
+
