@@ -6,6 +6,8 @@ Table of Content:
 - [Example setup for Zabbix environment via Ansible](#example-setup-for-zabbix-environment-via-ansible)
 - [Introduction](#introduction)
 - [Files](#files)
+- [Example](#example)
+- [asciinema](#asciinema)
 
 # Introduction
 
