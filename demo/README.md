@@ -85,4 +85,17 @@ ansible-playbook -i hosts zabbix-agent.yml
 
 # asciinema
 
+- Install Zabbix enviroment by Vagrant
 [![Install Zabbix enviroment by Vagrant](https://asciinema.org/a/447077.svg)](https://asciinema.org/a/447077)
+
+- Install Zabbix server by Ansible
+[![Install Zabbix server by Ansible](https://asciinema.org/a/447078.svg)](https://asciinema.org/a/447078)
+
+- Install Zabbix proxy by Ansible 
+[![Install Zabbix proxy by Ansible](https://asciinema.org/a/447079.svg)](https://asciinema.org/a/447079)
+
+- Install Zabbix agent by Ansible
+[![Install Zabbix agent by Ansible](https://asciinema.org/a/447081.svg)](https://asciinema.org/a/447081)
+
+- Destroy Zabbix enviroment by Vagrant
+[![Destroy Zabbix enviroment by Vagrant](https://asciinema.org/a/447082.svg)](https://asciinema.org/a/447082)
