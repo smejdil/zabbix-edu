@@ -1,0 +1,5 @@
+---
+zabbix_agent_server: "{{ hostvars['node-1']['ansible_host'] }}"
+zabbix_agent_serveractive: "{{ hostvars['node-1']['ansible_host'] }}"
+zabbix_agent_hostname: "{{ hostvars['srv03']['ansible_host'] }}"
+zabbix_visible_hostname: "Server 3"

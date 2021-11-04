@@ -11,6 +11,9 @@
         - '10.10.1.11 node-1 zabbix-web zabbix-server zabbix.example.com'
         - '10.10.1.12 node-2 zabbix-database'
         - '10.10.1.13 node-3 zabbix-proxy'
+        - '10.10.1.21 tower-1 srv01'
+        - '10.10.1.22 tower-2 srv02'
+        - '10.10.1.23 tower-3 srv03'
 
     - name: Install basic packages
       apt:

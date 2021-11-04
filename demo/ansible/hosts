@@ -10,6 +10,11 @@ node-2 ansible_host=10.10.1.12
 [zabbix_proxy]
 node-3 ansible_host=10.10.1.13
 
+#[servers]
+#srv01 ansible_host=10.10.1.21
+#srv02 ansible_host=10.10.1.22
+#srv03 ansible_host=10.10.1.23
+
 [database:children]
 zabbix_database
 zabbix_proxy
