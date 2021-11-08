@@ -31,6 +31,7 @@ dnf clean all
 dnf -y install ipmitool
 dnf -y install zabbix-server-mysql zabbix-web-mysql zabbix-apache-conf zabbix-agent zabbix-agent2 zabbix-sender zabbix-get zabbix-java-gateway
 dnf -y install perl-App-cpanminus
+dnf -y install perl-JSON.noarch
 dnf -y install ansible
 dnf -y install golang-github-prometheus-node-exporter
 pip3 install zabbix-api
