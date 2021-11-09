@@ -2,14 +2,19 @@
 #
 # Create GCP Windows server VM
 #
-# Lukas Maly <Iam@LukasMaly.NET> 15.1.2021
+# Lukas Maly <Iam@LukasMaly.NET> 9.111.2021
 #
 
 # GCP Set project Zabbix-EDU
-gcloud config set project datascript-zabbix-edu
+REGION="europe-central2"
+ZONE="europe-central2-a"
+PROJECT="datascript-zabbix-edu"
+
+gcloud config set project ${PROJECT}
+gcloud config set compute/region ${REGION}
+gcloud config set compute/zone ${ZONE}
 
 IMAGE_WIN=`gcloud compute images list --project windows-cloud --no-standard-images | grep dc-v | grep 2019 | awk '{print $1}'`
-ZONE="europe-central2-c"
 
 argc=$#;
 argv=("$@");

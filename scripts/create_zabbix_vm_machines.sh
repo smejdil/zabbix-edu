@@ -2,14 +2,19 @@
 #
 # Create GCP CentOS 8 VM
 #
-# Lukas Maly <Iam@LukasMaly.NET> 1.9.2021
+# Lukas Maly <Iam@LukasMaly.NET> 9.11.2021
 #
 
 # GCP Set project Zabbix-EDU
-gcloud config set project datascript-zabbix-edu
+REGION="europe-west3"
+ZONE="europe-west3-a"
+PROJECT="datascript-zabbix-edu"
+
+gcloud config set project ${PROJECT}
+gcloud config set compute/region ${REGION}
+gcloud config set compute/zone ${ZONE}
 
 IMAGE_CENTOS8=`gcloud compute images list | grep centos-8 | awk '{print $1}'`
-ZONE="europe-west3-a"
 
 argc=$#;
 argv=("$@");
