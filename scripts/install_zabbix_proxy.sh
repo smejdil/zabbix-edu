@@ -28,7 +28,7 @@ zcat /usr/share/doc/zabbix-proxy-mysql/schema.sql.gz | mysql -u zabbix_proxy -p$
 # Zabbix configuration
 echo "--- Configure Zabbix proxy config ---"
 cp -v /etc/zabbix/zabbix_proxy.conf /etc/zabbix/zabbix_proxy.conf-orig
-sed -i "s/^# ListenPort=10051/# ListenPort=10053/g" /etc/zabbix/zabbix_proxy.conf
+sed -i "s/^# ListenPort=10051/ListenPort=10053/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/Hostname=Zabbix proxy/Hostname=zbxp-local/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/# DBHost=localhost/DBHost=localhost/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/^DBName=zabbix_proxy/DBHost=zabbix_proxy/g" /etc/zabbix/zabbix_proxy.conf
@@ -38,7 +38,7 @@ sed -i "s/# Timeout=3/Timeout=30/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/# CacheSize=8M/CacheSize=32M/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/# DBSocket=/DBSocket=\/var\/lib\/mysql\/mysql.sock/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/# StartVMwareCollectors=0/StartVMwareCollectors=1/g" /etc/zabbix/zabbix_proxy.conf
-diff -u /etc/zabbix/zabbix_proxy.conf-orig /etc/zabbix//etc/zabbix/zabbix_proxy.conf
+diff -u /etc/zabbix/zabbix_proxy.conf-orig /etc/zabbix/zabbix_proxy.conf
 
 # Restart services
 echo "--- Restart and enable services ---"
