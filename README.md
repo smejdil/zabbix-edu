@@ -71,7 +71,7 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz/zabbix/
 - Connect to VM Linux + Tomcat and run scripts + reboot SELinux disable
 
 ```console
-gcloud compute ssh linsrv01 --zone=europe-central2-c
+gcloud compute ssh linsrv01 --zone=europe-central2-a
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 reboot
