@@ -105,8 +105,12 @@ systemctl start docker.service
 # Dockerized PostgreSQL
 # https://hub.docker.com/_/postgres
 docker run --name postgres -e POSTGRES_PASSWORD=123456 -d postgres
-
 #docker run --name httpd -p 80:80 -d httpd
+
+# Install Vault by HashiCorp
+# http://linsrv01.pfsense.cz:8200 - Token DataScript-ZabbixEDU202X
+cd /root/zabbix-edu/zabbix/docker-vault
+docker-compose -f docker-compose.yml up -d
 
 ## Zabbix Docker
 #cd /root/zabbix-docker
