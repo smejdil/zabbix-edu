@@ -5,14 +5,6 @@
 # Lukas Maly <Iam@LukasMaly.NET> 13.10.2021
 #
 
-# Fix problem
-# Error: Failed to download metadata for repo 'baseos': repomd.xml parser error: Element <repomd> was not found - Bad repomd file
-dnf clean all
-rm -rf /var/cache/dnf
-cp /etc/yum.repos.d/CentOS-Linux-BaseOS.repo /etc/yum.repos.d/CentOS-Linux-BaseOS.repo-orig
-sed -i 's/mirrorlist=/#mirrorlist=/g' /etc/yum.repos.d/CentOS-Linux-BaseOS.repo
-sed -i 's/#baseurl=/baseurl=/g' /etc/yum.repos.d/CentOS-Linux-BaseOS.repo
-
 # Post deploy commands
 dnf -y install git
 dnf -y install bash-completion
@@ -38,6 +30,9 @@ pip3 install zabbix-api
 dnf -y update
 cd /root/ && git clone https://github.com/smejdil/zabbix-edu
 ansible-galaxy collection install -r /root/zabbix-edu/zabbix/requirements.yml
-cpanm JSON::RPC::Client > /tmp/cpan.log
+#cpanm JSON::RPC::Client > /tmp/cpan.log
+#! Finding JSON::RPC::Client on cpanmetadb failed.
+#! Finding JSON::RPC::Client () on mirror http://www.cpan.org failed.
+#! Couldn't find module or a distribution JSON::RPC::Client
 
 # EOF

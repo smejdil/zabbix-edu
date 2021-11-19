@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Create GCP CentOS 8 VM
+# Create GCP RockyLinux 8 VM
 #
-# Lukas Maly <Iam@LukasMaly.NET> 9.11.2021
+# Lukas Maly <Iam@LukasMaly.NET> 19.11.2021
 #
 
 # GCP Set project Zabbix-EDU
@@ -14,14 +14,14 @@ gcloud config set project ${PROJECT}
 gcloud config set compute/region ${REGION}
 gcloud config set compute/zone ${ZONE}
 
-IMAGE_CENTOS8=`gcloud compute images list | grep centos-8 | awk '{print $1}'`
+IMAGE_ROCKYLINUX8=`gcloud compute images list | grep rocky-linux-8 | awk '{print $1}'`
 
 argc=$#;
 argv=("$@");
 
 for (( j=0; j<argc; j++ )); do
     echo "zbx${argv[j]}";
-    gcloud compute instances create zbx${argv[j]} --image ${IMAGE_CENTOS8} --image-project=centos-cloud --zone=${ZONE} --metadata-from-file startup-script=./zabbix-edu/scripts/install-gcp.sh
+    gcloud compute instances create zbx${argv[j]} --image ${IMAGE_ROCKYLINUX8} --image-project=rocky-linux-cloud --zone=${ZONE} --metadata-from-file startup-script=./zabbix-edu/scripts/install-gcp.sh
     gcloud compute instances add-tags zbx${argv[j]} --tags=http-server --zone=${ZONE}
     gcloud compute instances add-tags zbx${argv[j]} --tags=https-server --zone=${ZONE}
     gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-agent --zone=${ZONE}

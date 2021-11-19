@@ -1,6 +1,6 @@
 ## Deploy zabbix servers on GCP
 
-This small project is used for install EDU servers with Zabbix 5.0 LTS on CentOS 8.
+This small project is used for install EDU servers with Zabbix 5.0 LTS on Rocky Linux release 8.5 (Green Obsidian).
 
 ## Dependencies
 
