@@ -11,10 +11,11 @@ echo "Authenticating to vault..."
 vault login token=DataScript-ZabbixEDU202X
 
 echo "Initializing vault..."
-vault secrets enable -version=2 -path=my.secrets kv
+vault secrets enable -version=2 -path=zabbix kv
 
 echo "Adding entries..."
-vault kv put my.secrets/dev username=test_user
-vault kv put my.secrets/dev password=test_password
+vault kv put zabbix ZBX_PROBE_MYSQL_PASS=ASce6qQA9gtyWiGnGpmj
+vault kv put zabbix SSH_USER_PASS=8VsnE5QiYexIu4kazcBI
+vault kv put zabbix ZBX_PROBE_VMWARE_PASS=8VsnE5QiYexIu4kazcBI
 
 echo "Complete..."
