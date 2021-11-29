@@ -156,6 +156,10 @@ zbx03.pfsense.cz has address 34.107.115.225
 ```console
 ./zabbix-edu/scripts/create_html_list.sh
 ```
+## Other training projects
+
+- [Zabbix API](https://github.com/smejdil/zabbix-api)
+- [Zabbix auto registrace](https://github.com/smejdil/zbx-auto-reg-demo-gcp)
 
 ## To do
 
