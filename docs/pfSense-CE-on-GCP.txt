@@ -26,16 +26,35 @@ pfsense-252-installer                                 datascript-zabbix-edu  pfs
 
 Navigate to GCP Console -> Compute Engine -> Create an instance.
     Name: pfsense-install-252
-    Boot disk: pfsense-245-installer
-    Create a additional disk using the advanced drop down.
+    Region: europe-west6 (Zurich)
+    Zone: europe-west6-a
+    Boot disk: pfsense-252-installer (Select project DataScript-Zabbix-EDU)
+    Disk:
+    Additional disk
+	+ Add new disk
         Name: pfsense-252-clean-install
         Source Type: None (blank disk)
         Size: 20GB
 
-#gcloud compute instances create pfsense-install-252 --project=datascript-zabbix-edu --zone=europe-central2-c --image pfsense-252-installer
+#gcloud compute instances create pfsense-install-252 --project=datascript-zabbix-edu --zone=europe-west6-a --image pfsense-252-installer
 
-gcloud compute instances add-metadata --project=datascript-zabbix-edu --zone=europe-central2-c --metadata=serial-port-enable=1 pfsense-install-252
-gcloud compute connect-to-serial-port --project=datascript-zabbix-edu --zone=europe-central2-c pfsense-install-252
+gcloud compute instances add-metadata --project=datascript-zabbix-edu --zone=europe-west6-a --metadata=serial-port-enable=1 pfsense-install-252
+gcloud compute connect-to-serial-port --project=datascript-zabbix-edu --zone=europe-west6-a pfsense-install-252
+
+Boot pfsense to Install:
+
+Welcome to pfSense!
+
+Please choose the appropriate terminal type for your system.
+Common console types are:
+   ansi     Standard ANSI terminal
+   vt100    VT100 or compatible terminal
+   xterm    xterm terminal emulator (or compatible)
+   cons25w  cons25w terminal
+
+Console type [vt100]:
+
+Next install step ... Auto UFS Bios ... MBR Dos Partition
 
 Navigate to GCP Console -> Compute Engine -> Create snapshot
     Name: pfsense-252-image
@@ -43,18 +62,22 @@ Navigate to GCP Console -> Compute Engine -> Create snapshot
 
 Navigate to GCP Console -> Compute Engine -> Create an instance.
     Name: pfsense-edu
-    Machine type: Pick something applicable to the work load.
+    Region: europe-west6 (Zurich)
+    Zone: europe-west6-a
+    Machine type: e2-small (2 vCPU, 2 GB memory)
     Boot disk:
         Snapshots: pfsense-252-image
         Size: 20GB (or something applicable for work load, typically only needed for logging).
 
-gcloud compute instances add-tags pfsense-edu --tags=http-server --zone=europe-central2-c
-gcloud compute instances add-tags pfsense-edu --tags=https-server --zone=europe-central2-c
-gcloud compute instances add-tags pfsense-edu --tags=zabbix-agent --zone=europe-central2-c
-gcloud compute instances add-tags pfsense-edu --tags=snmp --zone=europe-central2-c
-gcloud compute instances add-tags pfsense-edu --tags=zabbix-server --zone=europe-central2-c
-gcloud compute instances add-metadata --metadata=serial-port-enable=1 pfsense-edu --zone=europe-central2-c
-gcloud compute connect-to-serial-port pfsense-edu --zone=europe-central2-c
+gcloud compute instances add-tags pfsense-edu --tags=http-server --zone=europe-west6-a
+gcloud compute instances add-tags pfsense-edu --tags=https-server --zone=europe-west6-a
+gcloud compute instances add-tags pfsense-edu --tags=zabbix-agent --zone=europe-west6-a
+gcloud compute instances add-tags pfsense-edu --tags=snmp --zone=europe-west6-a
+gcloud compute instances add-tags pfsense-edu --tags=zabbix-server --zone=europe-west6-a
+gcloud compute instances add-metadata --metadata=serial-port-enable=1 pfsense-edu --zone=europe-west6-a
+gcloud compute connect-to-serial-port pfsense-edu --zone=europe-west6-a
+
+WAN  -> vtnet0
 
 # Console pfSense 8
 
