@@ -15,11 +15,14 @@ do
 done
 
 # linsrv, winsrv, pfsense
-for i in linsrv winsrv pfsense;
+for i in linsrv winsrv;
 do
 	echo "Delete DNS record ${i}01.pfsense.cz:"
         cli4 /zones/:pfsense.cz/dns_records/:${i}01.pfsense.cz | jq '{"id":.id,"name":.name,"type":.type,"content":.content}'
         cli4 --delete /zones/:pfsense.cz/dns_records/:${i}01.pfsense.cz | jq -c .
 done
+
+cli4 /zones/:pfsense.cz/dns_records/:pfsense-edu.pfsense.cz | jq '{"id":.id,"name":.name,"type":.type,"content":.content}'
+cli4 --delete /zones/:pfsense.cz/dns_records/:pfsense-edu.pfsense.cz | jq -c .
 
 # EOF
