@@ -1,6 +1,6 @@
 ## Deploy zabbix servers on GCP
 
-This small project is used for install EDU servers with Zabbix 5.0 LTS on Rocky Linux release 8.5 (Green Obsidian).
+This small project is used for install EDU servers with Zabbix 5.0 LTS on CentOS Stream release 8.
 
 ## Dependencies
 
@@ -43,7 +43,7 @@ gcloud config set project [PROJECT]
 - Connect to VM Zabbix EDU and run scripts + reboot SELinux disable
 
 ```console
-gcloud compute ssh zbx01 --zone=europe-west3-a
+gcloud compute ssh zbx01 --zone=europe-west1-c
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 reboot

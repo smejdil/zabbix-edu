@@ -26,10 +26,10 @@ dnf -y install perl-App-cpanminus
 dnf -y install perl-JSON.noarch
 dnf -y install ansible
 dnf -y install golang-github-prometheus-node-exporter
-pip3 install zabbix-api
+pip3.8 install zabbix-api
 dnf -y update
 cd /root/ && git clone https://github.com/smejdil/zabbix-edu
-ansible-galaxy collection install -r /root/zabbix-edu/zabbix/requirements.yml
+ansible-galaxy collection install --force -r /root/zabbix-edu/zabbix/requirements.yml
 #cpanm JSON::RPC::Client > /tmp/cpan.log
 #! Finding JSON::RPC::Client on cpanmetadb failed.
 #! Finding JSON::RPC::Client () on mirror http://www.cpan.org failed.
