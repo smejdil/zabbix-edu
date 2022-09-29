@@ -2,7 +2,7 @@
 Terraform example configuration creates one VPS with `remote-exec` provisioner
 and deploys a public key.
 
-Inspired by [blog.vpsfree.cz][https://blog.vpsfree.cz/terraform-provider-pro-vpsadmin-spravujte-infrastrukturu-automatizovane/].
+Inspired by [blog.vpsfree.cz](https://blog.vpsfree.cz/terraform-provider-pro-vpsadmin-spravujte-infrastrukturu-automatizovane/).
 
 ## Obtaining API authentication token
 The provider needs an authentication token to the vpsAdmin API. The token can
