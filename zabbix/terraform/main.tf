@@ -66,4 +66,8 @@ resource "vpsadmin_vps" "zbx62" {
       timeout     = "2m"
     }
   }
+
+  provisioner "local-exec" { 
+    command = "sleep 120; ansible-playbook -i '${vpsadmin_vps.zbx62.public_ipv4_address}' playbook.yml"
+  }
 }
