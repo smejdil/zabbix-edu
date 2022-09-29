@@ -28,7 +28,8 @@ resource "vpsadmin_vps" "zbx62" {
   # Possible values
   #   - using vpsfree-client: vpsfreectl os_template list -o name
   #   - using curl: curl https://api.vpsfree.cz/os_templates
-  install_os_template = "debian-11-x86_64-vpsadminos-minimal"
+  #install_os_template = "debian-11-x86_64-vpsadminos-minimal"
+  install_os_template = "ubuntu-20.04-x86_64-vpsadminos-minimal"
 
   # vpsAdmin-managed hostname
   hostname = "zbx62"
@@ -52,7 +53,7 @@ resource "vpsadmin_vps" "zbx62" {
     inline = [
       "export PATH=$PATH:/usr/bin",
       "apt-get update",
-      "apt-get -y install joe mc",
+      "apt-get -y install joe mc ansible",
       ]
   
     connection {
