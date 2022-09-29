@@ -1,0 +1,5 @@
+token.auto.tfvars
+.terraform.lock.hcl
+shell.nix
+terraform.tfstate*
+.terraform*
