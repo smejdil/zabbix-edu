@@ -1,13 +1,13 @@
 output "PublicIPv4" {
-  value = vpsadmin_vps.zbx62.public_ipv4_address
+  value = vpsadmin_vps.zbx64.public_ipv4_address
 }
 
 output "PrivateIPv4" {
-  value = vpsadmin_vps.zbx62.private_ipv4_address
+  value = vpsadmin_vps.zbx64.private_ipv4_address
 }
 
 output "PublicIPv6" {
-  value = vpsadmin_vps.zbx62.public_ipv6_address
+  value = vpsadmin_vps.zbx64.public_ipv6_address
 }
 
 #output "NasMountCommand" {

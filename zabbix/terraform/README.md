@@ -51,7 +51,7 @@ $ terraform apply
 
 vpsadmin_ssh_key.DS-key: Creating...
 vpsadmin_ssh_key.DS-key: Creation complete after 0s [id=2575]
-vpsadmin_vps.zbx62: Creating...
-vpsadmin_vps.zbx62: Still creating... [10s elapsed]
-vpsadmin_vps.zbx62: Still creating... [20s elapsed]
+vpsadmin_vps.zbx64: Creating...
+vpsadmin_vps.zbx64: Still creating... [10s elapsed]
+vpsadmin_vps.zbx64: Still creating... [20s elapsed]
 ```

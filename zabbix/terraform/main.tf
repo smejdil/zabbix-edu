@@ -17,7 +17,7 @@ resource "vpsadmin_ssh_key" "TR-key" {
 }
 
 # Create a VPS
-resource "vpsadmin_vps" "zbx62" {
+resource "vpsadmin_vps" "zbx64" {
   # Location label
   # Possible values
   #   - using vpsfree-client: vpsfreectl location list -o label
@@ -32,7 +32,7 @@ resource "vpsadmin_vps" "zbx62" {
   install_os_template = "ubuntu-20.04-x86_64-vpsadminos-minimal"
 
   # vpsAdmin-managed hostname
-  hostname = "zbx62"
+  hostname = "zbx64"
 
   # Number of CPU cores
   cpu = 8
@@ -53,12 +53,12 @@ resource "vpsadmin_vps" "zbx62" {
     inline = [
       "export PATH=$PATH:/usr/bin",
       "apt-get update",
-      "apt-get -y install joe mc ansible",
+      "apt-get -y install joe mc",
       ]
   
     connection {
      type = "ssh"
-     host = vpsadmin_vps.zbx62.public_ipv4_address
+     host = vpsadmin_vps.zbx64.public_ipv4_address
   
      # Set your private key here
      private_key = file("~/.ssh/id_ed25519_terraform")
@@ -68,6 +68,6 @@ resource "vpsadmin_vps" "zbx62" {
   }
 
   provisioner "local-exec" { 
-    command = "sleep 120; ansible-playbook -i '${vpsadmin_vps.zbx62.public_ipv4_address}' playbook.yml"
+    command = "sleep 120; ansible-playbook -i '${vpsadmin_vps.zbx64.public_ipv4_address},' playbook.yml"
   }
 }
