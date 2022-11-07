@@ -26,7 +26,7 @@ dnf -y install perl-App-cpanminus
 dnf -y install perl-JSON.noarch
 dnf -y install ansible
 dnf -y install golang-github-prometheus-node-exporter
-pip3.8 install zabbix-api
+pip3.9 install zabbix-api
 dnf -y update
 cd /root/ && git clone https://github.com/smejdil/zabbix-edu
 ansible-galaxy collection install --force -r /root/zabbix-edu/zabbix/requirements.yml
