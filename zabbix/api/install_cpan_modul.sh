@@ -1,4 +1,4 @@
-!/bin/sh
+#!/bin/sh
 #
 # Install Perl CPAN modul
 #
