@@ -29,7 +29,7 @@ Install zabbix_agent2-5.0.7-windows-amd64-openssl
 Run total commander As Adminnistrator
 "c:\Program Files\Zabbix Agent 2\.." 
 	edit zabbix_agent2.conf
-Server=zabbix.pfsense.cz,zbx01.pfsense.cz,zbx02.pfsense.cz,zbx03.pfsense.cz,zbx04.pfsense.cz,zbx05.pfsense.cz,zbx06.pfsense.cz,zbx07.pfsense.cz,zbx08.pfsense.cz,zbx09.pfsense.cz,zbx10.pfsense.cz,zbx11.pfsense.cz,zbx12.pfsense.cz
+Server=enceladus.pfsense.cz,zbx01.pfsense.cz,zbx02.pfsense.cz,zbx03.pfsense.cz,zbx04.pfsense.cz,zbx05.pfsense.cz,zbx06.pfsense.cz,zbx07.pfsense.cz,zbx08.pfsense.cz,zbx09.pfsense.cz,zbx10.pfsense.cz,zbx11.pfsense.cz,zbx12.pfsense.cz
 Server Manager - Tools - Computer Management
 	Services
 	Zabbix Agent 2
