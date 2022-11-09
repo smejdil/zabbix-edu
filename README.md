@@ -24,6 +24,7 @@ By Google Cloud SDK is intalled servers zbx01-0X. After instalation run scripts 
 - Install and configure crontab file
 - Install and configure Windows server 2019
 - Install and configure Tomcat, PostgreSQL, Memcached, Docker ...
+- Install and configure FreeBSD server
 
 ### Installation
 
@@ -85,6 +86,28 @@ linsrv01 - http://34.107.114.128
 
 gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | grep linsrv0
 34.107.114.128 - http://linsrv01.pfsense.cz
+```
+
+## FreeBSD server for EDU
+- Create VM FreeBSD
+
+```console
+./zabbix-edu/scripts/create_fbsd_vm_machine.sh 01
+```
+
+- Connect to VM FreeBSD
+
+```console
+gcloud compute ssh fbsdsv01 --zone=europe-central2-a
+```
+- List FreeBSD servers EDU VM and external IPv4
+
+```console
+gcloud compute instances list | awk '{print $1" - http://"$5}' | grep fbsdsrv0
+fbsdsrv01 - http://34.107.114.182
+
+gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | grep fbsdsrv0
+34.107.114.182 - http://fbsdsrv01.pfsense.cz
 ```
 
 ## Windows server for EDU
