@@ -5,7 +5,7 @@
 # Lukas Maly <Iam@LukasMaly.NET> 9.11.2022
 #
 
-pkg -y install  -y joe mc git
+pkg install -y joe mc git
 
 echo "BATCH=yes" > /etc/make.conf
 
