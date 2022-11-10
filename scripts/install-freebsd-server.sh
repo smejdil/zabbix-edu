@@ -13,14 +13,14 @@ portsnap fetch
 portsnap extract
 
 cd /usr/ports/devel/p5-JSON-RPC && make install clean
-
 cd /usr/ports/devel/py-pip && make install clean
-
 cd /usr/ports/sysutils/ansible && make install clean
 
 pip install zabbix-api
 
-# Zabbix Agent !!!
+pkg install -y zabbix6-agent
+/usr/local/etc/rc.d/zabbix_agentd enable
+# sed edit config
 
 cd /root
 git clone https://github.com/smejdil/zabbix-api
