@@ -98,7 +98,7 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | gr
 - Connect to VM FreeBSD
 
 ```console
-gcloud compute ssh fbsdsv01 --zone=europe-central2-a
+gcloud compute ssh fbsdsrv01 --zone=europe-central2-a
 ```
 - List FreeBSD servers EDU VM and external IPv4
 
