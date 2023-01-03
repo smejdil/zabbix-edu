@@ -25,4 +25,8 @@ pkg install -y zabbix6-agent
 cd /root
 git clone https://github.com/smejdil/zabbix-api
 
+cd /usr/ports/lang/lua54 && make install clean
+cd /usr/ports/converters/lua-json && make install clean
+cd /usr/ports/net/luasocket && make install clean
+
 # EOF
