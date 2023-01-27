@@ -1,6 +1,6 @@
 ## Deploy zabbix servers on GCP
 
-This small project is used for install EDU servers with Zabbix 5.0 LTS on CentOS Stream release 8.
+This small project is used for install EDU servers with Zabbix 6.0 LTS on CentOS Stream release 9.
 
 ## Dependencies
 

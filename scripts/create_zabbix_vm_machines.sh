@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Create GCP CentOS Stream 8 VM
+# Create GCP CentOS Stream 9 VM
 #
-# Lukas Maly <Iam@LukasMaly.NET> 19.06.2022
+# Lukas Maly <Iam@LukasMaly.NET> 27.1.2023
 #
 
 # GCP Set project Zabbix-EDU
@@ -14,7 +14,7 @@ gcloud config set project ${PROJECT}
 gcloud config set compute/region ${REGION}
 gcloud config set compute/zone ${ZONE}
 
-IMAGE_CENTOSSTREAM8=`gcloud compute images list | grep centos-stream-8 | awk '{print $1}'`
+IMAGE_CENTOSSTREAM8=`gcloud compute images list | grep centos-stream-9 | awk '{print $1}'`
 
 argc=$#;
 argv=("$@");

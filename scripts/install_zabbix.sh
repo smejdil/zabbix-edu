@@ -2,7 +2,7 @@
 #
 # Zabbix install scpript
 #
-# Lukas Maly <Iam@LukasMaly.NET> 18.1.2021
+# Lukas Maly <Iam@LukasMaly.NET> 27.1.2023
 #
 
 ### MariaDB
@@ -23,15 +23,20 @@ openssl rand -base64 32 > /root/mysql-zabbix.pw
 ZABBIX_MYSQL_PASS=`cat /root/mysql-zabbix.pw`
 
 # Create database and user
-mysql -u root -p${MYSQL_ROOT_PASS} -e "create database zabbix character set utf8 collate utf8_bin;"
-mysql -u root -p${MYSQL_ROOT_PASS} -e "grant all privileges on zabbix.* to zabbix@localhost identified by '${ZABBIX_MYSQL_PASS}';"
+mysql -u root -p${MYSQL_ROOT_PASS} -e "create database zabbix character set utf8mb4 collate utf8mb4_bin;"
+mysql -u root -p${MYSQL_ROOT_PASS} -e "create user zabbix@localhost identified by '${ZABBIX_MYSQL_PASS}';"
+mysql -u root -p${MYSQL_ROOT_PASS} -e "grant all privileges on zabbix.* to zabbix@localhost;"
+mysql -u root -p${MYSQL_ROOT_PASS} -e "set global log_bin_trust_function_creators = 1;"
 mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
 
 ### Zabbix
 
 # Import db schema
 echo "--- Import DB schema ---"
-zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -u zabbix -p${ZABBIX_MYSQL_PASS} zabbix
+zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -p${ZABBIX_MYSQL_PASS} zabbix
+
+# Disable log_bin_trust_function_creators option after importing database schema. 
+mysql -u root -p${MYSQL_ROOT_PASS} -e "set global log_bin_trust_function_creators = 0;"
 
 # Zabbix configuration
 echo "--- Configure Zabbix server config ---"
