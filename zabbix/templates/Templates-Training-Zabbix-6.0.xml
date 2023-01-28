@@ -1,0 +1,3266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>6.0</version>
+    <date>2023-01-28T18:27:10Z</date>
+    <groups>
+        <group>
+            <uuid>7045cb56d4334ebeabcf3ca9be64b9eb</uuid>
+            <name>Templates/Training</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <uuid>23102dfda2ae43bdbecccee99643e113</uuid>
+            <template>Template-Training</template>
+            <name>Template-Training</name>
+            <groups>
+                <group>
+                    <name>Templates/Training</name>
+                </group>
+            </groups>
+            <tags>
+                <tag>
+                    <tag>Template</tag>
+                    <value>Training</value>
+                </tag>
+            </tags>
+            <macros>
+                <macro>
+                    <macro>{$SSH_USER_PASS}</macro>
+                    <type>SECRET_TEXT</type>
+                    <description>User pass zbx_probe (cat /root/zbx_probe.pw)</description>
+                </macro>
+                <macro>
+                    <macro>{$ZBX_PROBE_MYSQL_PASS}</macro>
+                    <type>SECRET_TEXT</type>
+                    <description>MySQL user pass zbx_probe (cat /root/mysql-zbx_probe.pw)</description>
+                </macro>
+            </macros>
+        </template>
+        <template>
+            <uuid>5b826463ad67427fa556294381f6238e</uuid>
+            <template>Template-Training_App_Apache_Tomcat_JMX</template>
+            <name>Template-Training_App_Apache_Tomcat_JMX</name>
+            <description>The template to monitor Apache Tomcat by Zabbix that work without any external scripts.
+The metrics are collected by JMX.
+
+
+You can discuss this template or leave feedback on our forum https://www.zabbix.com/forum/zabbix-suggestions-and-feedback/411862-discussion-thread-for-official-zabbix-template-tomcat
+
+Template tooling version used: 0.38</description>
+            <groups>
+                <group>
+                    <name>Templates/Training</name>
+                </group>
+            </groups>
+            <items>
+                <item>
+                    <uuid>2cb4f1765a3d4e14b55c43ad202fc73d</uuid>
+                    <name>Tomcat: Version</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;Catalina:type=Server&quot;,serverInfo]</key>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <username>{$TOMCAT.USER}</username>
+                    <password>{$TOMCAT.PASSWORD}</password>
+                    <description>The version of the Tomcat.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>1d</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Tomcat</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>608c1b6987214745be632b6f54ce9e96</uuid>
+                            <expression>(last(/Template-Training_App_Apache_Tomcat_JMX/jmx[&quot;Catalina:type=Server&quot;,serverInfo],#1)&lt;&gt;last(/Template-Training_App_Apache_Tomcat_JMX/jmx[&quot;Catalina:type=Server&quot;,serverInfo],#2))=1 and length(last(/Template-Training_App_Apache_Tomcat_JMX/jmx[&quot;Catalina:type=Server&quot;,serverInfo]))&gt;0</expression>
+                            <name>Tomcat: Version has been changed</name>
+                            <priority>INFO</priority>
+                            <description>Tomcat version has changed. Ack to close.</description>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <uuid>0d9b7954f9c949dfa9a1e9ee589aecec</uuid>
+                    <name>Protocol handlers discovery</name>
+                    <type>JMX</type>
+                    <key>jmx.discovery[attributes,&quot;Catalina:type=ProtocolHandler,port=*&quot;]</key>
+                    <delay>1h</delay>
+                    <status>DISABLED</status>
+                    <username>{$TOMCAT.USER}</username>
+                    <password>{$TOMCAT.PASSWORD}</password>
+                    <filter>
+                        <evaltype>AND</evaltype>
+                        <conditions>
+                            <condition>
+                                <macro>{#JMXATTR}</macro>
+                                <value>^name$</value>
+                                <formulaid>A</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <description>Discovery for ProtocolHandler</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>dc57a97e67314385aeeb036d4817bb08</uuid>
+                            <name>{#JMXVALUE}: Gzip compression status</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},compression]</key>
+                            <history>7d</history>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Gzip compression status on {#JMXNAME}. Enabling gzip compression may save server bandwidth.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <parameters>
+                                        <parameter>1h</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: ProtocolHandler {#JMXVALUE}</value>
+                                </tag>
+                            </tags>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <uuid>75a15e352d274dc4bea054af921f7197</uuid>
+                                    <expression>find(/Template-Training_App_Apache_Tomcat_JMX/jmx[{#JMXOBJ},compression],,&quot;like&quot;,&quot;off&quot;) = 1</expression>
+                                    <name>{#JMXVALUE}: Gzip compression is disabled</name>
+                                    <priority>INFO</priority>
+                                    <description>gzip compression is disabled for connector {#JMXVALUE}.</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                </discovery_rule>
+                <discovery_rule>
+                    <uuid>9a94cb1bd02c466385ace3ec176254a2</uuid>
+                    <name>Global request processors discovery</name>
+                    <type>JMX</type>
+                    <key>jmx.discovery[beans,&quot;Catalina:type=GlobalRequestProcessor,name=*&quot;]</key>
+                    <delay>1h</delay>
+                    <username>{$TOMCAT.USER}</username>
+                    <password>{$TOMCAT.PASSWORD}</password>
+                    <filter>
+                        <evaltype>AND</evaltype>
+                        <conditions>
+                            <condition>
+                                <macro>{#JMXNAME}</macro>
+                                <value>{$TOMCAT.LLD.FILTER.MATCHES:&quot;GlobalRequesProcessor&quot;}</value>
+                                <formulaid>A</formulaid>
+                            </condition>
+                            <condition>
+                                <macro>{#JMXNAME}</macro>
+                                <value>{$TOMCAT.LLD.FILTER.NOT_MATCHES:&quot;GlobalRequesProcessor&quot;}</value>
+                                <operator>NOT_MATCHES_REGEX</operator>
+                                <formulaid>B</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <description>Discovery for GlobalRequesProcessor</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>57f1fdd51f4c4ffea89a09adca5466e6</uuid>
+                            <name>{#JMXNAME}: Bytes received per second</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},bytesReceived]</key>
+                            <history>7d</history>
+                            <units>B</units>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Bytes received rate by processor {#JMXNAME}</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: {#JMXTYPE} {#JMXNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>953bd35e4bc84a37902db665c7fd70b4</uuid>
+                            <name>{#JMXNAME}: Bytes sent per second</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},bytesSent]</key>
+                            <history>7d</history>
+                            <units>B</units>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Bytes sent rate by processor {#JMXNAME}</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: {#JMXTYPE} {#JMXNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>fd158f6922d84277b1fc67d11c2aa54f</uuid>
+                            <name>{#JMXNAME}: Errors per second</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},errorCount]</key>
+                            <history>7d</history>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Error rate of request processor {#JMXNAME}</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: {#JMXTYPE} {#JMXNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>26641a70f209413691baf2f72d55600a</uuid>
+                            <name>{#JMXNAME}: Requests processing time</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},processingTime]</key>
+                            <history>7d</history>
+                            <units>s</units>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>The total time to process all incoming requests of request processor {#JMXNAME}</description>
+                            <preprocessing>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <parameters>
+                                        <parameter>0.001</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: {#JMXTYPE} {#JMXNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>1c3be860e5fd469e9a95dd22c78c2e6d</uuid>
+                            <name>{#JMXNAME}: Requests per second</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},requestCount]</key>
+                            <history>7d</history>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Rate of requests served by request processor {#JMXNAME}</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: {#JMXTYPE} {#JMXNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <uuid>3e47568eddc54218ae03764e551dcf2e</uuid>
+                            <name>{#JMXNAME}: Traffic</name>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>1A7C11</color>
+                                    <item>
+                                        <host>Template-Training_App_Apache_Tomcat_JMX</host>
+                                        <key>jmx[{#JMXOBJ},bytesSent]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>2774A4</color>
+                                    <item>
+                                        <host>Template-Training_App_Apache_Tomcat_JMX</host>
+                                        <key>jmx[{#JMXOBJ},bytesReceived]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                </discovery_rule>
+                <discovery_rule>
+                    <uuid>fb134ff82e894ce39c8d567be9067986</uuid>
+                    <name>Contexts discovery</name>
+                    <type>JMX</type>
+                    <key>jmx.discovery[beans,&quot;Catalina:type=Manager,host=*,context=*&quot;]</key>
+                    <delay>1h</delay>
+                    <username>{$TOMCAT.USER}</username>
+                    <password>{$TOMCAT.PASSWORD}</password>
+                    <filter>
+                        <evaltype>AND</evaltype>
+                        <conditions>
+                            <condition>
+                                <macro>{#JMXHOST}</macro>
+                                <value>{$TOMCAT.LLD.FILTER.MATCHES:&quot;Manager&quot;}</value>
+                                <formulaid>A</formulaid>
+                            </condition>
+                            <condition>
+                                <macro>{#JMXHOST}</macro>
+                                <value>{$TOMCAT.LLD.FILTER.NOT_MATCHES:&quot;Manager&quot;}</value>
+                                <operator>NOT_MATCHES_REGEX</operator>
+                                <formulaid>B</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <description>Discovery for contexts</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>528ddce397724637a3adaa7255e71224</uuid>
+                            <name>{#JMXHOST}{#JMXCONTEXT}: Sessions active</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},activeSessions]</key>
+                            <history>7d</history>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Active sessions of the application.</description>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: Context {#JMXHOST}{#JMXCONTEXT}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>259bf2012beb47cb8693e4f486279d7a</uuid>
+                            <name>{#JMXHOST}{#JMXCONTEXT}: Sessions allowed maximum</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},maxActiveSessions]</key>
+                            <history>7d</history>
+                            <value_type>FLOAT</value_type>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>The maximum number of active Sessions allowed, or -1 for no limit.</description>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: Context {#JMXHOST}{#JMXCONTEXT}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>374f12483f2844dc8a0c3b080c31151c</uuid>
+                            <name>{#JMXHOST}{#JMXCONTEXT}: Sessions active maximum so far</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},maxActive]</key>
+                            <history>7d</history>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Maximum number of active sessions so far.</description>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: Context {#JMXHOST}{#JMXCONTEXT}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>3b4b2f14cd5346b9a1a9d56012425b59</uuid>
+                            <name>{#JMXHOST}{#JMXCONTEXT}: Sessions rejected per second</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},rejectedSessions]</key>
+                            <history>7d</history>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Rate of sessions we rejected due to maxActive being reached.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: Context {#JMXHOST}{#JMXCONTEXT}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>7e00624165844b0e9aaad1b5a115225d</uuid>
+                            <name>{#JMXHOST}{#JMXCONTEXT}: Sessions created per second</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},sessionCounter]</key>
+                            <history>7d</history>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Rate of sessions created by this application per second.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: Context {#JMXHOST}{#JMXCONTEXT}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <uuid>932251e78365438d9fcfd58ac48f24d0</uuid>
+                            <name>{#JMXHOST}{#JMXCONTEXT}: Sessions</name>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>1A7C11</color>
+                                    <item>
+                                        <host>Template-Training_App_Apache_Tomcat_JMX</host>
+                                        <key>jmx[{#JMXOBJ},maxActive]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>2774A4</color>
+                                    <item>
+                                        <host>Template-Training_App_Apache_Tomcat_JMX</host>
+                                        <key>jmx[{#JMXOBJ},activeSessions]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>2</sortorder>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>F63100</color>
+                                    <item>
+                                        <host>Template-Training_App_Apache_Tomcat_JMX</host>
+                                        <key>jmx[{#JMXOBJ},rejectedSessions]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>3</sortorder>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>A54F10</color>
+                                    <item>
+                                        <host>Template-Training_App_Apache_Tomcat_JMX</host>
+                                        <key>jmx[{#JMXOBJ},maxActiveSessions]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                </discovery_rule>
+                <discovery_rule>
+                    <uuid>8b8f5958ff8348c4aa1c7b9801567381</uuid>
+                    <name>Thread pools discovery</name>
+                    <type>JMX</type>
+                    <key>jmx.discovery[beans,&quot;Catalina:type=ThreadPool,name=*&quot;]</key>
+                    <delay>1h</delay>
+                    <username>{$TOMCAT.USER}</username>
+                    <password>{$TOMCAT.PASSWORD}</password>
+                    <filter>
+                        <evaltype>AND</evaltype>
+                        <conditions>
+                            <condition>
+                                <macro>{#JMXNAME}</macro>
+                                <value>{$TOMCAT.LLD.FILTER.MATCHES:&quot;ThreadPool&quot;}</value>
+                                <formulaid>A</formulaid>
+                            </condition>
+                            <condition>
+                                <macro>{#JMXNAME}</macro>
+                                <value>{$TOMCAT.LLD.FILTER.NOT_MATCHES:&quot;ThreadPool&quot;}</value>
+                                <operator>NOT_MATCHES_REGEX</operator>
+                                <formulaid>B</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <description>Discovery for ThreadPool</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>3f869b9b19a14b398865a205f7fa3b3f</uuid>
+                            <name>{#JMXNAME}: Threads count</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},currentThreadCount]</key>
+                            <history>7d</history>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Amount of threads the thread pool has right now, both busy and free.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <parameters>
+                                        <parameter>10m</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: {#JMXTYPE} {#JMXNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>0b81ef2755a6476c84ccfd612d9f91c2</uuid>
+                            <name>{#JMXNAME}: Threads busy</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},currentThreadsBusy]</key>
+                            <history>7d</history>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Number of the requests that are being currently handled.</description>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: {#JMXTYPE} {#JMXNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>77c22c1d3ff74fe388ba1258b6ebbb1f</uuid>
+                            <name>{#JMXNAME}: Threads limit</name>
+                            <type>JMX</type>
+                            <key>jmx[{#JMXOBJ},maxThreads]</key>
+                            <history>7d</history>
+                            <username>{$TOMCAT.USER}</username>
+                            <password>{$TOMCAT.PASSWORD}</password>
+                            <description>Limit of the threads count. When currentThreadsBusy counter reaches the maxThreads limit, no more requests could be handled, and the application chokes.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <parameters>
+                                        <parameter>10m</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Tomcat: {#JMXTYPE} {#JMXNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                    </item_prototypes>
+                    <trigger_prototypes>
+                        <trigger_prototype>
+                            <uuid>93f4e80cbde145ea8f7a5d0f034ea567</uuid>
+                            <expression>min(/Template-Training_App_Apache_Tomcat_JMX/jmx[{#JMXOBJ},currentThreadsBusy],{$TOMCAT.THREADS.MAX.TIME:&quot;{#JMXNAME}&quot;})&gt;last(/Template-Training_App_Apache_Tomcat_JMX/jmx[{#JMXOBJ},maxThreads])*{$TOMCAT.THREADS.MAX.PCT:&quot;{#JMXNAME}&quot;}/100</expression>
+                            <name>{#JMXNAME}: Busy worker threads count are more than {$TOMCAT.THREADS.MAX.PCT:&quot;{#JMXNAME}&quot;}% of the limit for {$TOMCAT.THREADS.MAX.TIME:&quot;{#JMXNAME}&quot;}</name>
+                            <priority>HIGH</priority>
+                            <description>When current threads busy counter reaches the limit, no more requests could be handled, and the application chokes.</description>
+                        </trigger_prototype>
+                    </trigger_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <uuid>71203a6328864aa7929c2b104dc46f63</uuid>
+                            <name>{#JMXNAME}: Worker threads</name>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>1A7C11</color>
+                                    <item>
+                                        <host>Template-Training_App_Apache_Tomcat_JMX</host>
+                                        <key>jmx[{#JMXOBJ},maxThreads]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>2774A4</color>
+                                    <item>
+                                        <host>Template-Training_App_Apache_Tomcat_JMX</host>
+                                        <key>jmx[{#JMXOBJ},currentThreadCount]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>2</sortorder>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>F63100</color>
+                                    <item>
+                                        <host>Template-Training_App_Apache_Tomcat_JMX</host>
+                                        <key>jmx[{#JMXOBJ},currentThreadsBusy]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                </discovery_rule>
+            </discovery_rules>
+            <tags>
+                <tag>
+                    <tag>Template</tag>
+                    <value>Training</value>
+                </tag>
+            </tags>
+            <macros>
+                <macro>
+                    <macro>{$TOMCAT.LLD.FILTER.MATCHES}</macro>
+                    <value>.*</value>
+                    <description>Filter for discoverable objects. Can be used with following contexts: &quot;GlobalRequestProcessor&quot;, &quot;ThreadPool&quot;, &quot;Manager&quot;</description>
+                </macro>
+                <macro>
+                    <macro>{$TOMCAT.LLD.FILTER.NOT_MATCHES}</macro>
+                    <value>CHANGE IF NEEDED</value>
+                    <description>Filter to exclude discovered objects. Can be used with following contexts: &quot;GlobalRequestProcessor&quot;, &quot;ThreadPool&quot;, &quot;Manager&quot;</description>
+                </macro>
+                <macro>
+                    <macro>{$TOMCAT.PASSWORD}</macro>
+                    <description>Password for JMX</description>
+                </macro>
+                <macro>
+                    <macro>{$TOMCAT.THREADS.MAX.PCT}</macro>
+                    <value>75</value>
+                    <description>Threshold for busy worker threads trigger. Can be used with {#JMXNAME} as context.</description>
+                </macro>
+                <macro>
+                    <macro>{$TOMCAT.THREADS.MAX.TIME}</macro>
+                    <value>5m</value>
+                    <description>The time during which the number of busy threads can exceed the threshold. Can be used with {#JMXNAME} as context.</description>
+                </macro>
+                <macro>
+                    <macro>{$TOMCAT.USER}</macro>
+                    <description>User for JMX</description>
+                </macro>
+            </macros>
+        </template>
+        <template>
+            <uuid>d72d302685a14068afac4bccce4bf621</uuid>
+            <template>Template-Training_App_Generic_Java_JMX</template>
+            <name>Template-Training_App_Generic_Java_JMX</name>
+            <description>Template tooling version used: 0.38</description>
+            <groups>
+                <group>
+                    <name>Templates/Training</name>
+                </group>
+            </groups>
+            <items>
+                <item>
+                    <uuid>c827ac83e1a04554a93f01f346ab8d53</uuid>
+                    <name>ClassLoading: Loaded class count</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=ClassLoading&quot;,&quot;LoadedClassCount&quot;]</key>
+                    <history>7d</history>
+                    <description>Displays number of classes that are currently loaded in the Java virtual machine.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>86f3289ef40e4d0fa6365c9b72f5184c</uuid>
+                    <name>ClassLoading: Total loaded class count</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=ClassLoading&quot;,&quot;TotalLoadedClassCount&quot;]</key>
+                    <history>7d</history>
+                    <description>Displays the total number of classes that have been loaded since the Java virtual machine has started execution.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>ccc7a2f74f33427a9b4f52303f648d67</uuid>
+                    <name>ClassLoading: Unloaded class count</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=ClassLoading&quot;,&quot;UnloadedClassCount&quot;]</key>
+                    <history>7d</history>
+                    <description>Displays the total number of classes that have been loaded since the Java virtual machine has started execution.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>17076522abc442b1819bbc4937dccc22</uuid>
+                    <name>Compilation: Name of the current JIT compiler</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Compilation&quot;,&quot;Name&quot;]</key>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <description>Displays the total number of classes unloaded since the Java virtual machine has started execution.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>30m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>a97187f652024664b01b759ed6317f75</uuid>
+                            <expression>find(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=Compilation&quot;,&quot;Name&quot;],,&quot;like&quot;,&quot;Client&quot;)=1</expression>
+                            <name>Compilation: {HOST.NAME} uses suboptimal JIT compiler</name>
+                            <priority>INFO</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>2cd7d924953f465b873b3bed08c586ad</uuid>
+                    <name>Compilation: Accumulated time spent</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Compilation&quot;,&quot;TotalCompilationTime&quot;]</key>
+                    <history>7d</history>
+                    <value_type>FLOAT</value_type>
+                    <units>s</units>
+                    <description>Displays the approximate accumulated elapsed time spent in compilation, in seconds.</description>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <parameters>
+                                <parameter>0.001</parameter>
+                            </parameters>
+                        </step>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>9c31266eee9c44a984604cab0db12403</uuid>
+                    <name>GarbageCollector: Copy number of collections per second</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=GarbageCollector,name=Copy&quot;,&quot;CollectionCount&quot;]</key>
+                    <history>7d</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Displays the total number of collections that have occurred per second.</description>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <parameters>
+                                <parameter/>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>5894303e2f6b4f67b40f8cb10e9b4f9e</uuid>
+                    <name>GarbageCollector: Copy accumulated time spent in collection</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=GarbageCollector,name=Copy&quot;,&quot;CollectionTime&quot;]</key>
+                    <history>7d</history>
+                    <value_type>FLOAT</value_type>
+                    <units>s</units>
+                    <description>Displays the approximate accumulated collection elapsed time, in seconds.</description>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <parameters>
+                                <parameter>0.001</parameter>
+                            </parameters>
+                        </step>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>cd3a34acf77748559ac1d277d18528b3</uuid>
+                    <name>GarbageCollector: MarkSweepCompact number of collections per second</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=GarbageCollector,name=MarkSweepCompact&quot;,&quot;CollectionCount&quot;]</key>
+                    <history>7d</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Displays the total number of collections that have occurred per second.</description>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <parameters>
+                                <parameter/>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>ed4f51c2662440e49766dfeeb151ef2c</uuid>
+                    <name>GarbageCollector: MarkSweepCompact accumulated time spent in collection</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=GarbageCollector,name=MarkSweepCompact&quot;,&quot;CollectionTime&quot;]</key>
+                    <history>7d</history>
+                    <value_type>FLOAT</value_type>
+                    <units>s</units>
+                    <description>Displays the approximate accumulated collection elapsed time, in seconds.</description>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <parameters>
+                                <parameter>0.001</parameter>
+                            </parameters>
+                        </step>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>5ca948591fcc4bfda4f42f077a8725e9</uuid>
+                    <name>Memory: Heap memory committed</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Memory&quot;,&quot;HeapMemoryUsage.committed&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Current heap memory allocated. This amount of memory is guaranteed for the Java virtual machine to use.</description>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>5e0da0cd5bfb40b8bbff64eb35b0dae4</uuid>
+                    <name>Memory: Heap memory maximum size</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Memory&quot;,&quot;HeapMemoryUsage.max&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Maximum amount of heap that can be used for memory management. This amount of memory is not guaranteed to be available if it is greater than the amount of committed memory. The Java virtual machine may fail to allocate memory even if the amount of used memory does not exceed this maximum size.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>05175be2bf0f46318fc928e52ad81c44</uuid>
+                    <name>Memory: Heap memory used</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Memory&quot;,&quot;HeapMemoryUsage.used&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Current memory usage outside the heap.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>4bf1ceb8b2804e3c8d8f96cb281aa6a8</uuid>
+                    <name>Memory: Non-Heap memory committed</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Memory&quot;,&quot;NonHeapMemoryUsage.committed&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Current memory allocated outside the heap. This amount of memory is guaranteed for the Java virtual machine to use.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>d1fcaa7c7094437296fc6a549487b55d</uuid>
+                    <name>Memory: Non-Heap memory used</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Memory&quot;,&quot;NonHeapMemoryUsage.used&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Current memory usage outside the heap</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>7acd3f0faffc48b08fec8920d013cf3a</uuid>
+                    <name>Memory: Object pending finalization count</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Memory&quot;,&quot;ObjectPendingFinalizationCount&quot;]</key>
+                    <history>7d</history>
+                    <description>The approximate number of objects for which finalization is pending.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>65581f6d7bca49e9bc8705e010270e6e</uuid>
+                    <name>MemoryPool: Code Cache committed</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=MemoryPool,name=Code Cache&quot;,&quot;Usage.committed&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Current memory allocated</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>a35336b573da41f8a538d8655689e928</uuid>
+                    <name>MemoryPool: CodeCache maximum size</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=MemoryPool,name=Code Cache&quot;,&quot;Usage.max&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Maximum amount of memory that can be used for memory management. This amount of memory is not guaranteed to be available if it is greater than the amount of committed memory. The Java virtual machine may fail to allocate memory even if the amount of used memory does not exceed this maximum size.</description>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>348460618adc4cba86ab677f8bc031e6</uuid>
+                    <name>MemoryPool: Code Cache used</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=MemoryPool,name=Code Cache&quot;,&quot;Usage.used&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Current memory usage</description>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>b3d1f4c5391f418db69484187bdff765</uuid>
+                    <name>MemoryPool: Tenured Gen committed</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=MemoryPool,name=Tenured Gen&quot;,&quot;Usage.committed&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Current memory allocated</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>48de10a77f1d4b7db11c2ce12fd77313</uuid>
+                    <name>MemoryPool: Tenured Gen maximum size</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=MemoryPool,name=Tenured Gen&quot;,&quot;Usage.max&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Maximum amount of memory that can be used for memory management. This amount of memory is not guaranteed to be available if it is greater than the amount of committed memory. The Java virtual machine may fail to allocate memory even if the amount of used memory does not exceed this maximum size.</description>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>b03fa3bdbf9c4cc797599c93336e2008</uuid>
+                    <name>MemoryPool: Tenured Gen used</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=MemoryPool,name=Tenured Gen&quot;,&quot;Usage.used&quot;]</key>
+                    <history>7d</history>
+                    <units>B</units>
+                    <description>Current memory usage</description>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>bf133a201c204c508b5a98aa80ad5944</uuid>
+                    <name>OperatingSystem: File descriptors maximum count</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=OperatingSystem&quot;,&quot;MaxFileDescriptorCount&quot;]</key>
+                    <history>7d</history>
+                    <description>This is the number of file descriptors we can have opened in the same process, as determined by the operating system. You can never have more file descriptors than this number.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>6b7e033a4a9047fe8b4f68d4a40224ec</uuid>
+                    <name>OperatingSystem: File descriptors opened</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=OperatingSystem&quot;,&quot;OpenFileDescriptorCount&quot;]</key>
+                    <history>7d</history>
+                    <description>This is the number of opened file descriptors at the moment, if this reaches the MaxFileDescriptorCount, the application will throw an IOException: Too many open files. This could mean you’re are opening file descriptors and never closing them.</description>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>67464e6974ce4efeb6991015886f2894</uuid>
+                    <name>OperatingSystem: Process CPU Load</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=OperatingSystem&quot;,&quot;ProcessCpuLoad&quot;]</key>
+                    <history>7d</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>ProcessCpuLoad represents the CPU load in this process.</description>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <parameters>
+                                <parameter>100</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>b7ffbcde226d478e9926983cef311968</uuid>
+                            <expression>min(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=OperatingSystem&quot;,&quot;ProcessCpuLoad&quot;],{$JMX.CPU.LOAD.TIME})&gt;{$JMX.CPU.LOAD.MAX}</expression>
+                            <name>OperatingSystem: Process CPU Load more than {$JMX.CPU.LOAD.MAX}% for {$JMX.CPU.LOAD.TIME}</name>
+                            <priority>AVERAGE</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>c288f170cdeb406f9d33df13ad767d5c</uuid>
+                    <name>Runtime: JVM uptime</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Runtime&quot;,&quot;Uptime&quot;]</key>
+                    <history>7d</history>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <parameters>
+                                <parameter>0.001</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>374fd4a4f8714d319b4d0a56f87a0603</uuid>
+                            <expression>nodata(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=Runtime&quot;,&quot;Uptime&quot;],5m)=1</expression>
+                            <name>Runtime: JVM is not reachable</name>
+                            <priority>AVERAGE</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>e294ae0f9fca42c9a22203ff6fa112c4</uuid>
+                    <name>Runtime: JVM name</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Runtime&quot;,&quot;VmName&quot;]</key>
+                    <delay>1h</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>30m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>743fde04af694af0b012e8f651d7894a</uuid>
+                            <expression>find(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=Runtime&quot;,&quot;VmName&quot;],,&quot;like&quot;,&quot;Server&quot;)&lt;&gt;1</expression>
+                            <name>Runtime: {HOST.NAME} runs suboptimal VM type</name>
+                            <priority>INFO</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>af49c614010c413e8c0a04271af7a566</uuid>
+                    <name>Runtime: JVM version</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Runtime&quot;,&quot;VmVersion&quot;]</key>
+                    <delay>1h</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>30m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>83a6828136c144debe3a1434744f2a56</uuid>
+                    <name>Threading: Daemon thread count</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Threading&quot;,&quot;DaemonThreadCount&quot;]</key>
+                    <history>7d</history>
+                    <description>Number of daemon threads running.</description>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>10m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>ab4c7fe3328246cea8d3e45c90d0acba</uuid>
+                    <name>Threading: Peak thread count</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Threading&quot;,&quot;PeakThreadCount&quot;]</key>
+                    <history>7d</history>
+                    <description>Maximum number of threads being executed at the same time since the JVM was started or the peak was reset.</description>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>433d2fb53c1a407e84c89818fc125f5e</uuid>
+                    <name>Threading: Thread count</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Threading&quot;,&quot;ThreadCount&quot;]</key>
+                    <history>7d</history>
+                    <description>The number of threads running at the current moment.</description>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>c04dcaf684e4407f9a3e70aea8f61103</uuid>
+                    <name>Threading: Total started thread count</name>
+                    <type>JMX</type>
+                    <key>jmx[&quot;java.lang:type=Threading&quot;,&quot;TotalStartedThreadCount&quot;]</key>
+                    <history>7d</history>
+                    <description>The number of threads started since the JVM was launched.</description>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>JMX</value>
+                        </tag>
+                    </tags>
+                </item>
+            </items>
+            <tags>
+                <tag>
+                    <tag>Template</tag>
+                    <value>Training</value>
+                </tag>
+            </tags>
+            <macros>
+                <macro>
+                    <macro>{$JMX.CPU.LOAD.MAX}</macro>
+                    <value>85</value>
+                    <description>A threshold in percent for CPU utilization trigger.</description>
+                </macro>
+                <macro>
+                    <macro>{$JMX.CPU.LOAD.TIME}</macro>
+                    <value>5m</value>
+                    <description>The time during which the CPU utilization may exceed the threshold.</description>
+                </macro>
+                <macro>
+                    <macro>{$JMX.FILE.DESCRIPTORS.MAX}</macro>
+                    <value>85</value>
+                    <description>A threshold in percent for file descriptors count trigger.</description>
+                </macro>
+                <macro>
+                    <macro>{$JMX.FILE.DESCRIPTORS.TIME}</macro>
+                    <value>3m</value>
+                    <description>The time during which the file descriptors count may exceed the threshold.</description>
+                </macro>
+                <macro>
+                    <macro>{$JMX.HEAP.MEM.USAGE.MAX}</macro>
+                    <value>85</value>
+                    <description>A threshold in percent for Heap memory utilization trigger.</description>
+                </macro>
+                <macro>
+                    <macro>{$JMX.HEAP.MEM.USAGE.TIME}</macro>
+                    <value>10m</value>
+                    <description>The time during which the Heap memory utilization may exceed the threshold.</description>
+                </macro>
+                <macro>
+                    <macro>{$JMX.MP.USAGE.MAX}</macro>
+                    <value>85</value>
+                    <description>A threshold in percent for memory pools utilization trigger. Use a context to change the threshold for a specific pool.</description>
+                </macro>
+                <macro>
+                    <macro>{$JMX.MP.USAGE.TIME}</macro>
+                    <value>10m</value>
+                    <description>The time during which the memory pools utilization may exceed the threshold.</description>
+                </macro>
+                <macro>
+                    <macro>{$JMX.NONHEAP.MEM.USAGE.MAX}</macro>
+                    <value>85</value>
+                    <description>A threshold in percent for Non-heap memory utilization trigger.</description>
+                </macro>
+                <macro>
+                    <macro>{$JMX.NONHEAP.MEM.USAGE.TIME}</macro>
+                    <value>10m</value>
+                    <description>The time during which the Non-heap memory utilization may exceed the threshold.</description>
+                </macro>
+            </macros>
+        </template>
+        <template>
+            <uuid>524f1214f9304e83b7425f789868c3d9</uuid>
+            <template>Template-Training_Examples-Items</template>
+            <name>Template-Training_Examples-Items</name>
+            <groups>
+                <group>
+                    <name>Templates/Training</name>
+                </group>
+            </groups>
+            <items>
+                <item>
+                    <uuid>95c85fec7ac240b798b6b74a629db7be</uuid>
+                    <name>Date - command over Zabbix server</name>
+                    <type>EXTERNAL</type>
+                    <key>date.sh</key>
+                    <delay>30</delay>
+                    <history>1d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>151fcab641ab46deb3f40373a5dc24f4</uuid>
+                    <name>Zabbix DB size</name>
+                    <type>ODBC</type>
+                    <key>db.odbc.select[zabbix.dbsize,zabbix]</key>
+                    <units>B</units>
+                    <params>select SUM(data_length) from information_schema.tables where table_schema = 'zabbix'</params>
+                    <username>zbx_probe</username>
+                    <password>{$ZBX_PROBE_MYSQL_PASS}</password>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>e4aff9fb2294411da7f35a7460ccf71f</uuid>
+                    <name>Ping to the server (ICMP loss)</name>
+                    <type>SIMPLE</type>
+                    <key>icmppingloss[,5,1000,99,3000]</key>
+                    <delay>30</delay>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>c8e4d137922d42d38d8390bab42dad95</uuid>
+                    <name>Java VM uptime</name>
+                    <type>JMX</type>
+                    <key>jmx[java.lang:type=Runtime,Uptime]</key>
+                    <delay>30</delay>
+                    <value_type>FLOAT</value_type>
+                    <units>s</units>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <parameters>
+                                <parameter>0.001</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <jmx_endpoint>service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi</jmx_endpoint>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>ea1b1ff0b2ec4b51b797a93fbba14593</uuid>
+                    <name>Zabbix Server - log</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>log[/var/log/zabbix/zabbix_server.log,,,5,skip]</key>
+                    <delay>30</delay>
+                    <history>1d</history>
+                    <trends>0</trends>
+                    <value_type>LOG</value_type>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>ce7a3abfce144222b866c436ac6a3367</uuid>
+                    <name>Ping to the server (TCP)</name>
+                    <type>SIMPLE</type>
+                    <key>net.tcp.service[tcp,,10050]</key>
+                    <delay>60</delay>
+                    <valuemap>
+                        <name>Service state</name>
+                    </valuemap>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>d450ecd6cdbb4b2ca7f985dd4414d597</uuid>
+                    <name>Date - command over SSH</name>
+                    <type>SSH</type>
+                    <key>ssh.run[ssh.date]</key>
+                    <delay>60</delay>
+                    <history>1d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <params>/bin/date</params>
+                    <username>zbx_probe</username>
+                    <password>{$SSH_USER_PASS}</password>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>d526e2eaddba46318984168289cee68e</uuid>
+                    <name>CPU load</name>
+                    <key>system.cpu.load[,avg15]</key>
+                    <delay>30</delay>
+                    <value_type>FLOAT</value_type>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>b25b898762e94afc876eae7a129f06c9</uuid>
+                    <name>CPU util</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>system.cpu.util[,,avg15]</key>
+                    <delay>30</delay>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>08c4e77bc7e946aa8f9db8f8ca817416</uuid>
+                    <name>VMware version</name>
+                    <type>SIMPLE</type>
+                    <key>vmware.version[https://10.2.0.23/sdk]</key>
+                    <history>1d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <username>zbx_probe</username>
+                    <password>ZBXlab00</password>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>3ac9684c05e64b3faf4cf19d3736abc9</uuid>
+                    <name>Zabbix agent availability</name>
+                    <type>INTERNAL</type>
+                    <key>zabbix[host,agent,available]</key>
+                    <history>1d</history>
+                    <valuemap>
+                        <name>Host availability status</name>
+                    </valuemap>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>9b2dbee43ce847b689938c266413d08d</uuid>
+                    <name>Zabbix Server - count of unsupported items</name>
+                    <type>INTERNAL</type>
+                    <key>zabbix[items_unsupported]</key>
+                    <delay>30</delay>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>84afa78b78584c17b9e6f7450d61e0ed</uuid>
+                    <name>Date - minute</name>
+                    <key>zbx.cmd.date[M]</key>
+                    <delay>30</delay>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>71d4b31987d342be99aa7ad6c66db611</uuid>
+                            <expression>last(/Template-Training_Examples-Items/zbx.cmd.date[M])&gt;45 and last(/Template-Training_Examples-Items/zbx.cmd.date[M])&lt;50</expression>
+                            <name>Minute is &gt;45 and &lt;50</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>7a8f92c7e42644acaaff7516efcb1407</uuid>
+                    <name>Random number</name>
+                    <key>zbx.cmd.random</key>
+                    <delay>30</delay>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>a7bd820f63544305b99e190d6bcfba30</uuid>
+                    <name>Date - sent by zabbix_sender utility</name>
+                    <type>TRAP</type>
+                    <key>zbx.date.trapper</key>
+                    <delay>0</delay>
+                    <history>1d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>d83abb761a8b4b7b95785ba3ad59186e</uuid>
+                    <name>Get page www.datascript.cz</name>
+                    <type>HTTP_AGENT</type>
+                    <key>zbx.http</key>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <url>https://www.datascript.cz/</url>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+            </items>
+            <tags>
+                <tag>
+                    <tag>Template</tag>
+                    <value>Training</value>
+                </tag>
+            </tags>
+            <macros>
+                <macro>
+                    <macro>{$SSH_USER_PASS}</macro>
+                    <type>SECRET_TEXT</type>
+                    <description>User pass zbx_probe (cat /root/zbx_probe.pw)</description>
+                </macro>
+                <macro>
+                    <macro>{$ZBX_PROBE_MYSQL_PASS}</macro>
+                    <type>SECRET_TEXT</type>
+                    <description>MySQL user pass zbx_probe (cat /root/mysql-zbx_probe.pw)</description>
+                </macro>
+            </macros>
+            <valuemaps>
+                <valuemap>
+                    <uuid>79486a95db7e4027b71acd316bd0e543</uuid>
+                    <name>Host availability status</name>
+                    <mappings>
+                        <mapping>
+                            <value>0</value>
+                            <newvalue>Down</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>Up</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>2</value>
+                            <newvalue>Unknown</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+                <valuemap>
+                    <uuid>695b854c812d4949a3e04287e18b3ee3</uuid>
+                    <name>Service state</name>
+                    <mappings>
+                        <mapping>
+                            <value>0</value>
+                            <newvalue>Down</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>Up</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+            </valuemaps>
+        </template>
+        <template>
+            <uuid>260b97b1372f40a395fec8f5ae29a477</uuid>
+            <template>Template-Training_Examples-Windows</template>
+            <name>Template-Training_Examples-Windows</name>
+            <groups>
+                <group>
+                    <name>Templates/Training</name>
+                </group>
+            </groups>
+            <items>
+                <item>
+                    <uuid>86597cae7e6e4a80a69236993031e860</uuid>
+                    <name>ICMP loss</name>
+                    <type>SIMPLE</type>
+                    <key>icmppingloss[,5,1000,99,3000]</key>
+                    <delay>300</delay>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>6ec0cbd10b6c42dc99c35e0ccb1e8780</uuid>
+                    <name>WindowsPerformanceCounter - $1</name>
+                    <key>perf_counter[\Memory\Pages Output/sec]</key>
+                    <delay>300</delay>
+                    <history>1d</history>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>5d45b9234d0f4add9fc6058d7ccbaf55</uuid>
+                    <name>WindowsPerformanceCounter - $1</name>
+                    <key>perf_counter[\PhysicalDisk(_Total)\Avg. Disk Read Queue Length]</key>
+                    <delay>300</delay>
+                    <history>1d</history>
+                    <value_type>FLOAT</value_type>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>20f771babcc545c781c5e7ed82ba7f12</uuid>
+                    <name>Services not running</name>
+                    <key>services[automatic,stopped,&quot;exceptions&quot;]</key>
+                    <delay>300</delay>
+                    <history>1d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>4f58711c73474baaaf926a61c3c7836a</uuid>
+                    <name>Service state - $1</name>
+                    <key>service_state[Zabbix Agent]</key>
+                    <delay>300</delay>
+                    <valuemap>
+                        <name>Windows service state</name>
+                    </valuemap>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>331b6f24b3014500b4c36c3cae4527d7</uuid>
+                    <name>CPU load</name>
+                    <key>system.cpu.load[,avg15]</key>
+                    <delay>300</delay>
+                    <value_type>FLOAT</value_type>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>af19839a45694e44949e457e4626900a</uuid>
+                    <name>CPU util</name>
+                    <key>system.cpu.util[,,avg15]</key>
+                    <delay>300</delay>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Examples of item types</value>
+                        </tag>
+                    </tags>
+                </item>
+            </items>
+            <tags>
+                <tag>
+                    <tag>Template</tag>
+                    <value>Training</value>
+                </tag>
+            </tags>
+            <valuemaps>
+                <valuemap>
+                    <uuid>bd400b633fce42f48fca552c1583de2f</uuid>
+                    <name>Windows service state</name>
+                    <mappings>
+                        <mapping>
+                            <value>0</value>
+                            <newvalue>Running</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>Paused</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>2</value>
+                            <newvalue>Start pending</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>3</value>
+                            <newvalue>Pause pending</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>4</value>
+                            <newvalue>Continue pending</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>5</value>
+                            <newvalue>Stop pending</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>6</value>
+                            <newvalue>Stopped</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>7</value>
+                            <newvalue>Unknown</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>255</value>
+                            <newvalue>No such service</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+            </valuemaps>
+        </template>
+        <template>
+            <uuid>a2030c9672f1463ebcb4e9c33e1d6489</uuid>
+            <template>Template-Training_MySQL_Service_Active</template>
+            <name>Template-Training_MySQL_Service_Active</name>
+            <groups>
+                <group>
+                    <name>Templates/Training</name>
+                </group>
+            </groups>
+            <discovery_rules>
+                <discovery_rule>
+                    <uuid>c7d28b1960054770917fd1b38484e117</uuid>
+                    <name>MySQL instance discovery</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>mysql.discovery</key>
+                    <delay>60</delay>
+                    <lifetime>1d</lifetime>
+                    <description>auto discovery mysql instance port</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>7770c5f2be57422394b543ede1eeef3f</uuid>
+                            <name>MySQL status</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.ping[{#MYSQLHOST},{#MYSQLPORT}]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <valuemap>
+                                <name>Service state</name>
+                            </valuemap>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <uuid>83e93108b7b5493c8d998a724d567d2a</uuid>
+                                    <expression>last(/Template-Training_MySQL_Service_Active/mysql.ping[{#MYSQLHOST},{#MYSQLPORT}])=0</expression>
+                                    <name>MySQL is down</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>91022351a2a444959a3e719b0302aa89</uuid>
+                            <name>MySQL bytes received per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Bytes_received]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>Bps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>db6a7ee587b0462a94f4ca61060bda69</uuid>
+                            <name>MySQL bytes sent per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Bytes_sent]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>Bps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>62cc49284bbd4ced9272b6fa8e989689</uuid>
+                            <name>MySQL begin operations per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_begin]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>qps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>16439d8dc2574df2b8746b155bc47d4c</uuid>
+                            <name>MySQL commit operations per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_commit]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>qps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>a8e358836d1249cc9fe26c80ae92432d</uuid>
+                            <name>MySQL delete operations per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_delete]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>qps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>3f01d85a21994c6fbbe45f02aede9210</uuid>
+                            <name>MySQL insert operations per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_insert]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>qps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>77c46538172f4f8d8a8f0db36eca4686</uuid>
+                            <name>MySQL rollback operations per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_rollback]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>qps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>af816ded27cd4727acbaf180fa592708</uuid>
+                            <name>MySQL select operations per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_select]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>qps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>a141f278aa0441e38aac2c4778693324</uuid>
+                            <name>MySQL update operations per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_update]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>qps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>9e56ee426ee94fa5a1b2d2398d75e7b4</uuid>
+                            <name>MySQL max used connections</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Max_used_connections]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>0e798afa2a76416880d2a3b7354e650e</uuid>
+                            <name>MySQL QPS</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Questions]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>qps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>84514dc6f9e84881a4417b5c7c2fc3c4</uuid>
+                            <name>MySQL slow queries</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Slow_queries]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>a8a5124f0e2b4907897281fb62046361</uuid>
+                            <name>MySQL threads connected</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Threads_connected]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>01be5bddcbdb466cbb57704557488f93</uuid>
+                            <name>MySQL TPS</name>
+                            <type>CALCULATED</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},tps]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <value_type>FLOAT</value_type>
+                            <units>tps</units>
+                            <params>last(//mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_commit])+last(//mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_rollback])</params>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>4f3db13f222b4ce8a983aa6a13075414</uuid>
+                            <name>MySQL uptime</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Uptime]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <units>uptime</units>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>9a2f4ad23c874246a709c9db9d8a4c4f</uuid>
+                            <name>MySQL version</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.version[{#MYSQLHOST},{#MYSQLPORT}]</key>
+                            <delay>3600</delay>
+                            <history>7d</history>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <uuid>78feb9022b974e2ea7062cf821797d98</uuid>
+                            <name>MySQL bandwidth {#MYSQLHOST}:{#MYSQLPORT}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>00AA00</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Bytes_received]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>3333FF</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Bytes_sent]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <uuid>8f8cb99d85514e2ab6629f774fd5acb2</uuid>
+                            <name>MySQL connection {#MYSQLHOST}:{#MYSQLPORT}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>00C800</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Threads_connected]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>C80000</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Max_used_connections]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <uuid>331028c6b12945c9869c7e6e98a37e3a</uuid>
+                            <name>MySQL operations {#MYSQLHOST}:{#MYSQLPORT}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>C8C800</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_begin]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>006400</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_commit]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>2</sortorder>
+                                    <color>C80000</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_delete]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>3</sortorder>
+                                    <color>0000EE</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_insert]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>4</sortorder>
+                                    <color>640000</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_rollback]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>5</sortorder>
+                                    <color>00C800</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_select]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>6</sortorder>
+                                    <color>C800C8</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_update]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <uuid>d47e015cce7c455b8df0b6fa596061ae</uuid>
+                            <name>MySQL QPS / TPS {#MYSQLHOST}:{#MYSQLPORT}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>00C800</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},Questions]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>C80000</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Active</host>
+                                        <key>mysql.status[{#MYSQLHOST},{#MYSQLPORT},tps]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <tags>
+                <tag>
+                    <tag>Template</tag>
+                    <value>Training</value>
+                </tag>
+            </tags>
+            <valuemaps>
+                <valuemap>
+                    <uuid>8161a379377347cfbf41026b4ab545c7</uuid>
+                    <name>Service state</name>
+                    <mappings>
+                        <mapping>
+                            <value>0</value>
+                            <newvalue>Down</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>Up</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+            </valuemaps>
+        </template>
+        <template>
+            <uuid>291b1cd93d9947bb889e78f705147216</uuid>
+            <template>Template-Training_MySQL_Service_Slave</template>
+            <name>Template-Training_MySQL_Service_Slave</name>
+            <groups>
+                <group>
+                    <name>Templates/Training</name>
+                </group>
+            </groups>
+            <discovery_rules>
+                <discovery_rule>
+                    <uuid>6a5a6e2ecc0d4d349583801524b5c240</uuid>
+                    <name>MySQL slave instance discovery</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>mysql.slave.discovery</key>
+                    <delay>3600</delay>
+                    <lifetime>7d</lifetime>
+                    <description>auto discovery mysql slave instance port</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>5ddd28d3615449a6b94aff730bdf7311</uuid>
+                            <name>MySQL slave seconds behind master</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.slave.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Seconds_Behind_Master]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>3650d</trends>
+                            <units>second</units>
+                            <description>The number of seconds that the slave SQL thread is behind processing the master binary log.</description>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL slave</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>d1b4ab0827264b0cacb8fbc2841cfd57</uuid>
+                            <name>MySQL slave I/O thread</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.slave.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Slave_IO_Running]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL slave</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>9826907147014566afd9166b8254b08a</uuid>
+                            <name>MySQL slave SQL thread</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.slave.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Slave_SQL_Running]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL slave</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>a1e8e029616c4d19b5ae81c2e28fa5b2</uuid>
+                            <name>MySQL slave status</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>mysql.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Slave_running]</key>
+                            <delay>60</delay>
+                            <history>7d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>MySQL slave</value>
+                                </tag>
+                            </tags>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <uuid>da79fb4495654e8dbaf2b246b6e2e695</uuid>
+                                    <expression>length(last(/Template-Training_MySQL_Service_Slave/mysql.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Slave_running]))&lt;&gt;2</expression>
+                                    <name>MySQL Slave is down</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <uuid>b7d4e160f4e149ef854682e5b2eddf88</uuid>
+                            <name>MySQL slave behind master {#MYSQLSLAVEHOST}:{#MYSQLSLAVEPORT}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>00C800</color>
+                                    <item>
+                                        <host>Template-Training_MySQL_Service_Slave</host>
+                                        <key>mysql.slave.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Seconds_Behind_Master]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <tags>
+                <tag>
+                    <tag>Template</tag>
+                    <value>Training</value>
+                </tag>
+            </tags>
+            <macros>
+                <macro>
+                    <macro>{$MYSQL_HOST}</macro>
+                    <value>127.0.0.1</value>
+                </macro>
+            </macros>
+        </template>
+        <template>
+            <uuid>23becc8f08ec4c44b16a4ccb9ddc911e</uuid>
+            <template>Template-Training_SNMPv2c-Base</template>
+            <name>Template-Training_SNMPv2c-Base</name>
+            <groups>
+                <group>
+                    <name>Templates/Training</name>
+                </group>
+            </groups>
+            <items>
+                <item>
+                    <uuid>8318f153954b4a9896b1194e62f4d4f8</uuid>
+                    <name>Ping to the device (ICMP loss)</name>
+                    <type>SIMPLE</type>
+                    <key>icmppingloss[,5,1000,999,3000]</key>
+                    <delay>60</delay>
+                    <history>10d</history>
+                    <trends>1500d</trends>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>SNMP Base</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>de5457e2d0dc4ef282cf4f30a51b9c22</uuid>
+                            <expression>min(/Template-Training_SNMPv2c-Base/icmppingloss[,5,1000,999,3000],150s)=100</expression>
+                            <name>Zarizeni je nedostupne po siti</name>
+                            <priority>HIGH</priority>
+                            <description>Zarizeni neodpovida na ICMP ping. Overte sitovou dostupnost zarizeni.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>21e180ef5ec54f26a40aa455185eadfb</uuid>
+                    <name>System_Descr</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.2.1.1.1.0</snmp_oid>
+                    <key>system.descr</key>
+                    <delay>14400</delay>
+                    <history>10d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>SNMP Base</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>7f07745cbbf14d70bb0c28848776fc10</uuid>
+                    <name>System_Name</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.2.1.1.5.0</snmp_oid>
+                    <key>system.name</key>
+                    <delay>14400</delay>
+                    <history>10d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>SNMP Base</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>5aa77b01483843c08d2264e0f9ea26c7</uuid>
+                            <expression>(last(/Template-Training_SNMPv2c-Base/system.name,#1)&lt;&gt;last(/Template-Training_SNMPv2c-Base/system.name,#2))&gt;0</expression>
+                            <name>Jmeno zarizeni bylo zmeneno</name>
+                            <priority>INFO</priority>
+                            <description>Upozorneni na zmenu SNMP sysName zarizeni.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>668349be2298459abf990f826242cc1e</uuid>
+                    <name>System_Uptime</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.2.1.1.3.0</snmp_oid>
+                    <key>system.uptime</key>
+                    <delay>60</delay>
+                    <history>10d</history>
+                    <trends>0</trends>
+                    <units>s</units>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <parameters>
+                                <parameter>0.01</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>SNMP Base</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>363335d9641c4e3db6adab9d56837e1a</uuid>
+                            <expression>last(/Template-Training_SNMPv2c-Base/system.uptime)&lt;900 and last(/Template-Training_SNMPv2c-Base/system.uptime,#10)&lt;42948900</expression>
+                            <name>Zarizeni bylo restartovano</name>
+                            <priority>INFO</priority>
+                            <description>Uptime zarizeni indikuje jeho restart. 42948900</description>
+                        </trigger>
+                        <trigger>
+                            <uuid>e4b1458fd575455a94b89aa2a517dd9c</uuid>
+                            <expression>nodata(/Template-Training_SNMPv2c-Base/system.uptime,900s)=1</expression>
+                            <name>Zarizeni je nedostupne pro monitoring</name>
+                            <priority>AVERAGE</priority>
+                            <description>SNMP data ze zarizeni nejsou dostupna dele nez 15 minut.</description>
+                            <dependencies>
+                                <dependency>
+                                    <name>Zarizeni je nedostupne po siti</name>
+                                    <expression>min(/Template-Training_SNMPv2c-Base/icmppingloss[,5,1000,999,3000],150s)=100</expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+            <tags>
+                <tag>
+                    <tag>Template</tag>
+                    <value>Training</value>
+                </tag>
+            </tags>
+        </template>
+        <template>
+            <uuid>a4095dae2b1d4fdabd2da9db4ee42384</uuid>
+            <template>Template-Training_SNMPv2c-Interfaces</template>
+            <name>Template-Training_SNMPv2c-Interfaces</name>
+            <groups>
+                <group>
+                    <name>Templates/Training</name>
+                </group>
+            </groups>
+            <items>
+                <item>
+                    <uuid>58b779e78dd9499f807c368ac134fd0c</uuid>
+                    <name>Registered number of network interfaces</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.2.1.2.1.0</snmp_oid>
+                    <key>ifNumber</key>
+                    <delay>60</delay>
+                    <history>10d</history>
+                    <trends>0</trends>
+                    <description>The number of network interfaces (regardless of their current state) present on this system.</description>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Network Interfaces</value>
+                        </tag>
+                    </tags>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <uuid>07f88c7a192c44d398ac64c1bdb46932</uuid>
+                    <name>Network interfaces</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},IF-MIB::ifDescr]</snmp_oid>
+                    <key>ifDescr</key>
+                    <delay>60</delay>
+                    <filter>
+                        <conditions>
+                            <condition>
+                                <macro>{#SNMPVALUE}</macro>
+                                <value>^e</value>
+                                <formulaid>A</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <lifetime>1d</lifetime>
+                    <description>You may also consider using {#SNMPVALUE} macro to filter results.
+
+{$SNMP_COMMUNITY} is a global macro.</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>fe19cf6cc10c45408a0001ab0e968c55</uuid>
+                            <name>Admin status of $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ifAdminStatus.{#SNMPINDEX}</snmp_oid>
+                            <key>ifAdminStatus[{#SNMPVALUE}]</key>
+                            <delay>60;50/1-7,00:00-24:00</delay>
+                            <history>10d</history>
+                            <trends>0</trends>
+                            <status>DISABLED</status>
+                            <description>The desired state of the interface.</description>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Network Interfaces</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>4af92fdb8ed340c2af80c53447af862b</uuid>
+                            <name>Description of $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ifDescr.{#SNMPINDEX}</snmp_oid>
+                            <key>ifDescr[{#SNMPVALUE}]</key>
+                            <delay>3600;50/1-7,00:00-24:00</delay>
+                            <history>10d</history>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <description>A textual string containing information about the interface.  This string should include the name of the manufacturer, the product name and the version of the interface hardware/software.</description>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Network Interfaces</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>62df174a7a9344b6ba1e26148af36d6d</uuid>
+                            <name>Inbound errors on $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ifInErrors.{#SNMPINDEX}</snmp_oid>
+                            <key>ifInErrors[{#SNMPVALUE}]</key>
+                            <delay>60;50/1-7,00:00-24:00</delay>
+                            <history>10d</history>
+                            <trends>1500d</trends>
+                            <status>DISABLED</status>
+                            <description>For packet-oriented interfaces, the number of inbound packets that contained errors preventing them from being deliverable to a higher-layer protocol.  For character-oriented or fixed-length interfaces, the number of inbound transmission units that contained errors preventing them from being deliverable to a higher-layer protocol.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Network Interfaces</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>bb63138d90c6455badea8b939c76a8a3</uuid>
+                            <name>Incoming traffic on $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ifInOctets.{#SNMPINDEX}</snmp_oid>
+                            <key>ifInOctets[{#SNMPVALUE}]</key>
+                            <delay>60;50/1-7,00:00-24:00</delay>
+                            <history>10d</history>
+                            <trends>1500d</trends>
+                            <units>bps</units>
+                            <description>The number of octets in valid MAC frames received on this interface, including the MAC header and FCS.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <parameters>
+                                        <parameter>8</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Network Interfaces</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>3cc3200de1a74274812dbac49fc0ccd0</uuid>
+                            <name>Operational status of $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ifOperStatus.{#SNMPINDEX}</snmp_oid>
+                            <key>ifOperStatus[{#SNMPVALUE}]</key>
+                            <delay>60;50/1-7,00:00-24:00</delay>
+                            <history>10d</history>
+                            <trends>0</trends>
+                            <status>DISABLED</status>
+                            <description>The current operational state of the interface.</description>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Network Interfaces</value>
+                                </tag>
+                            </tags>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <uuid>68a3f85a3dd9469e8e21130b98e4871a</uuid>
+                                    <expression>(last(/Template-Training_SNMPv2c-Interfaces/ifOperStatus[{#SNMPVALUE}],#1)&lt;&gt;last(/Template-Training_SNMPv2c-Interfaces/ifOperStatus[{#SNMPVALUE}],#2))=1</expression>
+                                    <name>Operational status changed on interface {#SNMPVALUE}</name>
+                                    <priority>WARNING</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>60193ba4ffcc45e9ba8222176c6b6497</uuid>
+                            <name>Outbound discards on $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ifOutDiscards.{#SNMPINDEX}</snmp_oid>
+                            <key>ifOutDiscards[{#SNMPVALUE}]</key>
+                            <delay>60;50/1-7,00:00-24:00</delay>
+                            <history>10d</history>
+                            <trends>1500d</trends>
+                            <status>DISABLED</status>
+                            <description>The number of outbound packets which were chosen to be discarded even though no errors had been detected to prevent their being transmitted.  One possible reason for discarding such a packet could be to free up buffer space.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Network Interfaces</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>4e17488cc6c140e8b3fffcc903a29cc0</uuid>
+                            <name>Outbound errors on $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ifOutErrors.{#SNMPINDEX}</snmp_oid>
+                            <key>ifOutErrors[{#SNMPVALUE}]</key>
+                            <delay>60;50/1-7,00:00-24:00</delay>
+                            <history>10d</history>
+                            <trends>1500d</trends>
+                            <status>DISABLED</status>
+                            <description>For packet-oriented interfaces, the number of outbound packets that could not be transmitted because of errors. For character-oriented or fixed-length interfaces, the number of outbound transmission units that could not be transmitted because of errors.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Network Interfaces</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>917398e5e1e3407a8d94e95ab7b86d31</uuid>
+                            <name>Outgoing traffic on $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ifOutOctets.{#SNMPINDEX}</snmp_oid>
+                            <key>ifOutOctets[{#SNMPVALUE}]</key>
+                            <delay>60;50/1-7,00:00-24:00</delay>
+                            <history>10d</history>
+                            <trends>1500d</trends>
+                            <units>bps</units>
+                            <description>The number of octets transmitted in MAC frames on this interface, including the MAC header and FCS.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Network Interfaces</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>659e89a6846d47588394a6fe0853d993</uuid>
+                            <name>Type of interface $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>ifType.{#SNMPINDEX}</snmp_oid>
+                            <key>ifType[{#SNMPVALUE}]</key>
+                            <delay>3600;50/1-7,00:00-24:00</delay>
+                            <history>10d</history>
+                            <trends>0</trends>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Network Interfaces</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <uuid>2aaf191c8828492c8f879ffa2c88ac42</uuid>
+                            <name>Network traffic on {#SNMPVALUE}</name>
+                            <ymin_type_1>FIXED</ymin_type_1>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>00AA00</color>
+                                    <item>
+                                        <host>Template-Training_SNMPv2c-Interfaces</host>
+                                        <key>ifInOctets[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>3333FF</color>
+                                    <item>
+                                        <host>Template-Training_SNMPv2c-Interfaces</host>
+                                        <key>ifOutOctets[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <tags>
+                <tag>
+                    <tag>Template</tag>
+                    <value>Training</value>
+                </tag>
+            </tags>
+        </template>
+    </templates>
+    <triggers>
+        <trigger>
+            <uuid>1fccf7011a874bf4bd6a9e74dd58c0be</uuid>
+            <expression>last(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=GarbageCollector,name=MarkSweepCompact&quot;,&quot;CollectionCount&quot;])&gt;last(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=GarbageCollector,name=Copy&quot;,&quot;CollectionCount&quot;])</expression>
+            <name>GarbageCollector: Mark Sweep Compact in fire fighting mode</name>
+            <priority>AVERAGE</priority>
+        </trigger>
+        <trigger>
+            <uuid>44c91fd3be824196b94539d4ed291527</uuid>
+            <expression>min(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=Memory&quot;,&quot;HeapMemoryUsage.used&quot;],{$JMX.HEAP.MEM.USAGE.TIME})&gt;(last(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=Memory&quot;,&quot;HeapMemoryUsage.max&quot;])*{$JMX.HEAP.MEM.USAGE.MAX}/100)</expression>
+            <name>Memory: Heap memory usage more than {$JMX.HEAP.USAGE.MAX}% for {$JMX.HEAP.MEM.USAGE.TIME}</name>
+            <priority>WARNING</priority>
+        </trigger>
+        <trigger>
+            <uuid>093bd11161154146a2676095af87fe0e</uuid>
+            <expression>min(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=MemoryPool,name=Code Cache&quot;,&quot;Usage.used&quot;],{$JMX.MP.USAGE.TIME:&quot;Code Cache&quot;})&gt;(last(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=MemoryPool,name=Code Cache&quot;,&quot;Usage.max&quot;])*{$JMX.MP.USAGE.MAX:&quot;Code Cache&quot;}/100)</expression>
+            <name>MemoryPool: Code Cache memory usage more than {$JMX.MP.USAGE.MAX:&quot;Code Cache&quot;}% for {$JMX.MP.USAGE.TIME:&quot;Code Cache&quot;}</name>
+            <priority>WARNING</priority>
+        </trigger>
+        <trigger>
+            <uuid>73ac1fedaf0c4561b03f89bd1674c043</uuid>
+            <expression>min(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=MemoryPool,name=Tenured Gen&quot;,&quot;Usage.used&quot;],{$JMX.MP.USAGE.TIME:&quot;Tenured Gen&quot;})&gt;(last(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=MemoryPool,name=Tenured Gen&quot;,&quot;Usage.max&quot;])*{$JMX.MP.USAGE.MAX:&quot;Tenured Gen&quot;}/100)</expression>
+            <name>MemoryPool: Tenured Gen memory usage more than {$JMX.MP.USAGE.MAX:&quot;Tenured Gen&quot;}% for {$JMX.MP.USAGE.TIME:&quot;Tenured Gen&quot;}</name>
+            <priority>WARNING</priority>
+        </trigger>
+        <trigger>
+            <uuid>7c8d577d7159484bac32786c3be27a60</uuid>
+            <expression>min(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=OperatingSystem&quot;,&quot;OpenFileDescriptorCount&quot;],{$JMX.FILE.DESCRIPTORS.TIME})&gt;(last(/Template-Training_App_Generic_Java_JMX/jmx[&quot;java.lang:type=OperatingSystem&quot;,&quot;MaxFileDescriptorCount&quot;])*{$JMX.FILE.DESCRIPTORS.MAX}/100)</expression>
+            <name>OperatingSystem: Opened file descriptor count more than {$JMX.FILE.DESCRIPTORS.MAX}% of maximum</name>
+            <priority>WARNING</priority>
+        </trigger>
+    </triggers>
+    <graphs>
+        <graph>
+            <uuid>3d8e23faf6f94a1d800e9b76c1449ddb</uuid>
+            <name>ClassLoading: Class Loader</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=ClassLoading&quot;,&quot;TotalLoadedClassCount&quot;]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>2774A4</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=ClassLoading&quot;,&quot;UnloadedClassCount&quot;]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>F63100</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=ClassLoading&quot;,&quot;LoadedClassCount&quot;]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <uuid>8e058d284313498ea276b4096c351655</uuid>
+            <name>GarbageCollector: Garbage Collector collections per second</name>
+            <graph_items>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>2774A4</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=GarbageCollector,name=Copy&quot;,&quot;CollectionCount&quot;]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>3</sortorder>
+                    <color>A54F10</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=GarbageCollector,name=MarkSweepCompact&quot;,&quot;CollectionCount&quot;]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <uuid>4dcc4d9298594524bb54c8233e022896</uuid>
+            <name>MemoryPool: Memory Pool Code Cache</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=MemoryPool,name=Code Cache&quot;,&quot;Usage.max&quot;]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>2774A4</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=MemoryPool,name=Code Cache&quot;,&quot;Usage.committed&quot;]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>F63100</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=MemoryPool,name=Code Cache&quot;,&quot;Usage.used&quot;]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <uuid>07c3fd5ba25f4ba4a0940dee70341a48</uuid>
+            <name>MemoryPool: Memory Pool Tenured Gen</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=MemoryPool,name=Tenured Gen&quot;,&quot;Usage.max&quot;]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>2774A4</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=MemoryPool,name=Tenured Gen&quot;,&quot;Usage.committed&quot;]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>F63100</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=MemoryPool,name=Tenured Gen&quot;,&quot;Usage.used&quot;]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <uuid>1fa6cc0ac699456aa737955b74484dad</uuid>
+            <name>OperatingSystem: File Descriptors</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=OperatingSystem&quot;,&quot;MaxFileDescriptorCount&quot;]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>2774A4</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=OperatingSystem&quot;,&quot;OpenFileDescriptorCount&quot;]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <uuid>3a33ba6e4618429c9c3fbfaa70e610e5</uuid>
+            <name>Threading: Threads</name>
+            <graph_items>
+                <graph_item>
+                    <color>1A7C11</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=Threading&quot;,&quot;PeakThreadCount&quot;]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>2774A4</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=Threading&quot;,&quot;DaemonThreadCount&quot;]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>F63100</color>
+                    <item>
+                        <host>Template-Training_App_Generic_Java_JMX</host>
+                        <key>jmx[&quot;java.lang:type=Threading&quot;,&quot;ThreadCount&quot;]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+    </graphs>
+</zabbix_export>

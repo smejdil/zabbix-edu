@@ -17,7 +17,7 @@ MYSQL_ROOT_PASS=`cat /root/mysql-root.pw`
 # Set up root password
 echo "--- MaiaDB root pw ---"
 mysqladmin -u root password ${MYSQL_ROOT_PASS};
-
+ 
 echo "--- Zabbix DB user ---"
 openssl rand -base64 32 > /root/mysql-zabbix.pw
 ZABBIX_MYSQL_PASS=`cat /root/mysql-zabbix.pw`
@@ -105,12 +105,18 @@ echo "--- Zabbix Agent's ---"
 cp -v ./zabbix-edu/zabbix/zabbix_agentd.d/training.conf /etc/zabbix/zabbix_agentd.d/
 cp -v ./zabbix-edu/zabbix/zabbix_agentd.d/training.conf /etc/zabbix/zabbix_agent2.d/
 
+# Get MariaDB sources
+MARIADB_VER=`rpm -qa | grep mariadb-10 | awk 'BEGIN {FS="-"}{print $2}'`
+git clone -b ${MARIADB_VER} https://github.com/MariaDB/server.git
+
 # Make agent modules
 echo "--- Zabbix Agent's modules ---"
 mkdir -p /usr/lib/zabbix/modules
 
+cp -R /root/server/include/* /usr/local/include/
+
 cd ./zabbix-edu/zabbix/modules
-./make_modul_mysql.sh
+./make_modul_mysql.sh # :-( mysql_version.h ...
 
 cp -v /etc/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf-orig
 sed -i 's/# LoadModulePath=${libdir}\/modules/LoadModulePath=\/usr\/lib\/zabbix\/modules/g' /etc/zabbix/zabbix_agentd.conf
@@ -186,7 +192,7 @@ ansible-playbook /root/zabbix-edu/zabbix/ansible/add-template-training.yml
 # curl localhost:9100/metrics | grep -v '#'
 # http://zbx01.pfsense.cz:9100/metrics
 
-systemctl enable node_exporter.service
-systemctl start node_exporter.service
+systemctl enable prometheus-node-exporter.service
+systemctl start prometheus-node-exporter.service
 
 ### EOF
