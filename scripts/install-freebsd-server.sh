@@ -5,7 +5,7 @@
 # Lukas Maly <Iam@LukasMaly.NET> 14.2.2023
 #
 
-pkg install -y joe mc git
+pkg install -y bash joe mc git
 
 echo "BATCH=yes" > /etc/make.conf
 
@@ -13,6 +13,7 @@ portsnap fetch
 portsnap extract
 
 cd /usr/ports/devel/p5-JSON-RPC && make install clean
+cd /usr/ports/www/p5-LWP-Protocol-https && make install clean
 cd /usr/ports/devel/py-pip && make install clean
 cd /usr/ports/sysutils/ansible && make install clean
 
