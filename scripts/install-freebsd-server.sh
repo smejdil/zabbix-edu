@@ -2,7 +2,7 @@
 #
 # Install FreeBSD packages
 #
-# Lukas Maly <Iam@LukasMaly.NET> 9.11.2022
+# Lukas Maly <Iam@LukasMaly.NET> 14.2.2023
 #
 
 pkg install -y joe mc git
@@ -25,8 +25,8 @@ pkg install -y zabbix6-agent
 cd /root
 git clone https://github.com/smejdil/zabbix-api
 
-cd /usr/ports/lang/lua54 && make install clean
-cd /usr/ports/converters/lua-json && make install clean
-cd /usr/ports/net/luasocket && make install clean
+#cd /usr/ports/lang/lua54 && make install clean
+#cd /usr/ports/converters/lua-json && make install clean
+#cd /usr/ports/net/luasocket && make install clean
 
 # EOF
