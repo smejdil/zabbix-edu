@@ -110,6 +110,13 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | gr
 34.107.114.182 - http://fbsdsrv01.pfsense.cz
 ```
 
+- Post install upgrade
+
+```console
+portsnap fetch && portsnap update && pkg version -v | grep upd
+portupgrade -a
+```
+
 ## Windows server for EDU
 - Create VM Windows server 2019
 
