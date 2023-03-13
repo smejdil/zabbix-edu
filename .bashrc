@@ -180,5 +180,12 @@ bind-key m \
   display-message 'Mouse: OFF'
 EOF
 
+# Screen
+function exec_in_screen() {
+  name=$1
+  command=$2
+  screen -dmS $name sh; screen -S $name -X stuff "$command\n";
+}
+
 # EOF
 
