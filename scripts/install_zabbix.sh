@@ -2,7 +2,7 @@
 #
 # Zabbix install scpript
 #
-# Lukas Maly <Iam@LukasMaly.NET> 27.1.2023
+# Lukas Maly <Iam@LukasMaly.NET> 4.5.2023
 #
 
 ### MariaDB
@@ -62,8 +62,8 @@ diff -u /etc/php-fpm.d/zabbix.conf-orig /etc/php-fpm.d/zabbix.conf
 # Restart services
 echo "--- Restart and enable services ---"
 cp -v ./zabbix-edu/files/server-status.conf /etc/httpd/conf.d/
-systemctl restart zabbix-server zabbix-java-gateway zabbix-agent httpd php-fpm
-systemctl enable zabbix-server zabbix-java-gateway zabbix-agent httpd php-fpm
+systemctl restart zabbix-server zabbix-java-gateway zabbix-agent2 httpd php-fpm
+systemctl enable zabbix-server zabbix-java-gateway zabbix-agent2 httpd php-fpm
 
 # Copy frontend config file
 echo "--- Zabbix frontend config ---"
@@ -106,17 +106,17 @@ cp -v ./zabbix-edu/zabbix/zabbix_agentd.d/training.conf /etc/zabbix/zabbix_agent
 cp -v ./zabbix-edu/zabbix/zabbix_agentd.d/training.conf /etc/zabbix/zabbix_agent2.d/
 
 # Get MariaDB sources
-MARIADB_VER=`rpm -qa | grep mariadb-10 | awk 'BEGIN {FS="-"}{print $2}'`
-git clone -b ${MARIADB_VER} https://github.com/MariaDB/server.git
+#MARIADB_VER=`rpm -qa | grep mariadb-10 | awk 'BEGIN {FS="-"}{print $2}' | cut -d. -f1,2`
+#git clone -b ${MARIADB_VER} https://github.com/MariaDB/server.git
 
 # Make agent modules
-echo "--- Zabbix Agent's modules ---"
-mkdir -p /usr/lib/zabbix/modules
+#echo "--- Zabbix Agent's modules ---"
+#mkdir -p /usr/lib/zabbix/modules
 
-cp -R /root/server/include/* /usr/local/include/
+#cp -R /root/server/include/* /usr/local/include/
 
-cd ./zabbix-edu/zabbix/modules
-./make_modul_mysql.sh # :-( mysql_version.h ...
+#cd ./zabbix-edu/zabbix/modules
+#./make_modul_mysql.sh # :-( mysql_version.h ...
 
 cp -v /etc/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf-orig
 sed -i 's/# LoadModulePath=${libdir}\/modules/LoadModulePath=\/usr\/lib\/zabbix\/modules/g' /etc/zabbix/zabbix_agentd.conf
@@ -151,9 +151,9 @@ sed -i "s|^mysql_inst_password =|mysql_inst_password = ${MONITORING_MYSQL_PASS}|
 #zabbix_get -s 127.0.0.1 -I 127.0.0.1 -k mysql.discovery
 #{"data":[{"{#MYSQLHOST}":"127.0.0.1","{#MYSQLPORT}":"3306"}]}
 
-systemctl stop zabbix-agent2
-systemctl disable zabbix-agent2
-systemctl restart zabbix-agent.service
+systemctl stop zabbix-agent
+systemctl disable zabbix-agent
+systemctl restart zabbix-agent2.service
 
 ### API user nad Perl example
 echo "--- API ---"
