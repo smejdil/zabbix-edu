@@ -1,24 +1,31 @@
 - name: Using Zabbix collection
   hosts: localhost
-  collections:
-    - community.zabbix
   tasks:
+    - name: Set connection specific variables
+      set_fact:
+        ansible_network_os: community.zabbix.zabbix
+        ansible_connection: httpapi
+        ansible_httpapi_port: 80
+        ansible_httpapi_use_ssl: false
+        ansible_httpapi_validate_certs: false
+        ansible_zabbix_url_path: 'zabbix'  # If Zabbix WebUI runs on non-default (zabbix) path ,e.g. http://<FQDN>/zabbixeu
+        ansible_user: "{{ lookup('env','ZABBIX_USER') }}"
+        ansible_httpapi_pass: "{{ lookup('env','ZABBIX_PASSWORD') }}"
+
     - name: create a new zabbix user.
-      zabbix_user:
-        server_url: http://localhost/zabbix/
-        login_user: "{{ lookup('env','ZABBIX_USER') }}"
-        login_password: "{{ lookup('env','ZABBIX_PASSWORD') }}"
-        alias: zbx_probe
+      community.zabbix.zabbix_user:
+        username: zbx_probe
         name: Zabbix
         surname: Probe
         usrgrps:
           - Zabbix administrators
         passwd: "{{ lookup('env','ZBX_PROBE_PASS') }}"
         lang: en_GB
-        theme: dark-theme
+        theme: blue-theme
         autologin: no
         autologout: '0'
         refresh: '30'
-        rows_per_page: '50'
+        rows_per_page: '200'
         after_login_url: ''
         type: Zabbix super admin
+        state: present

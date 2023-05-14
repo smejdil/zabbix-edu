@@ -2,7 +2,7 @@
 #
 # Install package and extra repo
 #
-# Lukas Maly <Iam@LukasMaly.NET> 27.1.2023
+# Lukas Maly <Iam@LukasMaly.NET> 4.5.2023
 #
 
 # Post deploy commands
@@ -17,6 +17,7 @@ dnf -y install gcc pcre-devel make libtool autoconf automake dbus-devel
 dnf -y install mariadb-server 
 #dnf -y install mariadb-devel 
 dnf -y install mariadb-connector-odbc
+dnf -y install mariadb-connector-c-devel.x86_64
 dnf -y install postgresql-odbc
 dnf -y install libiodbc
 dnf -y install systemd-devel
