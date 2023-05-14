@@ -137,6 +137,7 @@ MONITORING_MYSQL_PASS=`cat /root/mysql-monitoring.pw`
 # Create user for modul
 
 mysql -u root -p${MYSQL_ROOT_PASS} -e "GRANT PROCESS, SUPER ON *.* TO monitoring@localhost IDENTIFIED BY '${MONITORING_MYSQL_PASS}';"
+mysql -u root -p${MYSQL_ROOT_PASS} -e "GRANT REPLICATION CLIENT,PROCESS,SHOW DATABASES,SHOW VIEW ON *.* TO 'monitoring'@'%' IDENTIFIED BY '${MONITORING_MYSQL_PASS}';"
 mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
 
 sed -i 's/^mysql_inst_ports =/mysql_inst_ports = 3306/g' /etc/zabbix/zbx_module_mysql.conf
