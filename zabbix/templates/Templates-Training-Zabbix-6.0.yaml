@@ -1,31 +1,11 @@
 zabbix_export:
   version: '6.0'
-  date: '2023-01-28T18:27:08Z'
+  date: '2023-05-18T14:48:19Z'
   groups:
     -
       uuid: 7045cb56d4334ebeabcf3ca9be64b9eb
       name: Templates/Training
   templates:
-    -
-      uuid: 23102dfda2ae43bdbecccee99643e113
-      template: Template-Training
-      name: Template-Training
-      groups:
-        -
-          name: Templates/Training
-      tags:
-        -
-          tag: Template
-          value: Training
-      macros:
-        -
-          macro: '{$SSH_USER_PASS}'
-          type: SECRET_TEXT
-          description: 'User pass zbx_probe (cat /root/zbx_probe.pw)'
-        -
-          macro: '{$ZBX_PROBE_MYSQL_PASS}'
-          type: SECRET_TEXT
-          description: 'MySQL user pass zbx_probe (cat /root/mysql-zbx_probe.pw)'
     -
       uuid: 5b826463ad67427fa556294381f6238e
       template: Template-Training_App_Apache_Tomcat_JMX
@@ -1331,12 +1311,12 @@ zabbix_export:
               value: 'Examples of item types'
         -
           uuid: d83abb761a8b4b7b95785ba3ad59186e
-          name: 'Get page www.datascript.cz'
+          name: 'Get page www.root.cz'
           type: HTTP_AGENT
           key: zbx.http
           trends: '0'
           value_type: CHAR
-          url: 'https://www.datascript.cz/'
+          url: 'https://www.root.cz/'
           tags:
             -
               tag: Application
@@ -1499,6 +1479,1818 @@ zabbix_export:
             -
               value: '255'
               newvalue: 'No such service'
+    -
+      uuid: 287661b5aca3463393c65199cb0e870b
+      template: Template-Training_MySQL_by_Zabbix_agent_2
+      name: Template-Training_MySQL_by_Zabbix_agent_2
+      description: |
+        Requirements for template operation:
+        1. Create MySQL user for monitoring. For example:
+        CREATE USER 'zbx_monitor'@'%' IDENTIFIED BY '<password>';
+        GRANT REPLICATION CLIENT,PROCESS,SHOW DATABASES,SHOW VIEW ON *.* TO 'zbx_monitor'@'%';
+        For more information please read the MySQL documentation https://dev.mysql.com/doc/refman/8.0/en/grant.html.
+        2. Set in the {$MYSQL.DSN} macro the data source name of the MySQL instance either session name from Zabbix agent 2 configuration file or URI.
+        Examples: MySQL1, tcp://localhost:3306, tcp://172.16.0.10, unix:/var/run/mysql.sock
+        For more information about MySQL Unix socket file please read the MySQL documentation https://dev.mysql.com/doc/refman/8.0/en/problems-with-mysql-sock.html.
+        3. If you had set URI in the {$MYSQL.DSN}, please define the user name and password in host macros ({$MYSQL.USER} and {$MYSQL.PASSWORD}).
+        Leave macros {$MYSQL.USER} and {$MYSQL.PASSWORD} empty if you use a session name. Set the user name and password in the Plugins.Mysql.<...> section of your Zabbix agent 2 configuration file.
+        For more information about configuring the Zabbix MySQL plugin please read the documentation https://git.zabbix.com/projects/ZBX/repos/zabbix/browse/src/go/plugins/mysql/README.md.
+        
+        
+        You can discuss this template or leave feedback on our forum https://www.zabbix.com/forum/zabbix-suggestions-and-feedback/384189-discussion-thread-for-official-zabbix-template-db-mysql
+        
+        Template tooling version used: 0.41
+      groups:
+        -
+          name: Templates/Training
+      items:
+        -
+          uuid: d161ba5022bd4eeba9dc63e80ba66034
+          name: 'MySQL: Aborted clients per second'
+          type: DEPENDENT
+          key: mysql.aborted_clients.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of connections that were aborted because the client died without closing the connection properly.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Aborted_clients
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: connections
+        -
+          uuid: bac4919f68114da7a09e9818fafb6607
+          name: 'MySQL: Aborted connections per second'
+          type: DEPENDENT
+          key: mysql.aborted_connects.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of failed attempts to connect to the MySQL server.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Aborted_connects
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: connections
+          triggers:
+            -
+              uuid: 5a0f793c785f4e82aadde1a8581d5fbd
+              expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.aborted_connects.rate,5m)>{$MYSQL.ABORTED_CONN.MAX.WARN}'
+              name: 'MySQL: Server has aborted connections'
+              event_name: 'MySQL: Server has aborted connections (over {$MYSQL.ABORTED_CONN.MAX.WARN} for 5m)'
+              priority: AVERAGE
+              description: 'The number of failed attempts to connect to the MySQL server is more than {$MYSQL.ABORTED_CONN.MAX.WARN} in the last 5 minutes.'
+              dependencies:
+                -
+                  name: 'MySQL: Refused connections'
+                  expression: last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.connection_errors_max_connections.rate)>0
+              tags:
+                -
+                  tag: scope
+                  value: availability
+        -
+          uuid: 81dc243ff54841a680f156b32bf07abc
+          name: 'MySQL: Binlog cache disk use'
+          type: DEPENDENT
+          key: mysql.binlog_cache_disk_use
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of transactions that used a temporary disk cache because they could not fit in the regular binary log cache, being larger than binlog_cache_size.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Binlog_cache_disk_use
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: cache
+        -
+          uuid: 816aa31bcc16464da85debc9afbef8b7
+          name: 'MySQL: Buffer pool efficiency'
+          type: CALCULATED
+          key: mysql.buffer_pool_efficiency
+          history: 7d
+          value_type: FLOAT
+          units: '%'
+          params: |
+            last(//mysql.innodb_buffer_pool_reads) / 
+            ( last(//mysql.innodb_buffer_pool_read_requests) + 
+            ( last(//mysql.innodb_buffer_pool_read_requests) = 0 ) ) * 100 * 
+            ( last(//mysql.innodb_buffer_pool_read_requests) > 0 )
+          description: 'The item shows how effectively the buffer pool is serving reads.'
+          tags:
+            -
+              tag: component
+              value: memory
+        -
+          uuid: 3e26932f7d2d4801bf57cefa0528d1f3
+          name: 'MySQL: Buffer pool utilization'
+          type: CALCULATED
+          key: mysql.buffer_pool_utilization
+          history: 7d
+          value_type: FLOAT
+          units: '%'
+          params: |
+            ( last(//mysql.innodb_buffer_pool_pages_total) - 
+            last(//mysql.innodb_buffer_pool_pages_free) ) / 
+            ( last(//mysql.innodb_buffer_pool_pages_total) + 
+            ( last(//mysql.innodb_buffer_pool_pages_total) = 0 ) ) * 100 * 
+            ( last(//mysql.innodb_buffer_pool_pages_total) > 0 )
+          description: 'Ratio of used to total pages in the buffer pool.'
+          tags:
+            -
+              tag: component
+              value: memory
+          triggers:
+            -
+              uuid: 8486c8809c4d4b5daacdce15a6030b55
+              expression: 'max(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.buffer_pool_utilization,5m)<{$MYSQL.BUFF_UTIL.MIN.WARN}'
+              name: 'MySQL: Buffer pool utilization is too low'
+              event_name: 'MySQL: Buffer pool utilization is too low (less than {$MYSQL.BUFF_UTIL.MIN.WARN}% for 5m)'
+              priority: WARNING
+              description: 'The buffer pool utilization is less than {$MYSQL.BUFF_UTIL.MIN.WARN}% in the last 5 minutes. This means that there is a lot of unused RAM allocated for the buffer pool, which you can easily reallocate at the moment.'
+              tags:
+                -
+                  tag: scope
+                  value: notice
+        -
+          uuid: 3b2c8dc7159b4217914a5ee3f967a9a4
+          name: 'MySQL: Bytes received'
+          type: DEPENDENT
+          key: mysql.bytes_received.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          units: Bps
+          description: 'Number of bytes received from all clients.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Bytes_received
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: network
+        -
+          uuid: 2e3f3c1af2f8448b915373fc4b73e4cb
+          name: 'MySQL: Bytes sent'
+          type: DEPENDENT
+          key: mysql.bytes_sent.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          units: Bps
+          description: 'Number of bytes sent to all clients.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Bytes_sent
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: network
+        -
+          uuid: e39e1927903c483b8ed430453e423859
+          name: 'MySQL: Command Delete per second'
+          type: DEPENDENT
+          key: mysql.com_delete.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'The Com_delete counter variable indicates the number of times the delete statement has been executed.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Com_delete
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: operations
+        -
+          uuid: fcad9a3191a7458ea482cb7c1b13f840
+          name: 'MySQL: Command Insert per second'
+          type: DEPENDENT
+          key: mysql.com_insert.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'The Com_insert counter variable indicates the number of times the insert statement has been executed.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Com_insert
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: operations
+        -
+          uuid: 751d100fce4848abb0e11991075dd6ef
+          name: 'MySQL: Command Select per second'
+          type: DEPENDENT
+          key: mysql.com_select.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'The Com_select counter variable indicates the number of times the select statement has been executed.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Com_select
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: operations
+        -
+          uuid: e645263bbdfa4cd493a4e0f7a297e5b4
+          name: 'MySQL: Command Update per second'
+          type: DEPENDENT
+          key: mysql.com_update.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'The Com_update counter variable indicates the number of times the update statement has been executed.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Com_update
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: operations
+        -
+          uuid: 63d9dec8b975458dade3dce477efa40f
+          name: 'MySQL: Connections per second'
+          type: DEPENDENT
+          key: mysql.connections.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of connection attempts (successful or not) to the MySQL server.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Connections
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: connections
+        -
+          uuid: 0829f6f4f96b46cc918faa10df7b1fab
+          name: 'MySQL: Connection errors accept per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_accept.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of errors that occurred during calls to accept() on the listening port.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Connection_errors_accept
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: connections
+        -
+          uuid: bec3f7a9dda74abe950d2ae79ee0edca
+          name: 'MySQL: Connection errors internal per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_internal.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of refused connections due to internal server errors, for example, out of memory errors, or failed thread starts.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Connection_errors_internal
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: connections
+        -
+          uuid: a5251a75ee8d47cb86fb3d6bcb30459b
+          name: 'MySQL: Connection errors max connections per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_max_connections.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of refused connections due to the max_connections limit being reached.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Connection_errors_max_connections
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: connections
+          triggers:
+            -
+              uuid: f4085bac41bc49438504ccfce01a7fe2
+              expression: last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.connection_errors_max_connections.rate)>0
+              name: 'MySQL: Refused connections'
+              event_name: 'MySQL: Refused connections (max_connections limit reached)'
+              priority: AVERAGE
+              description: 'Number of refused connections due to the max_connections limit being reached.'
+              tags:
+                -
+                  tag: scope
+                  value: availability
+        -
+          uuid: 56e446da5e7f4aae90aab29b069f1dcf
+          name: 'MySQL: Connection errors peer address per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_peer_address.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of errors while searching for the connecting client IP address.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Connection_errors_peer_address
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: connections
+        -
+          uuid: 00d39d7485564f3abd262a6106941603
+          name: 'MySQL: Connection errors select per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_select.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of errors during calls to select() or poll() on the listening port. The client would not necessarily have been rejected in these cases.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Connection_errors_select
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: connections
+        -
+          uuid: 43908d7ac0e4444c893373054cf0bdfb
+          name: 'MySQL: Connection errors tcpwrap per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_tcpwrap.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of connections the libwrap library has refused.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Connection_errors_tcpwrap
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: connections
+        -
+          uuid: f25400f2998f4ff4b8e7a38bb40ba00d
+          name: 'MySQL: Created tmp tables on disk per second'
+          type: DEPENDENT
+          key: mysql.created_tmp_disk_tables.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of internal on-disk temporary tables created by the server while executing statements.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Created_tmp_disk_tables
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: storage
+            -
+              tag: component
+              value: tables
+          triggers:
+            -
+              uuid: 1b6ae0a737c6441799d3a67879dd706a
+              expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.created_tmp_disk_tables.rate,5m)>{$MYSQL.CREATED_TMP_DISK_TABLES.MAX.WARN}'
+              name: 'MySQL: Number of on-disk temporary tables created per second is high'
+              event_name: 'MySQL: Number of on-disk temporary tables created per second is high (over {$MYSQL.CREATED_TMP_DISK_TABLES.MAX.WARN} for 5m)'
+              priority: WARNING
+              description: 'Possibly the application using the database is in need of query optimization.'
+              tags:
+                -
+                  tag: scope
+                  value: performance
+        -
+          uuid: d5778380514a49bd846818f548c5dd21
+          name: 'MySQL: Created tmp files on disk per second'
+          type: DEPENDENT
+          key: mysql.created_tmp_files.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'How many temporary files mysqld has created.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Created_tmp_files
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: storage
+          triggers:
+            -
+              uuid: 7c45188cb3e44fa8b64b06853ab1bfe7
+              expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.created_tmp_files.rate,5m)>{$MYSQL.CREATED_TMP_FILES.MAX.WARN}'
+              name: 'MySQL: Number of temporary files created per second is high'
+              event_name: 'MySQL: Number of temporary files created per second is high (over {$MYSQL.CREATED_TMP_FILES.MAX.WARN} for 5m)'
+              priority: WARNING
+              description: 'Possibly the application using the database is in need of query optimization.'
+              tags:
+                -
+                  tag: scope
+                  value: performance
+        -
+          uuid: 8c4c262e3a484431b214221658b42ac6
+          name: 'MySQL: Created tmp tables on memory per second'
+          type: DEPENDENT
+          key: mysql.created_tmp_tables.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of internal temporary tables created by the server while executing statements.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Created_tmp_tables
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: memory
+            -
+              tag: component
+              value: tables
+          triggers:
+            -
+              uuid: 69d87f68c1444f29811d42b8b5910b38
+              expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.created_tmp_tables.rate,5m)>{$MYSQL.CREATED_TMP_TABLES.MAX.WARN}'
+              name: 'MySQL: Number of internal temporary tables created per second is high'
+              event_name: 'MySQL: Number of internal temporary tables created per second is high (over {$MYSQL.CREATED_TMP_TABLES.MAX.WARN} for 5m)'
+              priority: WARNING
+              description: 'Possibly the application using the database is in need of query optimization.'
+              tags:
+                -
+                  tag: scope
+                  value: performance
+        -
+          uuid: bbf3c268dcaf472a8d4ab7be9fdc7f87
+          name: 'MySQL: Get status variables'
+          key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          description: 'The item gets server global status information.'
+          tags:
+            -
+              tag: component
+              value: raw
+        -
+          uuid: c39e8cdb8525452d8193b9f5c60c0b74
+          name: 'MySQL: InnoDB buffer pool pages free'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_pages_free
+          delay: '0'
+          history: 7d
+          description: 'The total size of the InnoDB buffer pool, in pages.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_pages_free
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: memory
+        -
+          uuid: e4c6ec928292409fa0929eedb05b7511
+          name: 'MySQL: InnoDB buffer pool pages total'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_pages_total
+          delay: '0'
+          history: 7d
+          description: 'The total size of the InnoDB buffer pool, in pages.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_pages_total
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: memory
+        -
+          uuid: 1a8a2631071a48e1b44e3f935bd28e8e
+          name: 'MySQL: InnoDB buffer pool reads'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_reads
+          delay: '0'
+          history: 7d
+          description: 'Number of logical reads that InnoDB could not satisfy from the buffer pool, and had to read directly from the disk.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_reads
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: memory
+        -
+          uuid: 13042e24a6794b109887b1354a5ef1d6
+          name: 'MySQL: InnoDB buffer pool reads per second'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_reads.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of logical reads per second that InnoDB could not satisfy from the buffer pool, and had to read directly from the disk.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_reads
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: memory
+        -
+          uuid: 3ec62051d51642af9fc5333705c97a53
+          name: 'MySQL: InnoDB buffer pool read requests'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_read_requests
+          delay: '0'
+          history: 7d
+          description: 'Number of logical read requests.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_read_requests
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: memory
+        -
+          uuid: 7ff741b3125f4ef385504bd61798bf7d
+          name: 'MySQL: InnoDB buffer pool read requests per second'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_read_requests.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of logical read requests per second.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_read_requests
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: memory
+        -
+          uuid: f382347b9f154e8e9b7b15bcd9aca3c7
+          name: 'MySQL: Innodb buffer pool wait free'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_wait_free
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of times InnoDB waited for a free page before reading or creating a page. Normally, writes to the InnoDB buffer pool happen in the background. When no clean pages are available, dirty pages are flushed first in order to free some up. This counts the numbers of wait for this operation to finish. If this value is not small, look at the increasing innodb_buffer_pool_size.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_wait_free
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: memory
+        -
+          uuid: 455ab7719f44408b9e7493eac0c35752
+          name: 'MySQL: Calculated value of innodb_log_file_size'
+          type: CALCULATED
+          key: mysql.innodb_log_file_size
+          history: 7d
+          value_type: FLOAT
+          params: '(last(//mysql.innodb_os_log_written) - last(//mysql.innodb_os_log_written,#1:now-1h)) / {$MYSQL.INNODB_LOG_FILES}'
+          description: 'Calculated by (innodb_os_log_written-innodb_os_log_written(time shift -1h))/{$MYSQL.INNODB_LOG_FILES} value of the innodb_log_file_size. Innodb_log_file_size is the size in bytes of the each InnoDB redo log file in the log group. The combined size can be no more than 512GB. Larger values mean less disk I/O due to less flushing checkpoint activity, but also slower recovery from a crash.'
+          preprocessing:
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          tags:
+            -
+              tag: component
+              value: system
+        -
+          uuid: 27abce9766a24b5e9baebb5b590e9b91
+          name: 'MySQL: Innodb number open files'
+          type: DEPENDENT
+          key: mysql.innodb_num_open_files
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of open files held by InnoDB. InnoDB only.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_num_open_files
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: system
+        -
+          uuid: bb9d4eea576f435690336cd3b9d63773
+          name: 'MySQL: Innodb log written'
+          type: DEPENDENT
+          key: mysql.innodb_os_log_written
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          units: B
+          description: 'Number of bytes written to the InnoDB log.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_os_log_written
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: system
+        -
+          uuid: 34f24f7ba4234283aa691fc5a60d3606
+          name: 'MySQL: InnoDB row lock time'
+          type: DEPENDENT
+          key: mysql.innodb_row_lock_time
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          units: s
+          description: 'The total time spent in acquiring row locks for InnoDB tables, in milliseconds.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_row_lock_time
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.001'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: tables
+        -
+          uuid: d346a737a4ab4ab48ef7387810db51eb
+          name: 'MySQL: InnoDB row lock time max'
+          type: DEPENDENT
+          key: mysql.innodb_row_lock_time_max
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          units: s
+          description: 'The maximum time to acquire a row lock for InnoDB tables, in milliseconds.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_row_lock_time_max
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.001'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: tables
+        -
+          uuid: 8418e4dc06a942b1857160f63c7f05c8
+          name: 'MySQL: InnoDB row lock waits'
+          type: DEPENDENT
+          key: mysql.innodb_row_lock_waits
+          delay: '0'
+          history: 7d
+          description: 'Number of times operations on InnoDB tables had to wait for a row lock.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Innodb_row_lock_waits
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: innodb
+            -
+              tag: component
+              value: tables
+        -
+          uuid: 8cbcb34e5d9e401faff36d5fdc2d52b3
+          name: 'MySQL: Max used connections'
+          type: DEPENDENT
+          key: mysql.max_used_connections
+          delay: '0'
+          history: 7d
+          description: 'The maximum number of connections that have been in use simultaneously since the server start.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Max_used_connections
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: connections
+        -
+          uuid: 2fca95d1d5af42d4b82c86d849559cb8
+          name: 'MySQL: Open tables'
+          type: DEPENDENT
+          key: mysql.open_tables
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of tables that are open.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Open_tables
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: tables
+        -
+          uuid: d0a6cc00856841d59b6c37ee53d0eea2
+          name: 'MySQL: Open table definitions'
+          type: DEPENDENT
+          key: mysql.open_table_definitions
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of cached table definitions.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Open_table_definitions
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: tables
+        -
+          uuid: aaf5e95a3f9f4e9e9643039e6f690563
+          name: 'MySQL: Status'
+          key: 'mysql.ping["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          history: 7d
+          valuemap:
+            name: 'Service state'
+          preprocessing:
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          tags:
+            -
+              tag: component
+              value: application
+            -
+              tag: component
+              value: health
+          triggers:
+            -
+              uuid: 1eb71d292bd44980a4e2ae38cea930ab
+              expression: 'last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.ping["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"])=0'
+              name: 'MySQL: Service is down'
+              priority: HIGH
+              tags:
+                -
+                  tag: scope
+                  value: availability
+        -
+          uuid: f52f6765a5d74a1cb031081e1f7ac236
+          name: 'MySQL: Queries per second'
+          type: DEPENDENT
+          key: mysql.queries.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of statements executed by the server. This variable includes statements executed within stored programs, unlike the Questions variable.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Queries
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: queries
+        -
+          uuid: 41e39304cf704a6dbea0b7c3f1d5f735
+          name: 'MySQL: Questions per second'
+          type: DEPENDENT
+          key: mysql.questions.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of statements executed by the server. This includes only statements sent to the server by clients and not statements executed within stored programs, unlike the Queries variable.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Questions
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: queries
+        -
+          uuid: a21c7a282879491199527b52680154db
+          name: 'MySQL: Slow queries per second'
+          type: DEPENDENT
+          key: mysql.slow_queries.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of queries that have taken more than long_query_time seconds.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Slow_queries
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: queries
+          triggers:
+            -
+              uuid: 3af472ed42c04612a1e5bd6bc9de3d00
+              expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.slow_queries.rate,5m)>{$MYSQL.SLOW_QUERIES.MAX.WARN}'
+              name: 'MySQL: Server has slow queries'
+              event_name: 'MySQL: Server has slow queries (over {$MYSQL.SLOW_QUERIES.MAX.WARN} for 5m)'
+              priority: WARNING
+              description: 'The number of slow queries is more than {$MYSQL.SLOW_QUERIES.MAX.WARN} in the last 5 minutes.'
+              tags:
+                -
+                  tag: scope
+                  value: performance
+        -
+          uuid: f011f881cf534a02beed6bd8a79d1a66
+          name: 'MySQL: Threads cached'
+          type: DEPENDENT
+          key: mysql.threads_cached
+          delay: '0'
+          history: 7d
+          description: 'Number of threads in the thread cache.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Threads_cached
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: threads
+        -
+          uuid: 579e6543a24a40b88dcf77cdf4a20c93
+          name: 'MySQL: Threads connected'
+          type: DEPENDENT
+          key: mysql.threads_connected
+          delay: '0'
+          history: 7d
+          description: 'Number of currently open connections.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Threads_connected
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: threads
+        -
+          uuid: 4d88d0c6a9c74e9289d0d3584baffbca
+          name: 'MySQL: Threads created per second'
+          type: DEPENDENT
+          key: mysql.threads_created.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of threads created to handle connections. If Threads_created is big, you may want to increase the thread_cache_size value. The cache miss rate can be calculated as Threads_created/Connections.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Threads_created
+            -
+              type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: threads
+        -
+          uuid: 81e895eacf724a2b884279792e97ef1d
+          name: 'MySQL: Threads running'
+          type: DEPENDENT
+          key: mysql.threads_running
+          delay: '0'
+          history: 7d
+          description: 'Number of threads which are not sleeping.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Threads_running
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: threads
+        -
+          uuid: 8bfb6eca3e7d427cb16bf26c3b0ed67f
+          name: 'MySQL: Uptime'
+          type: DEPENDENT
+          key: mysql.uptime
+          delay: '0'
+          history: 7d
+          units: uptime
+          description: 'The amount of seconds that the server has been up.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Uptime
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            -
+              tag: component
+              value: application
+          triggers:
+            -
+              uuid: 83a9995c3963466da674e171e73204dc
+              expression: 'nodata(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.uptime,30m)=1'
+              name: 'MySQL: Failed to fetch info data'
+              event_name: 'MySQL: Failed to fetch info data (or no data for 30m)'
+              priority: INFO
+              description: 'Zabbix has not received data for items for the last 30 minutes.'
+              dependencies:
+                -
+                  name: 'MySQL: Service is down'
+                  expression: 'last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.ping["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"])=0'
+              tags:
+                -
+                  tag: scope
+                  value: availability
+            -
+              uuid: 97aac08a7ccb44a097eb5572eddcdbc1
+              expression: last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.uptime)<10m
+              name: 'MySQL: Service has been restarted'
+              event_name: 'MySQL: Service has been restarted (uptime < 10m)'
+              priority: INFO
+              description: 'MySQL uptime is less than 10 minutes.'
+              tags:
+                -
+                  tag: scope
+                  value: notice
+        -
+          uuid: a8a71af334ec4c43a3943a0147af88e3
+          name: 'MySQL: Version'
+          key: 'mysql.version["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          delay: 15m
+          history: 7d
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          tags:
+            -
+              tag: component
+              value: application
+          triggers:
+            -
+              uuid: 141bbd9c2050492dbcc6f10b719bc358
+              expression: 'last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.version["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"],#1)<>last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.version["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"],#2) and length(last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.version["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]))>0'
+              name: 'MySQL: Version has changed'
+              event_name: 'MySQL: Version has changed (new version value received: {ITEM.VALUE})'
+              priority: INFO
+              description: 'MySQL version has changed. Ack to close.'
+              manual_close: 'YES'
+              tags:
+                -
+                  tag: scope
+                  value: notice
+      discovery_rules:
+        -
+          uuid: 8dc8dfa2fda44ef592dac56e7710d984
+          name: 'Database discovery'
+          key: 'mysql.db.discovery["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          delay: 1h
+          filter:
+            conditions:
+              -
+                macro: '{#DATABASE}'
+                value: information_schema
+                operator: NOT_MATCHES_REGEX
+                formulaid: A
+          description: 'Scanning databases in DBMS.'
+          item_prototypes:
+            -
+              uuid: 14bf445bc7854f119ed2d8cef1a10743
+              name: 'MySQL: Size of database {#DATABASE}'
+              key: 'mysql.db.size["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#DATABASE}"]'
+              delay: 5m
+              history: 7d
+              units: B
+              preprocessing:
+                -
+                  type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              tags:
+                -
+                  tag: component
+                  value: storage
+                -
+                  tag: database
+                  value: '{#DATABASE}'
+          lld_macro_paths:
+            -
+              lld_macro: '{#DATABASE}'
+              path: $.Database
+          preprocessing:
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+        -
+          uuid: e91b5ed83589496c9b6fd33b99438da6
+          name: 'MariaDB discovery'
+          type: DEPENDENT
+          key: mysql.extra_metric.discovery
+          delay: '0'
+          description: 'Additional metrics if MariaDB is used.'
+          item_prototypes:
+            -
+              uuid: 4e770424b4fd4b989a8a64d698d80577
+              name: 'MySQL: Binlog commits'
+              type: DEPENDENT
+              key: 'mysql.binlog_commits[{#SINGLETON}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              description: 'Total number of transactions committed to the binary log.'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.Binlog_commits
+              master_item:
+                key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+              tags:
+                -
+                  tag: component
+                  value: transactions
+            -
+              uuid: 494cd20a94dc4b0fb97bc2b60487304e
+              name: 'MySQL: Binlog group commits'
+              type: DEPENDENT
+              key: 'mysql.binlog_group_commits[{#SINGLETON}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              description: 'Total number of group commits done to the binary log.'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.Binlog_group_commits
+              master_item:
+                key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+              tags:
+                -
+                  tag: component
+                  value: transactions
+            -
+              uuid: ff77076ddc51424693bcdeaa3cef86a2
+              name: 'MySQL: Master GTID wait count'
+              type: DEPENDENT
+              key: 'mysql.master_gtid_wait_count[{#SINGLETON}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              description: 'The number of times MASTER_GTID_WAIT called.'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.Master_gtid_wait_count
+                -
+                  type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 6h
+              master_item:
+                key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+              tags:
+                -
+                  tag: component
+                  value: transactions
+            -
+              uuid: ee65f564d22248e5a370fc2d01d3dfa1
+              name: 'MySQL: Master GTID wait timeouts'
+              type: DEPENDENT
+              key: 'mysql.master_gtid_wait_timeouts[{#SINGLETON}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              description: 'Number of timeouts occurring in MASTER_GTID_WAIT.'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.Master_gtid_wait_timeouts
+                -
+                  type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 6h
+              master_item:
+                key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+              tags:
+                -
+                  tag: component
+                  value: transactions
+            -
+              uuid: cb5763b45fee4a288822569161f4fcab
+              name: 'MySQL: Master GTID wait time'
+              type: DEPENDENT
+              key: 'mysql.master_gtid_wait_time[{#SINGLETON}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              description: 'Total number of time spent in MASTER_GTID_WAIT.'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.Master_gtid_wait_time
+                -
+                  type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 6h
+              master_item:
+                key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+              tags:
+                -
+                  tag: component
+                  value: transactions
+          master_item:
+            key: 'mysql.version["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          preprocessing:
+            -
+              type: JAVASCRIPT
+              parameters:
+                - 'return JSON.stringify(value.search(''MariaDB'')>-1 ? [{''{#SINGLETON}'': ''''}] : []);'
+        -
+          uuid: 63e52240e9b448648083e59ea3814fb0
+          name: 'Replication discovery'
+          key: 'mysql.replication.discovery["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          delay: 1h
+          description: 'If "show slave status" returns Master_Host, "Replication: *" items are created.'
+          item_prototypes:
+            -
+              uuid: edacb716362449209d4f5c34b5400063
+              name: 'MySQL: Replication Slave status {#MASTER_HOST}'
+              key: 'mysql.replication.get_slave_status["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#MASTER_HOST}"]'
+              history: '0'
+              trends: '0'
+              value_type: TEXT
+              description: 'The item gets status information on the essential parameters of the slave threads.'
+              tags:
+                -
+                  tag: component
+                  value: raw
+            -
+              uuid: 1096bb7570e94933a19ee54ab6de077b
+              name: 'MySQL: Replication Seconds Behind Master {#MASTER_HOST}'
+              type: DEPENDENT
+              key: 'mysql.replication.seconds_behind_master["{#MASTER_HOST}"]'
+              delay: '0'
+              history: 7d
+              units: s
+              description: |
+                Number of seconds that the slave SQL thread is behind processing the master binary log.
+                A high number (or an increasing one) can indicate that the slave is unable to handle events
+                from the master in a timely fashion.
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.Seconds_Behind_Master
+                -
+                  type: MATCHES_REGEX
+                  parameters:
+                    - \d+
+                  error_handler: CUSTOM_ERROR
+                  error_handler_params: 'Replication is not performed.'
+                -
+                  type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              master_item:
+                key: 'mysql.replication.get_slave_status["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#MASTER_HOST}"]'
+              tags:
+                -
+                  tag: component
+                  value: replication
+              trigger_prototypes:
+                -
+                  uuid: b2ccdfb9bc8741d885204015c5070927
+                  expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.seconds_behind_master["{#MASTER_HOST}"],5m)>{$MYSQL.REPL_LAG.MAX.WARN}'
+                  name: 'MySQL: Replication lag is too high'
+                  event_name: 'MySQL: Replication lag is too high (over {$MYSQL.REPL_LAG.MAX.WARN} for 5m)'
+                  priority: WARNING
+                  tags:
+                    -
+                      tag: scope
+                      value: notice
+            -
+              uuid: 24c7a9f10c244af48f4c4bd803052276
+              name: 'MySQL: Replication Slave IO Running {#MASTER_HOST}'
+              type: DEPENDENT
+              key: 'mysql.replication.slave_io_running["{#MASTER_HOST}"]'
+              delay: '0'
+              history: 7d
+              trends: '0'
+              value_type: CHAR
+              description: |
+                Whether the I/O thread for reading the master's binary log is running.
+                Normally, you want this to be Yes unless you have not yet started a replication or have
+                explicitly stopped it with STOP SLAVE.
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.Slave_IO_Running
+                -
+                  type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              master_item:
+                key: 'mysql.replication.get_slave_status["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#MASTER_HOST}"]'
+              tags:
+                -
+                  tag: component
+                  value: replication
+              trigger_prototypes:
+                -
+                  uuid: 38cf87c7db724c86a58e6409933945e6
+                  expression: 'count(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.slave_io_running["{#MASTER_HOST}"],#1,"ne","Yes")=1'
+                  name: 'MySQL: The slave I/O thread is not connected to a replication master'
+                  priority: WARNING
+                  dependencies:
+                    -
+                      name: 'MySQL: The slave I/O thread is not running'
+                      expression: 'count(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.slave_io_running["{#MASTER_HOST}"],#1,"eq","No")=1'
+                  tags:
+                    -
+                      tag: scope
+                      value: availability
+                -
+                  uuid: b48fc08f81cf45f88f7cf6329b5f41ff
+                  expression: 'count(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.slave_io_running["{#MASTER_HOST}"],#1,"eq","No")=1'
+                  name: 'MySQL: The slave I/O thread is not running'
+                  priority: AVERAGE
+                  description: 'Whether the I/O thread for reading the master''s binary log is running.'
+                  tags:
+                    -
+                      tag: scope
+                      value: notice
+            -
+              uuid: bb50480f0c164726996c0542156fe3bd
+              name: 'MySQL: Replication Slave SQL Running {#MASTER_HOST}'
+              type: DEPENDENT
+              key: 'mysql.replication.slave_sql_running["{#MASTER_HOST}"]'
+              delay: '0'
+              history: 7d
+              trends: '0'
+              value_type: CHAR
+              description: |
+                Whether the SQL thread for executing events in the relay log is running.
+                As with the I/O thread, this should normally be Yes.
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.Slave_SQL_Running
+                -
+                  type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              master_item:
+                key: 'mysql.replication.get_slave_status["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#MASTER_HOST}"]'
+              tags:
+                -
+                  tag: component
+                  value: replication
+              trigger_prototypes:
+                -
+                  uuid: 05cdd5201c6242288f56b379c96db025
+                  expression: 'count(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.slave_sql_running["{#MASTER_HOST}"],#1,"eq","No")=1'
+                  name: 'MySQL: The SQL thread is not running'
+                  priority: WARNING
+                  description: 'Whether the SQL thread for executing events in the relay log is running.'
+                  dependencies:
+                    -
+                      name: 'MySQL: The slave I/O thread is not running'
+                      expression: 'count(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.slave_io_running["{#MASTER_HOST}"],#1,"eq","No")=1'
+                  tags:
+                    -
+                      tag: scope
+                      value: notice
+            -
+              uuid: cc4f70bc4d9648a3b09d25facc955509
+              name: 'MySQL: Replication Slave SQL Running State {#MASTER_HOST}'
+              type: DEPENDENT
+              key: 'mysql.replication.slave_sql_running_state["{#MASTER_HOST}"]'
+              delay: '0'
+              history: 7d
+              trends: '0'
+              value_type: TEXT
+              description: 'This shows the state of the SQL driver threads.'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.Slave_SQL_Running_State
+                -
+                  type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 6h
+              master_item:
+                key: 'mysql.replication.get_slave_status["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#MASTER_HOST}"]'
+              tags:
+                -
+                  tag: component
+                  value: replication
+          lld_macro_paths:
+            -
+              lld_macro: '{#MASTER_HOST}'
+              path: $.Master_Host
+          preprocessing:
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+      tags:
+        -
+          tag: class
+          value: database
+        -
+          tag: target
+          value: mysql
+      macros:
+        -
+          macro: '{$MYSQL.ABORTED_CONN.MAX.WARN}'
+          value: '3'
+          description: 'Number of failed attempts to connect to the MySQL server for trigger expression.'
+        -
+          macro: '{$MYSQL.BUFF_UTIL.MIN.WARN}'
+          value: '50'
+          description: 'The minimum buffer pool utilization percentage for trigger expression.'
+        -
+          macro: '{$MYSQL.CREATED_TMP_DISK_TABLES.MAX.WARN}'
+          value: '10'
+          description: 'The maximum number of created tmp tables on a disk per second for trigger expressions.'
+        -
+          macro: '{$MYSQL.CREATED_TMP_FILES.MAX.WARN}'
+          value: '10'
+          description: 'The maximum number of created tmp files on a disk per second for trigger expressions.'
+        -
+          macro: '{$MYSQL.CREATED_TMP_TABLES.MAX.WARN}'
+          value: '30'
+          description: 'The maximum number of created tmp tables in memory per second for trigger expressions.'
+        -
+          macro: '{$MYSQL.DSN}'
+          value: 'unix:/var/lib/mysql/mysql.sock'
+          description: 'System data source name such as <tcp://host:port or unix:/path/to/socket)/>.'
+        -
+          macro: '{$MYSQL.INNODB_LOG_FILES}'
+          value: '2'
+          description: 'Number of physical files in the InnoDB redo log for calculating innodb_log_file_size.'
+        -
+          macro: '{$MYSQL.PASSWORD}'
+          description: 'MySQL user password.'
+        -
+          macro: '{$MYSQL.REPL_LAG.MAX.WARN}'
+          value: 30m
+          description: 'The lag of slave from master for trigger expression.'
+        -
+          macro: '{$MYSQL.SLOW_QUERIES.MAX.WARN}'
+          value: '3'
+          description: 'The number of slow queries for trigger expression.'
+        -
+          macro: '{$MYSQL.USER}'
+          value: monitoring
+          description: 'MySQL user name.'
+      dashboards:
+        -
+          uuid: b30b464d4cea48b898f782733dd8c7c1
+          name: 'MySQL performance'
+          pages:
+            -
+              widgets:
+                -
+                  type: GRAPH_CLASSIC
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '0'
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: Operations'
+                -
+                  type: GRAPH_CLASSIC
+                  x: '12'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '0'
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: Queries'
+                -
+                  type: GRAPH_CLASSIC
+                  'y': '5'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '0'
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: Connections'
+                -
+                  type: GRAPH_CLASSIC
+                  x: '12'
+                  'y': '5'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '0'
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: Bandwidth'
+                -
+                  type: GRAPH_CLASSIC
+                  'y': '10'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '0'
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: InnoDB buffer pool'
+                -
+                  type: GRAPH_CLASSIC
+                  x: '12'
+                  'y': '10'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: source_type
+                      value: '0'
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: Threads'
+      valuemaps:
+        -
+          uuid: f89798bc7e9f451ba3b0ca5a1fee2582
+          name: 'Service state'
+          mappings:
+            -
+              value: '0'
+              newvalue: Down
+            -
+              value: '1'
+              newvalue: Up
     -
       uuid: a2030c9672f1463ebcb4e9c33e1d6489
       template: Template-Training_MySQL_Service_Active
@@ -2452,6 +4244,152 @@ zabbix_export:
           item:
             host: Template-Training_App_Generic_Java_JMX
             key: 'jmx["java.lang:type=MemoryPool,name=Tenured Gen","Usage.used"]'
+    -
+      uuid: 178ee4500497436ea2ee066578907a05
+      name: 'MySQL: Bandwidth'
+      graph_items:
+        -
+          drawtype: GRADIENT_LINE
+          color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.bytes_received.rate
+        -
+          sortorder: '1'
+          drawtype: GRADIENT_LINE
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.bytes_sent.rate
+    -
+      uuid: 4e00ba43e7c94fdaa4a25dd822b0acec
+      name: 'MySQL: Connections'
+      graph_items:
+        -
+          color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.aborted_clients.rate
+        -
+          sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.aborted_connects.rate
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.connections.rate
+        -
+          sortorder: '3'
+          color: A54F10
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.max_used_connections
+    -
+      uuid: 97c68069788c4e66ac6468e748c9acec
+      name: 'MySQL: InnoDB buffer pool'
+      graph_items:
+        -
+          color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.innodb_buffer_pool_pages_free
+        -
+          sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.innodb_buffer_pool_pages_total
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.innodb_buffer_pool_read_requests.rate
+        -
+          sortorder: '3'
+          color: A54F10
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.innodb_buffer_pool_reads.rate
+    -
+      uuid: 2d0bb87772f643b58c3502aa40f1c3b8
+      name: 'MySQL: Operations'
+      graph_items:
+        -
+          color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.com_delete.rate
+        -
+          sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.com_insert.rate
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.com_select.rate
+        -
+          sortorder: '3'
+          color: A54F10
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.com_update.rate
+    -
+      uuid: 0fc60c6f25bf404eac2e2098bf85e43b
+      name: 'MySQL: Queries'
+      graph_items:
+        -
+          color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.queries.rate
+        -
+          sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.questions.rate
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.slow_queries.rate
+    -
+      uuid: a68a5cd595454fe69b8399a9cce5d006
+      name: 'MySQL: Threads'
+      graph_items:
+        -
+          color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.threads_cached
+        -
+          sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.threads_connected
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.threads_created.rate
+        -
+          sortorder: '3'
+          color: A54F10
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.threads_running
     -
       uuid: 1fa6cc0ac699456aa737955b74484dad
       name: 'OperatingSystem: File Descriptors'
