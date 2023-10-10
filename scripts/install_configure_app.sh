@@ -51,10 +51,10 @@ echo ${ZBX_PROBE_PASS} | passwd zbx_probe --stdin
 # mod_jk for Apache
 
 mkdir /tmp/install && cd /tmp/install
-wget http://mirror.dkm.cz/apache/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.48-src.tar.gz
+wget https://dlcdn.apache.org/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.49-src.tar.gz
 
-tar xvzf tomcat-connectors-1.2.48-src.tar.gz
-cd tomcat-connectors-1.2.48-src/native
+tar xvzf tomcat-connectors-1.2.49-src.tar.gz
+cd tomcat-connectors-1.2.49-src/native
 
 which apxs
 
