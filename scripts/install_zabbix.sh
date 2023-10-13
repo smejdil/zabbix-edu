@@ -2,7 +2,7 @@
 #
 # Zabbix install scpript
 #
-# Lukas Maly <Iam@LukasMaly.NET> 4.5.2023
+# Lukas Maly <Iam@LukasMaly.NET> 10.10.2023
 #
 
 ### MariaDB
@@ -118,6 +118,7 @@ cp -v ./zabbix-edu/zabbix/zabbix_agentd.d/training.conf /etc/zabbix/zabbix_agent
 #cd ./zabbix-edu/zabbix/modules
 #./make_modul_mysql.sh # :-( mysql_version.h ...
 
+# Zabbix agentd
 cp -v /etc/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf-orig
 sed -i 's/# LoadModulePath=${libdir}\/modules/LoadModulePath=\/usr\/lib\/zabbix\/modules/g' /etc/zabbix/zabbix_agentd.conf
 sed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /etc/zabbix/zabbix_agentd.conf
@@ -129,6 +130,14 @@ diff -u /etc/zabbix/zabbix_agentd.conf-orig /etc/zabbix/zabbix_agentd.conf
 cd
 cp -v ./zabbix-edu/zabbix/zabbix_agentd.d/libzbxmysql.conf /etc/zabbix/zabbix_agentd.d/libzbxmysql.conf
 cp -v ./zabbix-edu/zabbix/modules/module-mysql/zbx_module_mysql.conf /etc/zabbix/
+
+# Zabbix agent2
+cp -v /etc/zabbix/zabbix_agent2.conf /etc/zabbix/zabbix_agent2.conf-orig
+sed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /etc/zabbix/zabbix_agent2.conf
+sed -i 's/Server=127.0.0.1/Server=127.0.0.1,enceladus.pfsense.cz/g' /etc/zabbix/zabbix_agent2.conf
+sed -i 's/# LogRemoteCommands=0/LogRemoteCommands=1/g' /etc/zabbix/zabbix_agent2.conf
+sed -i 's/# DenyKey=system.run\[\*\]/AllowKey=system.run\[\*\]/g' /etc/zabbix/zabbix_agent2.conf
+diff -u /etc/zabbix/zabbix_agent2.conf-orig /etc/zabbix/zabbix_agent2.conf
 
 echo "--- Monitoring DB user ---"
 openssl rand -base64 32 > /root/mysql-monitoring.pw
