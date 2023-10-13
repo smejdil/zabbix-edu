@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.0'
-  date: '2023-10-13T13:52:51Z'
+  date: '2023-10-13T14:03:52Z'
   groups:
     - uuid: 7045cb56d4334ebeabcf3ca9be64b9eb
       name: Templates/Training
