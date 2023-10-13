@@ -1,40 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>6.0</version>
-    <date>2023-10-13T13:44:41Z</date>
+    <date>2023-10-13T13:42:55Z</date>
     <groups>
         <group>
-            <uuid>dc579cd7a1a34222933f24f52a68bcd8</uuid>
-            <name>Linux servers</name>
+            <uuid>869a6665ac0e45dc9f6de91a9e0029a6</uuid>
+            <name>FreeBSD servers</name>
         </group>
     </groups>
     <hosts>
         <host>
-            <host>linsrv01-prom</host>
-            <name>linsrv01-prom</name>
+            <host>fbsdsrv01</host>
+            <name>fbsdsrv01</name>
+            <description>fbsdsrv01    europe-central2-a  n1-standard-1               10.186.0.47  34.118.67.9</description>
             <templates>
                 <template>
-                    <name>Linux by Prom</name>
+                    <name>FreeBSD by Zabbix agent</name>
                 </template>
             </templates>
             <groups>
                 <group>
-                    <name>Linux servers</name>
+                    <name>FreeBSD servers</name>
                 </group>
             </groups>
             <interfaces>
                 <interface>
                     <useip>NO</useip>
-                    <ip/>
-                    <dns>linsrv01.pfsense.cz</dns>
+                    <ip>34.118.67.9</ip>
+                    <dns>fbsdsrv01.pfsense.cz</dns>
                     <interface_ref>if1</interface_ref>
                 </interface>
             </interfaces>
             <tags>
-                <tag>
-                    <tag>Metrics</tag>
-                    <value>Prom</value>
-                </tag>
                 <tag>
                     <tag>OS</tag>
                     <value>Linux</value>
@@ -42,7 +39,7 @@
             </tags>
             <inventory>
                 <name>linsrv01</name>
-                <os>Linux version: 3.10.0-1160.99.1.el7.x86_64 #1 SMP Wed Sep 13 14:19:20 UTC 2023</os>
+                <os>Linux version 3.10.0-1160.99.1.el7.x86_64 (mockbuild@kbuilder.bsys.centos.org) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-44) (G</os>
             </inventory>
             <inventory_mode>AUTOMATIC</inventory_mode>
         </host>

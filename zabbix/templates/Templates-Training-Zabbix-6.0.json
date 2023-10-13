@@ -1,7 +1,7 @@
 {
     "zabbix_export": {
         "version": "6.0",
-        "date": "2023-05-18T14:48:22Z",
+        "date": "2023-10-13T13:52:54Z",
         "groups": [
             {
                 "uuid": "7045cb56d4334ebeabcf3ca9be64b9eb",
@@ -9,6 +9,968 @@
             }
         ],
         "templates": [
+            {
+                "uuid": "ad6096be151747aea5ed324b0f1bc4cc",
+                "template": "Template-Training_Agent_Network interfaces",
+                "name": "Template-Training_Agent_Network interfaces",
+                "groups": [
+                    {
+                        "name": "Templates/Training"
+                    }
+                ],
+                "discovery_rules": [
+                    {
+                        "uuid": "8ad1700d1362458087087b6dbe1440e7",
+                        "name": "Network interface discovery",
+                        "key": "net.if.discovery",
+                        "delay": "1h",
+                        "filter": {
+                            "evaltype": "AND",
+                            "conditions": [
+                                {
+                                    "macro": "{#IFNAME}",
+                                    "value": "{$NET.IF.IFNAME.MATCHES}",
+                                    "formulaid": "A"
+                                },
+                                {
+                                    "macro": "{#IFNAME}",
+                                    "value": "{$NET.IF.IFNAME.NOT_MATCHES}",
+                                    "operator": "NOT_MATCHES_REGEX",
+                                    "formulaid": "B"
+                                }
+                            ]
+                        },
+                        "description": "The discovery of network interfaces.",
+                        "item_prototypes": [
+                            {
+                                "uuid": "681b4d656b704b1ca5cabe73e24bd6be",
+                                "name": "Interface {#IFNAME}: Inbound packets discarded",
+                                "key": "net.if.in[\"{#IFNAME}\",dropped]",
+                                "delay": "3m",
+                                "history": "7d",
+                                "preprocessing": [
+                                    {
+                                        "type": "CHANGE_PER_SECOND",
+                                        "parameters": [
+                                            ""
+                                        ]
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "network"
+                                    },
+                                    {
+                                        "tag": "interface",
+                                        "value": "{#IFNAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "3d715a6bbb614ad3a0d28957c3f16edb",
+                                "name": "Interface {#IFNAME}: Inbound packets with errors",
+                                "key": "net.if.in[\"{#IFNAME}\",errors]",
+                                "delay": "3m",
+                                "history": "7d",
+                                "preprocessing": [
+                                    {
+                                        "type": "CHANGE_PER_SECOND",
+                                        "parameters": [
+                                            ""
+                                        ]
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "network"
+                                    },
+                                    {
+                                        "tag": "interface",
+                                        "value": "{#IFNAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "bafc8107488840628e725d83f1af894c",
+                                "name": "Interface {#IFNAME}: Bits received",
+                                "key": "net.if.in[\"{#IFNAME}\"]",
+                                "delay": "3m",
+                                "history": "7d",
+                                "units": "bps",
+                                "preprocessing": [
+                                    {
+                                        "type": "CHANGE_PER_SECOND",
+                                        "parameters": [
+                                            ""
+                                        ]
+                                    },
+                                    {
+                                        "type": "MULTIPLIER",
+                                        "parameters": [
+                                            "8"
+                                        ]
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "network"
+                                    },
+                                    {
+                                        "tag": "interface",
+                                        "value": "{#IFNAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "ea80af6a665841c0b2819f061ebb0c61",
+                                "name": "Interface {#IFNAME}: Outbound packets discarded",
+                                "key": "net.if.out[\"{#IFNAME}\",dropped]",
+                                "delay": "3m",
+                                "history": "7d",
+                                "preprocessing": [
+                                    {
+                                        "type": "CHANGE_PER_SECOND",
+                                        "parameters": [
+                                            ""
+                                        ]
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "network"
+                                    },
+                                    {
+                                        "tag": "interface",
+                                        "value": "{#IFNAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "8dae4d8e9ca04f59b85b9dec3e9c950f",
+                                "name": "Interface {#IFNAME}: Outbound packets with errors",
+                                "key": "net.if.out[\"{#IFNAME}\",errors]",
+                                "delay": "3m",
+                                "history": "7d",
+                                "preprocessing": [
+                                    {
+                                        "type": "CHANGE_PER_SECOND",
+                                        "parameters": [
+                                            ""
+                                        ]
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "network"
+                                    },
+                                    {
+                                        "tag": "interface",
+                                        "value": "{#IFNAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "4cf573f2a04241fd9bc21e7f90a75474",
+                                "name": "Interface {#IFNAME}: Bits sent",
+                                "key": "net.if.out[\"{#IFNAME}\"]",
+                                "delay": "3m",
+                                "history": "7d",
+                                "units": "bps",
+                                "preprocessing": [
+                                    {
+                                        "type": "CHANGE_PER_SECOND",
+                                        "parameters": [
+                                            ""
+                                        ]
+                                    },
+                                    {
+                                        "type": "MULTIPLIER",
+                                        "parameters": [
+                                            "8"
+                                        ]
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "network"
+                                    },
+                                    {
+                                        "tag": "interface",
+                                        "value": "{#IFNAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "7be8c34c5d97461d99416fb52fdfe59f",
+                                "name": "Interface {#IFNAME}: Operational status",
+                                "key": "vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"]",
+                                "history": "7d",
+                                "trends": "0",
+                                "description": "Reference: https://www.kernel.org/doc/Documentation/networking/operstates.txt",
+                                "valuemap": {
+                                    "name": "ifOperStatus"
+                                },
+                                "preprocessing": [
+                                    {
+                                        "type": "JAVASCRIPT",
+                                        "parameters": [
+                                            "var newvalue;\nswitch(value) {\n  case \"unknown\":\n    newvalue = 0;\n    break;\n  case \"notpresent\":\n    newvalue = 1;\n    break;\n  case \"down\":\n    newvalue = 2;\n    break;\n  case \"lowerlayerdown\":\n    newvalue = 3;\n    break;\n  case \"testing\":\n    newvalue = 4;\n    break;\n  case \"dormant\":\n    newvalue = 5;\n    break;\n  case \"up\":\n    newvalue = 6;\n    break;  default:\n    newvalue = \"Problem parsing interface operstate in JS\";\n}\nreturn newvalue;"
+                                        ]
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "network"
+                                    },
+                                    {
+                                        "tag": "interface",
+                                        "value": "{#IFNAME}"
+                                    }
+                                ],
+                                "trigger_prototypes": [
+                                    {
+                                        "uuid": "43dff94f271749989642eb165f317c37",
+                                        "expression": "{$IFCONTROL:\"{#IFNAME}\"}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"],#1)<>last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"],#2))",
+                                        "recovery_mode": "RECOVERY_EXPRESSION",
+                                        "recovery_expression": "last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"])<>2 or {$IFCONTROL:\"{#IFNAME}\"}=0",
+                                        "name": "Interface {#IFNAME}: Link down",
+                                        "opdata": "Current state: {ITEM.LASTVALUE1}",
+                                        "priority": "AVERAGE",
+                                        "description": "This trigger expression works as follows:\n1. It can be triggered if the operations status is down.\n2. `{$IFCONTROL:\"{#IFNAME}\"}=1` - a user can redefine context macro to value - 0. That marks this interface as not important. No new trigger will be fired if this interface is down.\n3. `{TEMPLATE_NAME:METRIC.diff()}=1` - the trigger fires only if the operational status was up to (1) sometime before (so, do not fire for the 'eternal off' interfaces.)\n\nWARNING: if closed manually - it will not fire again on the next poll, because of .diff.",
+                                        "manual_close": "YES",
+                                        "tags": [
+                                            {
+                                                "tag": "scope",
+                                                "value": "availability"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "c128be4c5fe64b2baf5373e4c0683dfe",
+                                "name": "Interface {#IFNAME}: Speed",
+                                "key": "vfs.file.contents[\"/sys/class/net/{#IFNAME}/speed\"]",
+                                "delay": "5m",
+                                "history": "7d",
+                                "trends": "0",
+                                "units": "bps",
+                                "description": "It indicates the latest or current speed value of the interface. The value is an integer representing the link speed expressed in bits/sec.\nThis attribute is only valid for the interfaces that implement the ethtool `get_link_ksettings` method (mostly Ethernet).\n\nReference: https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-net",
+                                "preprocessing": [
+                                    {
+                                        "type": "MULTIPLIER",
+                                        "parameters": [
+                                            "1000000"
+                                        ]
+                                    },
+                                    {
+                                        "type": "DISCARD_UNCHANGED_HEARTBEAT",
+                                        "parameters": [
+                                            "1h"
+                                        ]
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "network"
+                                    },
+                                    {
+                                        "tag": "interface",
+                                        "value": "{#IFNAME}"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "537e798f2a54496eadc2a99bcb61b4c0",
+                                "name": "Interface {#IFNAME}: Interface type",
+                                "key": "vfs.file.contents[\"/sys/class/net/{#IFNAME}/type\"]",
+                                "delay": "1h",
+                                "history": "7d",
+                                "trends": "0",
+                                "description": "It indicates the interface protocol type as a decimal value.\nSee `include/uapi/linux/if_arp.h` for all possible values.\nReference: https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-net",
+                                "valuemap": {
+                                    "name": "Linux::Interface protocol types"
+                                },
+                                "preprocessing": [
+                                    {
+                                        "type": "DISCARD_UNCHANGED_HEARTBEAT",
+                                        "parameters": [
+                                            "1d"
+                                        ]
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "network"
+                                    },
+                                    {
+                                        "tag": "interface",
+                                        "value": "{#IFNAME}"
+                                    }
+                                ]
+                            }
+                        ],
+                        "trigger_prototypes": [
+                            {
+                                "uuid": "8ffa721e8713485eaf98249593847717",
+                                "expression": "change(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/speed\"])<0 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/speed\"])>0\nand\n(last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/type\"])=6 or last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/type\"])=1)\nand\n(last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"])<>2)",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "(change(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/speed\"])>0 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/speed\"],#2)>0) or\n(last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"])=2)",
+                                "name": "Interface {#IFNAME}: Ethernet has changed to lower speed than it was before",
+                                "opdata": "Current reported speed: {ITEM.LASTVALUE1}",
+                                "priority": "INFO",
+                                "description": "This Ethernet connection has transitioned down from its known maximum speed. This might be a sign of autonegotiation issues. Acknowledge to close the problem manually.",
+                                "manual_close": "YES",
+                                "dependencies": [
+                                    {
+                                        "name": "Interface {#IFNAME}: Link down",
+                                        "expression": "{$IFCONTROL:\"{#IFNAME}\"}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"],#1)<>last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"],#2))",
+                                        "recovery_expression": "last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"])<>2 or {$IFCONTROL:\"{#IFNAME}\"}=0"
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "performance"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "d782af28cbe046f2a556ff5d339d5b15",
+                                "expression": "(avg(/Template-Training_Agent_Network interfaces/net.if.in[\"{#IFNAME}\"],15m)>({$IF.UTIL.MAX:\"{#IFNAME}\"}/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/speed\"]) or\navg(/Template-Training_Agent_Network interfaces/net.if.out[\"{#IFNAME}\"],15m)>({$IF.UTIL.MAX:\"{#IFNAME}\"}/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/speed\"])) and\nlast(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/speed\"])>0",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "avg(/Template-Training_Agent_Network interfaces/net.if.in[\"{#IFNAME}\"],15m)<(({$IF.UTIL.MAX:\"{#IFNAME}\"}-3)/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/speed\"]) and\navg(/Template-Training_Agent_Network interfaces/net.if.out[\"{#IFNAME}\"],15m)<(({$IF.UTIL.MAX:\"{#IFNAME}\"}-3)/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/speed\"])",
+                                "name": "Interface {#IFNAME}: High bandwidth usage",
+                                "event_name": "Interface {#IFNAME}: High bandwidth usage (>{$IF.UTIL.MAX:\"{#IFNAME}\"}%)",
+                                "opdata": "In: {ITEM.LASTVALUE1}, out: {ITEM.LASTVALUE3}, speed: {ITEM.LASTVALUE2}",
+                                "priority": "WARNING",
+                                "description": "The utilization of the network interface is close to its estimated maximum bandwidth.",
+                                "manual_close": "YES",
+                                "dependencies": [
+                                    {
+                                        "name": "Interface {#IFNAME}: Link down",
+                                        "expression": "{$IFCONTROL:\"{#IFNAME}\"}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"],#1)<>last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"],#2))",
+                                        "recovery_expression": "last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"])<>2 or {$IFCONTROL:\"{#IFNAME}\"}=0"
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "performance"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "d601dd19e5d640049f36f2037e72faa9",
+                                "expression": "min(/Template-Training_Agent_Network interfaces/net.if.in[\"{#IFNAME}\",errors],5m)>{$IF.ERRORS.WARN:\"{#IFNAME}\"}\nor min(/Template-Training_Agent_Network interfaces/net.if.out[\"{#IFNAME}\",errors],5m)>{$IF.ERRORS.WARN:\"{#IFNAME}\"}",
+                                "recovery_mode": "RECOVERY_EXPRESSION",
+                                "recovery_expression": "max(/Template-Training_Agent_Network interfaces/net.if.in[\"{#IFNAME}\",errors],5m)<{$IF.ERRORS.WARN:\"{#IFNAME}\"}*0.8\nand max(/Template-Training_Agent_Network interfaces/net.if.out[\"{#IFNAME}\",errors],5m)<{$IF.ERRORS.WARN:\"{#IFNAME}\"}*0.8",
+                                "name": "Interface {#IFNAME}: High error rate",
+                                "event_name": "Interface {#IFNAME}: High error rate (>{$IF.ERRORS.WARN:\"{#IFNAME}\"} for 5m)",
+                                "opdata": "errors in: {ITEM.LASTVALUE1}, errors out: {ITEM.LASTVALUE2}",
+                                "priority": "WARNING",
+                                "description": "It recovers when it is below 80% of the `{$IF.ERRORS.WARN:\"{#IFNAME}\"}` threshold.",
+                                "manual_close": "YES",
+                                "dependencies": [
+                                    {
+                                        "name": "Interface {#IFNAME}: Link down",
+                                        "expression": "{$IFCONTROL:\"{#IFNAME}\"}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"],#1)<>last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"],#2))",
+                                        "recovery_expression": "last(/Template-Training_Agent_Network interfaces/vfs.file.contents[\"/sys/class/net/{#IFNAME}/operstate\"])<>2 or {$IFCONTROL:\"{#IFNAME}\"}=0"
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "scope",
+                                        "value": "availability"
+                                    },
+                                    {
+                                        "tag": "scope",
+                                        "value": "performance"
+                                    }
+                                ]
+                            }
+                        ],
+                        "graph_prototypes": [
+                            {
+                                "uuid": "3c3dc00c218341fab48296474ce2b6be",
+                                "name": "Interface {#IFNAME}: Network traffic",
+                                "graph_items": [
+                                    {
+                                        "drawtype": "GRADIENT_LINE",
+                                        "color": "199C0D",
+                                        "item": {
+                                            "host": "Template-Training_Agent_Network interfaces",
+                                            "key": "net.if.in[\"{#IFNAME}\"]"
+                                        }
+                                    },
+                                    {
+                                        "sortorder": "1",
+                                        "drawtype": "BOLD_LINE",
+                                        "color": "F63100",
+                                        "item": {
+                                            "host": "Template-Training_Agent_Network interfaces",
+                                            "key": "net.if.out[\"{#IFNAME}\"]"
+                                        }
+                                    },
+                                    {
+                                        "sortorder": "2",
+                                        "color": "00611C",
+                                        "yaxisside": "RIGHT",
+                                        "item": {
+                                            "host": "Template-Training_Agent_Network interfaces",
+                                            "key": "net.if.out[\"{#IFNAME}\",errors]"
+                                        }
+                                    },
+                                    {
+                                        "sortorder": "3",
+                                        "color": "F7941D",
+                                        "yaxisside": "RIGHT",
+                                        "item": {
+                                            "host": "Template-Training_Agent_Network interfaces",
+                                            "key": "net.if.in[\"{#IFNAME}\",errors]"
+                                        }
+                                    },
+                                    {
+                                        "sortorder": "4",
+                                        "color": "FC6EA3",
+                                        "yaxisside": "RIGHT",
+                                        "item": {
+                                            "host": "Template-Training_Agent_Network interfaces",
+                                            "key": "net.if.out[\"{#IFNAME}\",dropped]"
+                                        }
+                                    },
+                                    {
+                                        "sortorder": "5",
+                                        "color": "6C59DC",
+                                        "yaxisside": "RIGHT",
+                                        "item": {
+                                            "host": "Template-Training_Agent_Network interfaces",
+                                            "key": "net.if.in[\"{#IFNAME}\",dropped]"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "tags": [
+                    {
+                        "tag": "class",
+                        "value": "os"
+                    },
+                    {
+                        "tag": "target",
+                        "value": "linux"
+                    }
+                ],
+                "macros": [
+                    {
+                        "macro": "{$AGENT.TIMEOUT}",
+                        "value": "3m",
+                        "description": "Timeout after which agent is considered unavailable. Works only for agents reachable from Zabbix server/proxy (passive mode)."
+                    },
+                    {
+                        "macro": "{$CPU.UTIL.CRIT}",
+                        "value": "90"
+                    },
+                    {
+                        "macro": "{$IF.ERRORS.WARN}",
+                        "value": "2"
+                    },
+                    {
+                        "macro": "{$IF.UTIL.MAX}",
+                        "value": "90",
+                        "description": "This macro is used as a threshold in the interface utilization trigger."
+                    },
+                    {
+                        "macro": "{$IFCONTROL}",
+                        "value": "1"
+                    },
+                    {
+                        "macro": "{$KERNEL.MAXFILES.MIN}",
+                        "value": "256"
+                    },
+                    {
+                        "macro": "{$KERNEL.MAXPROC.MIN}",
+                        "value": "1024"
+                    },
+                    {
+                        "macro": "{$LOAD_AVG_PER_CPU.MAX.WARN}",
+                        "value": "1.5",
+                        "description": "The CPU load per core is considered sustainable. If necessary, it can be tuned."
+                    },
+                    {
+                        "macro": "{$MEMORY.AVAILABLE.MIN}",
+                        "value": "20M",
+                        "description": "This macro is used as a threshold in the memory available trigger."
+                    },
+                    {
+                        "macro": "{$MEMORY.UTIL.MAX}",
+                        "value": "90",
+                        "description": "This macro is used as a threshold in the memory utilization trigger."
+                    },
+                    {
+                        "macro": "{$NET.IF.IFNAME.MATCHES}",
+                        "value": "^.*$"
+                    },
+                    {
+                        "macro": "{$NET.IF.IFNAME.NOT_MATCHES}",
+                        "value": "(^Software Loopback Interface|^NULL[0-9.]*$|^[Ll]o[0-9.]*$|^[Ss]ystem$|^Nu[0-9.]*$|^veth[0-9A-z]+$|docker[0-9]+|br-[a-z0-9]{12})",
+                        "description": "It filters out `loopbacks`, `nulls`, `docker veth` links and `docker0 bridge` by default."
+                    },
+                    {
+                        "macro": "{$SWAP.PFREE.MIN.WARN}",
+                        "value": "50"
+                    },
+                    {
+                        "macro": "{$SYSTEM.FUZZYTIME.MAX}",
+                        "value": "60"
+                    },
+                    {
+                        "macro": "{$VFS.DEV.DEVNAME.MATCHES}",
+                        "value": ".+",
+                        "description": "This macro is used for a discovery of block devices. It can be overridden on host level or its linked template level."
+                    },
+                    {
+                        "macro": "{$VFS.DEV.DEVNAME.NOT_MATCHES}",
+                        "value": "^(loop[0-9]*|sd[a-z][0-9]+|nbd[0-9]+|sr[0-9]+|fd[0-9]+|dm-[0-9]+|ram[0-9]+|ploop[a-z0-9]+|md[0-9]*|hcp[0-9]*|zram[0-9]*)",
+                        "description": "This macro is used for a discovery of block devices. It can be overridden on host level or its linked template level."
+                    },
+                    {
+                        "macro": "{$VFS.DEV.READ.AWAIT.WARN}",
+                        "value": "20",
+                        "description": "The average response time (in ms) of disk read before the trigger would fire."
+                    },
+                    {
+                        "macro": "{$VFS.DEV.WRITE.AWAIT.WARN}",
+                        "value": "20",
+                        "description": "The average response time (in ms) of disk write before the trigger would fire."
+                    },
+                    {
+                        "macro": "{$VFS.FS.FREE.MIN.CRIT}",
+                        "value": "5G",
+                        "description": "The critical threshold for utilization of the filesystem."
+                    },
+                    {
+                        "macro": "{$VFS.FS.FREE.MIN.WARN}",
+                        "value": "10G",
+                        "description": "The warning threshold for utilization of the filesystem."
+                    },
+                    {
+                        "macro": "{$VFS.FS.FSNAME.MATCHES}",
+                        "value": ".+",
+                        "description": "This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level."
+                    },
+                    {
+                        "macro": "{$VFS.FS.FSNAME.NOT_MATCHES}",
+                        "value": "^(/dev|/sys|/run|/proc|.+/shm$)",
+                        "description": "This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level."
+                    },
+                    {
+                        "macro": "{$VFS.FS.FSTYPE.MATCHES}",
+                        "value": "^(btrfs|ext2|ext3|ext4|reiser|xfs|ffs|ufs|jfs|jfs2|vxfs|hfs|apfs|refs|ntfs|fat32|zfs)$",
+                        "description": "This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level."
+                    },
+                    {
+                        "macro": "{$VFS.FS.FSTYPE.NOT_MATCHES}",
+                        "value": "^\\s$",
+                        "description": "This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level."
+                    },
+                    {
+                        "macro": "{$VFS.FS.INODE.PFREE.MIN.CRIT}",
+                        "value": "10",
+                        "description": "The critical threshold of the filesystem metadata utilization."
+                    },
+                    {
+                        "macro": "{$VFS.FS.INODE.PFREE.MIN.WARN}",
+                        "value": "20",
+                        "description": "The warning threshold of the filesystem metadata utilization."
+                    },
+                    {
+                        "macro": "{$VFS.FS.PUSED.MAX.CRIT}",
+                        "value": "90",
+                        "description": "The critical threshold of the filesystem utilization."
+                    },
+                    {
+                        "macro": "{$VFS.FS.PUSED.MAX.WARN}",
+                        "value": "80",
+                        "description": "The warning threshold of the filesystem utilization."
+                    }
+                ],
+                "dashboards": [
+                    {
+                        "uuid": "a1374bc79e8045b29df4a5bf96fab010",
+                        "name": "Network interfaces",
+                        "pages": [
+                            {
+                                "name": "Overview",
+                                "widgets": [
+                                    {
+                                        "type": "GRAPH_PROTOTYPE",
+                                        "width": "24",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "columns",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "type": "GRAPH_PROTOTYPE",
+                                                "name": "graphid",
+                                                "value": {
+                                                    "host": "Template-Training_Agent_Network interfaces",
+                                                    "name": "Interface {#IFNAME}: Network traffic"
+                                                }
+                                            },
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "rows",
+                                                "value": "1"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "valuemaps": [
+                    {
+                        "uuid": "86c44ead6eee43ceb4c7fd3fb1bd8701",
+                        "name": "ifOperStatus",
+                        "mappings": [
+                            {
+                                "value": "0",
+                                "newvalue": "unknown"
+                            },
+                            {
+                                "value": "1",
+                                "newvalue": "notpresent"
+                            },
+                            {
+                                "value": "2",
+                                "newvalue": "down"
+                            },
+                            {
+                                "value": "3",
+                                "newvalue": "lowerlayerdown"
+                            },
+                            {
+                                "value": "4",
+                                "newvalue": "testing"
+                            },
+                            {
+                                "value": "5",
+                                "newvalue": "dormant"
+                            },
+                            {
+                                "value": "6",
+                                "newvalue": "up"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "862eaaf08d5b40b583eb2259ecfc4240",
+                        "name": "Linux::Interface protocol types",
+                        "mappings": [
+                            {
+                                "value": "0",
+                                "newvalue": "from KA9Q: NET/ROM pseudo"
+                            },
+                            {
+                                "value": "1",
+                                "newvalue": "Ethernet"
+                            },
+                            {
+                                "value": "2",
+                                "newvalue": "Experimental Ethernet"
+                            },
+                            {
+                                "value": "3",
+                                "newvalue": "AX.25 Level 2"
+                            },
+                            {
+                                "value": "4",
+                                "newvalue": "PROnet token ring"
+                            },
+                            {
+                                "value": "5",
+                                "newvalue": "Chaosnet"
+                            },
+                            {
+                                "value": "6",
+                                "newvalue": "IEEE 802.2 Ethernet/TR/TB"
+                            },
+                            {
+                                "value": "7",
+                                "newvalue": "ARCnet"
+                            },
+                            {
+                                "value": "8",
+                                "newvalue": "APPLEtalk"
+                            },
+                            {
+                                "value": "15",
+                                "newvalue": "Frame Relay DLCI"
+                            },
+                            {
+                                "value": "19",
+                                "newvalue": "ATM"
+                            },
+                            {
+                                "value": "23",
+                                "newvalue": "Metricom STRIP (new IANA id)"
+                            },
+                            {
+                                "value": "24",
+                                "newvalue": "IEEE 1394 IPv4 - RFC 2734"
+                            },
+                            {
+                                "value": "27",
+                                "newvalue": "EUI-64"
+                            },
+                            {
+                                "value": "32",
+                                "newvalue": "InfiniBand"
+                            },
+                            {
+                                "value": "256",
+                                "newvalue": "ARPHRD_SLIP"
+                            },
+                            {
+                                "value": "257",
+                                "newvalue": "ARPHRD_CSLIP"
+                            },
+                            {
+                                "value": "258",
+                                "newvalue": "ARPHRD_SLIP6"
+                            },
+                            {
+                                "value": "259",
+                                "newvalue": "ARPHRD_CSLIP6"
+                            },
+                            {
+                                "value": "260",
+                                "newvalue": "Notional KISS type"
+                            },
+                            {
+                                "value": "264",
+                                "newvalue": "ARPHRD_ADAPT"
+                            },
+                            {
+                                "value": "270",
+                                "newvalue": "ARPHRD_ROSE"
+                            },
+                            {
+                                "value": "271",
+                                "newvalue": "CCITT X.25"
+                            },
+                            {
+                                "value": "272",
+                                "newvalue": "Boards with X.25 in firmware"
+                            },
+                            {
+                                "value": "280",
+                                "newvalue": "Controller Area Network"
+                            },
+                            {
+                                "value": "512",
+                                "newvalue": "ARPHRD_PPP"
+                            },
+                            {
+                                "value": "513",
+                                "newvalue": "Cisco HDLC"
+                            },
+                            {
+                                "value": "516",
+                                "newvalue": "LAPB"
+                            },
+                            {
+                                "value": "517",
+                                "newvalue": "Digital's DDCMP protocol"
+                            },
+                            {
+                                "value": "518",
+                                "newvalue": "Raw HDLC"
+                            },
+                            {
+                                "value": "519",
+                                "newvalue": "Raw IP"
+                            },
+                            {
+                                "value": "768",
+                                "newvalue": "IPIP tunnel"
+                            },
+                            {
+                                "value": "769",
+                                "newvalue": "IP6IP6 tunnel"
+                            },
+                            {
+                                "value": "770",
+                                "newvalue": "Frame Relay Access Device"
+                            },
+                            {
+                                "value": "771",
+                                "newvalue": "SKIP vif"
+                            },
+                            {
+                                "value": "772",
+                                "newvalue": "Loopback device"
+                            },
+                            {
+                                "value": "773",
+                                "newvalue": "Localtalk device"
+                            },
+                            {
+                                "value": "774",
+                                "newvalue": "Fiber Distributed Data Interface"
+                            },
+                            {
+                                "value": "775",
+                                "newvalue": "AP1000 BIF"
+                            },
+                            {
+                                "value": "776",
+                                "newvalue": "sit0 device - IPv6-in-IPv4"
+                            },
+                            {
+                                "value": "777",
+                                "newvalue": "IP over DDP tunneller"
+                            },
+                            {
+                                "value": "778",
+                                "newvalue": "GRE over IP"
+                            },
+                            {
+                                "value": "779",
+                                "newvalue": "PIMSM register interface"
+                            },
+                            {
+                                "value": "780",
+                                "newvalue": "High Performance Parallel Interface"
+                            },
+                            {
+                                "value": "781",
+                                "newvalue": "Nexus 64Mbps Ash"
+                            },
+                            {
+                                "value": "782",
+                                "newvalue": "Acorn Econet"
+                            },
+                            {
+                                "value": "783",
+                                "newvalue": "Linux-IrDA"
+                            },
+                            {
+                                "value": "784",
+                                "newvalue": "Point to point fibrechannel"
+                            },
+                            {
+                                "value": "785",
+                                "newvalue": "Fibrechannel arbitrated loop"
+                            },
+                            {
+                                "value": "786",
+                                "newvalue": "Fibrechannel public loop"
+                            },
+                            {
+                                "value": "787",
+                                "newvalue": "Fibrechannel fabric"
+                            },
+                            {
+                                "value": "800",
+                                "newvalue": "Magic type ident for TR"
+                            },
+                            {
+                                "value": "801",
+                                "newvalue": "IEEE 802.11"
+                            },
+                            {
+                                "value": "802",
+                                "newvalue": "IEEE 802.11 + Prism2 header"
+                            },
+                            {
+                                "value": "803",
+                                "newvalue": "IEEE 802.11 + radiotap header"
+                            },
+                            {
+                                "value": "804",
+                                "newvalue": "ARPHRD_IEEE802154"
+                            },
+                            {
+                                "value": "805",
+                                "newvalue": "IEEE 802.15.4 network monitor"
+                            },
+                            {
+                                "value": "820",
+                                "newvalue": "PhoNet media type"
+                            },
+                            {
+                                "value": "821",
+                                "newvalue": "PhoNet pipe header"
+                            },
+                            {
+                                "value": "822",
+                                "newvalue": "CAIF media type"
+                            },
+                            {
+                                "value": "823",
+                                "newvalue": "GRE over IPv6"
+                            },
+                            {
+                                "value": "824",
+                                "newvalue": "Netlink header"
+                            },
+                            {
+                                "value": "825",
+                                "newvalue": "IPv6 over LoWPAN"
+                            },
+                            {
+                                "value": "826",
+                                "newvalue": "Vsock monitor header"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "42e815bca1cc4732a86969b3cdbf5d23",
+                        "name": "zabbix.host.available",
+                        "mappings": [
+                            {
+                                "value": "0",
+                                "newvalue": "not available"
+                            },
+                            {
+                                "value": "1",
+                                "newvalue": "available"
+                            },
+                            {
+                                "value": "2",
+                                "newvalue": "unknown"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "b149e5d2a9854301af80a879dceaea6c",
+                        "name": "Zabbix agent ping status",
+                        "mappings": [
+                            {
+                                "value": "1",
+                                "newvalue": "Up"
+                            }
+                        ]
+                    }
+                ]
+            },
             {
                 "uuid": "5b826463ad67427fa556294381f6238e",
                 "template": "Template-Training_App_Apache_Tomcat_JMX",
@@ -1537,6 +2499,15 @@
                             {
                                 "tag": "Application",
                                 "value": "Examples of item types"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "c6871a4ce93e44969475ffe3a30a994f",
+                                "expression": "find(/Template-Training_Examples-Items/log[/var/log/zabbix/zabbix_server.log,,,5,skip],600s,\"like\",\"executing housekeeper\")=1 and nodata(/Template-Training_Examples-Items/log[/var/log/zabbix/zabbix_server.log,,,5,skip],300s)=0",
+                                "name": "Housekeeper is running",
+                                "priority": "INFO",
+                                "manual_close": "YES"
                             }
                         ]
                     },
@@ -4209,38 +5180,17 @@
                                         "height": "5",
                                         "fields": [
                                             {
-                                                "type": "INTEGER",
-                                                "name": "source_type",
-                                                "value": "0"
-                                            },
-                                            {
                                                 "type": "GRAPH",
                                                 "name": "graphid",
                                                 "value": {
                                                     "host": "Template-Training_MySQL_by_Zabbix_agent_2",
                                                     "name": "MySQL: Operations"
                                                 }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "type": "GRAPH_CLASSIC",
-                                        "x": "12",
-                                        "width": "12",
-                                        "height": "5",
-                                        "fields": [
+                                            },
                                             {
                                                 "type": "INTEGER",
                                                 "name": "source_type",
                                                 "value": "0"
-                                            },
-                                            {
-                                                "type": "GRAPH",
-                                                "name": "graphid",
-                                                "value": {
-                                                    "host": "Template-Training_MySQL_by_Zabbix_agent_2",
-                                                    "name": "MySQL: Queries"
-                                                }
                                             }
                                         ]
                                     },
@@ -4250,11 +5200,6 @@
                                         "width": "12",
                                         "height": "5",
                                         "fields": [
-                                            {
-                                                "type": "INTEGER",
-                                                "name": "source_type",
-                                                "value": "0"
-                                            },
                                             {
                                                 "type": "GRAPH",
                                                 "name": "graphid",
@@ -4262,6 +5207,53 @@
                                                     "host": "Template-Training_MySQL_by_Zabbix_agent_2",
                                                     "name": "MySQL: Connections"
                                                 }
+                                            },
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "source_type",
+                                                "value": "0"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "GRAPH_CLASSIC",
+                                        "y": "10",
+                                        "width": "12",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "GRAPH",
+                                                "name": "graphid",
+                                                "value": {
+                                                    "host": "Template-Training_MySQL_by_Zabbix_agent_2",
+                                                    "name": "MySQL: InnoDB buffer pool"
+                                                }
+                                            },
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "source_type",
+                                                "value": "0"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "GRAPH_CLASSIC",
+                                        "x": "12",
+                                        "width": "12",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "GRAPH",
+                                                "name": "graphid",
+                                                "value": {
+                                                    "host": "Template-Training_MySQL_by_Zabbix_agent_2",
+                                                    "name": "MySQL: Queries"
+                                                }
+                                            },
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "source_type",
+                                                "value": "0"
                                             }
                                         ]
                                     },
@@ -4273,38 +5265,17 @@
                                         "height": "5",
                                         "fields": [
                                             {
-                                                "type": "INTEGER",
-                                                "name": "source_type",
-                                                "value": "0"
-                                            },
-                                            {
                                                 "type": "GRAPH",
                                                 "name": "graphid",
                                                 "value": {
                                                     "host": "Template-Training_MySQL_by_Zabbix_agent_2",
                                                     "name": "MySQL: Bandwidth"
                                                 }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "type": "GRAPH_CLASSIC",
-                                        "y": "10",
-                                        "width": "12",
-                                        "height": "5",
-                                        "fields": [
+                                            },
                                             {
                                                 "type": "INTEGER",
                                                 "name": "source_type",
                                                 "value": "0"
-                                            },
-                                            {
-                                                "type": "GRAPH",
-                                                "name": "graphid",
-                                                "value": {
-                                                    "host": "Template-Training_MySQL_by_Zabbix_agent_2",
-                                                    "name": "MySQL: InnoDB buffer pool"
-                                                }
                                             }
                                         ]
                                     },
@@ -4316,17 +5287,17 @@
                                         "height": "5",
                                         "fields": [
                                             {
-                                                "type": "INTEGER",
-                                                "name": "source_type",
-                                                "value": "0"
-                                            },
-                                            {
                                                 "type": "GRAPH",
                                                 "name": "graphid",
                                                 "value": {
                                                     "host": "Template-Training_MySQL_by_Zabbix_agent_2",
                                                     "name": "MySQL: Threads"
                                                 }
+                                            },
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "source_type",
+                                                "value": "0"
                                             }
                                         ]
                                     }
@@ -5164,6 +6135,7 @@
                 "uuid": "a4095dae2b1d4fdabd2da9db4ee42384",
                 "template": "Template-Training_SNMPv2c-Interfaces",
                 "name": "Template-Training_SNMPv2c-Interfaces",
+                "description": "Value mapping\nhttps://www.circitor.fr/Mibs/Html/I/IANAifType-MIB.php#IANAifType",
                 "groups": [
                     {
                         "name": "Templates/Training"
@@ -5195,7 +6167,7 @@
                         "type": "SNMP_AGENT",
                         "snmp_oid": "discovery[{#SNMPVALUE},IF-MIB::ifDescr]",
                         "key": "ifDescr",
-                        "delay": "60",
+                        "delay": "1h",
                         "filter": {
                             "conditions": [
                                 {
@@ -5210,11 +6182,11 @@
                         "item_prototypes": [
                             {
                                 "uuid": "fe19cf6cc10c45408a0001ab0e968c55",
-                                "name": "Admin status of $1",
+                                "name": "Admin status",
                                 "type": "SNMP_AGENT",
                                 "snmp_oid": "ifAdminStatus.{#SNMPINDEX}",
                                 "key": "ifAdminStatus[{#SNMPVALUE}]",
-                                "delay": "60;50/1-7,00:00-24:00",
+                                "delay": "1m;50/1-7,00:00-24:00",
                                 "history": "10d",
                                 "trends": "0",
                                 "status": "DISABLED",
@@ -5228,15 +6200,23 @@
                             },
                             {
                                 "uuid": "4af92fdb8ed340c2af80c53447af862b",
-                                "name": "Description of $1",
+                                "name": "Description",
                                 "type": "SNMP_AGENT",
                                 "snmp_oid": "ifDescr.{#SNMPINDEX}",
                                 "key": "ifDescr[{#SNMPVALUE}]",
-                                "delay": "3600;50/1-7,00:00-24:00",
+                                "delay": "1h;50/1-7,00:00-24:00",
                                 "history": "10d",
                                 "trends": "0",
                                 "value_type": "CHAR",
                                 "description": "A textual string containing information about the interface.  This string should include the name of the manufacturer, the product name and the version of the interface hardware/software.",
+                                "preprocessing": [
+                                    {
+                                        "type": "DISCARD_UNCHANGED_HEARTBEAT",
+                                        "parameters": [
+                                            "12h"
+                                        ]
+                                    }
+                                ],
                                 "tags": [
                                     {
                                         "tag": "Application",
@@ -5246,11 +6226,10 @@
                             },
                             {
                                 "uuid": "62df174a7a9344b6ba1e26148af36d6d",
-                                "name": "Inbound errors on $1",
+                                "name": "Inbound errors",
                                 "type": "SNMP_AGENT",
                                 "snmp_oid": "ifInErrors.{#SNMPINDEX}",
                                 "key": "ifInErrors[{#SNMPVALUE}]",
-                                "delay": "60;50/1-7,00:00-24:00",
                                 "history": "10d",
                                 "trends": "1500d",
                                 "status": "DISABLED",
@@ -5272,11 +6251,10 @@
                             },
                             {
                                 "uuid": "bb63138d90c6455badea8b939c76a8a3",
-                                "name": "Incoming traffic on $1",
+                                "name": "Incoming traffic",
                                 "type": "SNMP_AGENT",
                                 "snmp_oid": "ifInOctets.{#SNMPINDEX}",
                                 "key": "ifInOctets[{#SNMPVALUE}]",
-                                "delay": "60;50/1-7,00:00-24:00",
                                 "history": "10d",
                                 "trends": "1500d",
                                 "units": "bps",
@@ -5304,11 +6282,10 @@
                             },
                             {
                                 "uuid": "3cc3200de1a74274812dbac49fc0ccd0",
-                                "name": "Operational status of $1",
+                                "name": "Operational status",
                                 "type": "SNMP_AGENT",
                                 "snmp_oid": "ifOperStatus.{#SNMPINDEX}",
                                 "key": "ifOperStatus[{#SNMPVALUE}]",
-                                "delay": "60;50/1-7,00:00-24:00",
                                 "history": "10d",
                                 "trends": "0",
                                 "status": "DISABLED",
@@ -5330,11 +6307,10 @@
                             },
                             {
                                 "uuid": "60193ba4ffcc45e9ba8222176c6b6497",
-                                "name": "Outbound discards on $1",
+                                "name": "Outbound discards",
                                 "type": "SNMP_AGENT",
                                 "snmp_oid": "ifOutDiscards.{#SNMPINDEX}",
                                 "key": "ifOutDiscards[{#SNMPVALUE}]",
-                                "delay": "60;50/1-7,00:00-24:00",
                                 "history": "10d",
                                 "trends": "1500d",
                                 "status": "DISABLED",
@@ -5356,11 +6332,10 @@
                             },
                             {
                                 "uuid": "4e17488cc6c140e8b3fffcc903a29cc0",
-                                "name": "Outbound errors on $1",
+                                "name": "Outbound errors",
                                 "type": "SNMP_AGENT",
                                 "snmp_oid": "ifOutErrors.{#SNMPINDEX}",
                                 "key": "ifOutErrors[{#SNMPVALUE}]",
-                                "delay": "60;50/1-7,00:00-24:00",
                                 "history": "10d",
                                 "trends": "1500d",
                                 "status": "DISABLED",
@@ -5382,11 +6357,10 @@
                             },
                             {
                                 "uuid": "917398e5e1e3407a8d94e95ab7b86d31",
-                                "name": "Outgoing traffic on $1",
+                                "name": "Outgoing traffic",
                                 "type": "SNMP_AGENT",
                                 "snmp_oid": "ifOutOctets.{#SNMPINDEX}",
                                 "key": "ifOutOctets[{#SNMPVALUE}]",
-                                "delay": "60;50/1-7,00:00-24:00",
                                 "history": "10d",
                                 "trends": "1500d",
                                 "units": "bps",
@@ -5408,13 +6382,21 @@
                             },
                             {
                                 "uuid": "659e89a6846d47588394a6fe0853d993",
-                                "name": "Type of interface $1",
+                                "name": "Type of interface",
                                 "type": "SNMP_AGENT",
                                 "snmp_oid": "ifType.{#SNMPINDEX}",
                                 "key": "ifType[{#SNMPVALUE}]",
-                                "delay": "3600;50/1-7,00:00-24:00",
+                                "delay": "1h;50/1-7,00:00-24:00",
                                 "history": "10d",
                                 "trends": "0",
+                                "preprocessing": [
+                                    {
+                                        "type": "DISCARD_UNCHANGED_HEARTBEAT",
+                                        "parameters": [
+                                            "12h"
+                                        ]
+                                    }
+                                ],
                                 "tags": [
                                     {
                                         "tag": "Application",
@@ -5455,6 +6437,42 @@
                     {
                         "tag": "Template",
                         "value": "Training"
+                    }
+                ],
+                "valuemaps": [
+                    {
+                        "uuid": "f5e449c4db7446a4be5b2b4e25e4dca6",
+                        "name": "IF-MIB::ifType",
+                        "mappings": [
+                            {
+                                "value": "1",
+                                "newvalue": "other"
+                            },
+                            {
+                                "value": "6",
+                                "newvalue": "ethernetCsmacd"
+                            },
+                            {
+                                "value": "224",
+                                "newvalue": "fcipLink"
+                            },
+                            {
+                                "value": "244",
+                                "newvalue": "wwanPP2"
+                            },
+                            {
+                                "value": "24",
+                                "newvalue": "softwareLoopback"
+                            },
+                            {
+                                "value": "246",
+                                "newvalue": "ifPwType"
+                            },
+                            {
+                                "value": "247",
+                                "newvalue": "ilan"
+                            }
+                        ]
                     }
                 ]
             }

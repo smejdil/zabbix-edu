@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>6.0</version>
-    <date>2023-05-18T14:48:20Z</date>
+    <date>2023-10-13T13:52:53Z</date>
     <groups>
         <group>
             <uuid>7045cb56d4334ebeabcf3ca9be64b9eb</uuid>
@@ -9,6 +9,1013 @@
         </group>
     </groups>
     <templates>
+        <template>
+            <uuid>ad6096be151747aea5ed324b0f1bc4cc</uuid>
+            <template>Template-Training_Agent_Network interfaces</template>
+            <name>Template-Training_Agent_Network interfaces</name>
+            <groups>
+                <group>
+                    <name>Templates/Training</name>
+                </group>
+            </groups>
+            <discovery_rules>
+                <discovery_rule>
+                    <uuid>8ad1700d1362458087087b6dbe1440e7</uuid>
+                    <name>Network interface discovery</name>
+                    <key>net.if.discovery</key>
+                    <delay>1h</delay>
+                    <filter>
+                        <evaltype>AND</evaltype>
+                        <conditions>
+                            <condition>
+                                <macro>{#IFNAME}</macro>
+                                <value>{$NET.IF.IFNAME.MATCHES}</value>
+                                <formulaid>A</formulaid>
+                            </condition>
+                            <condition>
+                                <macro>{#IFNAME}</macro>
+                                <value>{$NET.IF.IFNAME.NOT_MATCHES}</value>
+                                <operator>NOT_MATCHES_REGEX</operator>
+                                <formulaid>B</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <description>The discovery of network interfaces.</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <uuid>681b4d656b704b1ca5cabe73e24bd6be</uuid>
+                            <name>Interface {#IFNAME}: Inbound packets discarded</name>
+                            <key>net.if.in[&quot;{#IFNAME}&quot;,dropped]</key>
+                            <delay>3m</delay>
+                            <history>7d</history>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>component</tag>
+                                    <value>network</value>
+                                </tag>
+                                <tag>
+                                    <tag>interface</tag>
+                                    <value>{#IFNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>3d715a6bbb614ad3a0d28957c3f16edb</uuid>
+                            <name>Interface {#IFNAME}: Inbound packets with errors</name>
+                            <key>net.if.in[&quot;{#IFNAME}&quot;,errors]</key>
+                            <delay>3m</delay>
+                            <history>7d</history>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>component</tag>
+                                    <value>network</value>
+                                </tag>
+                                <tag>
+                                    <tag>interface</tag>
+                                    <value>{#IFNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>bafc8107488840628e725d83f1af894c</uuid>
+                            <name>Interface {#IFNAME}: Bits received</name>
+                            <key>net.if.in[&quot;{#IFNAME}&quot;]</key>
+                            <delay>3m</delay>
+                            <history>7d</history>
+                            <units>bps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <parameters>
+                                        <parameter>8</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>component</tag>
+                                    <value>network</value>
+                                </tag>
+                                <tag>
+                                    <tag>interface</tag>
+                                    <value>{#IFNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>ea80af6a665841c0b2819f061ebb0c61</uuid>
+                            <name>Interface {#IFNAME}: Outbound packets discarded</name>
+                            <key>net.if.out[&quot;{#IFNAME}&quot;,dropped]</key>
+                            <delay>3m</delay>
+                            <history>7d</history>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>component</tag>
+                                    <value>network</value>
+                                </tag>
+                                <tag>
+                                    <tag>interface</tag>
+                                    <value>{#IFNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>8dae4d8e9ca04f59b85b9dec3e9c950f</uuid>
+                            <name>Interface {#IFNAME}: Outbound packets with errors</name>
+                            <key>net.if.out[&quot;{#IFNAME}&quot;,errors]</key>
+                            <delay>3m</delay>
+                            <history>7d</history>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>component</tag>
+                                    <value>network</value>
+                                </tag>
+                                <tag>
+                                    <tag>interface</tag>
+                                    <value>{#IFNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>4cf573f2a04241fd9bc21e7f90a75474</uuid>
+                            <name>Interface {#IFNAME}: Bits sent</name>
+                            <key>net.if.out[&quot;{#IFNAME}&quot;]</key>
+                            <delay>3m</delay>
+                            <history>7d</history>
+                            <units>bps</units>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <parameters>
+                                        <parameter/>
+                                    </parameters>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <parameters>
+                                        <parameter>8</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>component</tag>
+                                    <value>network</value>
+                                </tag>
+                                <tag>
+                                    <tag>interface</tag>
+                                    <value>{#IFNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>7be8c34c5d97461d99416fb52fdfe59f</uuid>
+                            <name>Interface {#IFNAME}: Operational status</name>
+                            <key>vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;]</key>
+                            <history>7d</history>
+                            <trends>0</trends>
+                            <description>Reference: https://www.kernel.org/doc/Documentation/networking/operstates.txt</description>
+                            <valuemap>
+                                <name>ifOperStatus</name>
+                            </valuemap>
+                            <preprocessing>
+                                <step>
+                                    <type>JAVASCRIPT</type>
+                                    <parameters>
+                                        <parameter>var newvalue;
+switch(value) {
+  case &quot;unknown&quot;:
+    newvalue = 0;
+    break;
+  case &quot;notpresent&quot;:
+    newvalue = 1;
+    break;
+  case &quot;down&quot;:
+    newvalue = 2;
+    break;
+  case &quot;lowerlayerdown&quot;:
+    newvalue = 3;
+    break;
+  case &quot;testing&quot;:
+    newvalue = 4;
+    break;
+  case &quot;dormant&quot;:
+    newvalue = 5;
+    break;
+  case &quot;up&quot;:
+    newvalue = 6;
+    break;  default:
+    newvalue = &quot;Problem parsing interface operstate in JS&quot;;
+}
+return newvalue;</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>component</tag>
+                                    <value>network</value>
+                                </tag>
+                                <tag>
+                                    <tag>interface</tag>
+                                    <value>{#IFNAME}</value>
+                                </tag>
+                            </tags>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <uuid>43dff94f271749989642eb165f317c37</uuid>
+                                    <expression>{$IFCONTROL:&quot;{#IFNAME}&quot;}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;],#1)&lt;&gt;last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;],#2))</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;])&lt;&gt;2 or {$IFCONTROL:&quot;{#IFNAME}&quot;}=0</recovery_expression>
+                                    <name>Interface {#IFNAME}: Link down</name>
+                                    <opdata>Current state: {ITEM.LASTVALUE1}</opdata>
+                                    <priority>AVERAGE</priority>
+                                    <description>This trigger expression works as follows:
+1. It can be triggered if the operations status is down.
+2. `{$IFCONTROL:&quot;{#IFNAME}&quot;}=1` - a user can redefine context macro to value - 0. That marks this interface as not important. No new trigger will be fired if this interface is down.
+3. `{TEMPLATE_NAME:METRIC.diff()}=1` - the trigger fires only if the operational status was up to (1) sometime before (so, do not fire for the 'eternal off' interfaces.)
+
+WARNING: if closed manually - it will not fire again on the next poll, because of .diff.</description>
+                                    <manual_close>YES</manual_close>
+                                    <tags>
+                                        <tag>
+                                            <tag>scope</tag>
+                                            <value>availability</value>
+                                        </tag>
+                                    </tags>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>c128be4c5fe64b2baf5373e4c0683dfe</uuid>
+                            <name>Interface {#IFNAME}: Speed</name>
+                            <key>vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/speed&quot;]</key>
+                            <delay>5m</delay>
+                            <history>7d</history>
+                            <trends>0</trends>
+                            <units>bps</units>
+                            <description>It indicates the latest or current speed value of the interface. The value is an integer representing the link speed expressed in bits/sec.
+This attribute is only valid for the interfaces that implement the ethtool `get_link_ksettings` method (mostly Ethernet).
+
+Reference: https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-net</description>
+                            <preprocessing>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <parameters>
+                                        <parameter>1000000</parameter>
+                                    </parameters>
+                                </step>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <parameters>
+                                        <parameter>1h</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>component</tag>
+                                    <value>network</value>
+                                </tag>
+                                <tag>
+                                    <tag>interface</tag>
+                                    <value>{#IFNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                        <item_prototype>
+                            <uuid>537e798f2a54496eadc2a99bcb61b4c0</uuid>
+                            <name>Interface {#IFNAME}: Interface type</name>
+                            <key>vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/type&quot;]</key>
+                            <delay>1h</delay>
+                            <history>7d</history>
+                            <trends>0</trends>
+                            <description>It indicates the interface protocol type as a decimal value.
+See `include/uapi/linux/if_arp.h` for all possible values.
+Reference: https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-net</description>
+                            <valuemap>
+                                <name>Linux::Interface protocol types</name>
+                            </valuemap>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <parameters>
+                                        <parameter>1d</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
+                            <tags>
+                                <tag>
+                                    <tag>component</tag>
+                                    <value>network</value>
+                                </tag>
+                                <tag>
+                                    <tag>interface</tag>
+                                    <value>{#IFNAME}</value>
+                                </tag>
+                            </tags>
+                        </item_prototype>
+                    </item_prototypes>
+                    <trigger_prototypes>
+                        <trigger_prototype>
+                            <uuid>8ffa721e8713485eaf98249593847717</uuid>
+                            <expression>change(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/speed&quot;])&lt;0 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/speed&quot;])&gt;0
+and
+(last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/type&quot;])=6 or last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/type&quot;])=1)
+and
+(last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;])&lt;&gt;2)</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>(change(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/speed&quot;])&gt;0 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/speed&quot;],#2)&gt;0) or
+(last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;])=2)</recovery_expression>
+                            <name>Interface {#IFNAME}: Ethernet has changed to lower speed than it was before</name>
+                            <opdata>Current reported speed: {ITEM.LASTVALUE1}</opdata>
+                            <priority>INFO</priority>
+                            <description>This Ethernet connection has transitioned down from its known maximum speed. This might be a sign of autonegotiation issues. Acknowledge to close the problem manually.</description>
+                            <manual_close>YES</manual_close>
+                            <dependencies>
+                                <dependency>
+                                    <name>Interface {#IFNAME}: Link down</name>
+                                    <expression>{$IFCONTROL:&quot;{#IFNAME}&quot;}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;],#1)&lt;&gt;last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;],#2))</expression>
+                                    <recovery_expression>last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;])&lt;&gt;2 or {$IFCONTROL:&quot;{#IFNAME}&quot;}=0</recovery_expression>
+                                </dependency>
+                            </dependencies>
+                            <tags>
+                                <tag>
+                                    <tag>scope</tag>
+                                    <value>performance</value>
+                                </tag>
+                            </tags>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <uuid>d782af28cbe046f2a556ff5d339d5b15</uuid>
+                            <expression>(avg(/Template-Training_Agent_Network interfaces/net.if.in[&quot;{#IFNAME}&quot;],15m)&gt;({$IF.UTIL.MAX:&quot;{#IFNAME}&quot;}/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/speed&quot;]) or
+avg(/Template-Training_Agent_Network interfaces/net.if.out[&quot;{#IFNAME}&quot;],15m)&gt;({$IF.UTIL.MAX:&quot;{#IFNAME}&quot;}/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/speed&quot;])) and
+last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/speed&quot;])&gt;0</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>avg(/Template-Training_Agent_Network interfaces/net.if.in[&quot;{#IFNAME}&quot;],15m)&lt;(({$IF.UTIL.MAX:&quot;{#IFNAME}&quot;}-3)/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/speed&quot;]) and
+avg(/Template-Training_Agent_Network interfaces/net.if.out[&quot;{#IFNAME}&quot;],15m)&lt;(({$IF.UTIL.MAX:&quot;{#IFNAME}&quot;}-3)/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/speed&quot;])</recovery_expression>
+                            <name>Interface {#IFNAME}: High bandwidth usage</name>
+                            <event_name>Interface {#IFNAME}: High bandwidth usage (&gt;{$IF.UTIL.MAX:&quot;{#IFNAME}&quot;}%)</event_name>
+                            <opdata>In: {ITEM.LASTVALUE1}, out: {ITEM.LASTVALUE3}, speed: {ITEM.LASTVALUE2}</opdata>
+                            <priority>WARNING</priority>
+                            <description>The utilization of the network interface is close to its estimated maximum bandwidth.</description>
+                            <manual_close>YES</manual_close>
+                            <dependencies>
+                                <dependency>
+                                    <name>Interface {#IFNAME}: Link down</name>
+                                    <expression>{$IFCONTROL:&quot;{#IFNAME}&quot;}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;],#1)&lt;&gt;last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;],#2))</expression>
+                                    <recovery_expression>last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;])&lt;&gt;2 or {$IFCONTROL:&quot;{#IFNAME}&quot;}=0</recovery_expression>
+                                </dependency>
+                            </dependencies>
+                            <tags>
+                                <tag>
+                                    <tag>scope</tag>
+                                    <value>performance</value>
+                                </tag>
+                            </tags>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <uuid>d601dd19e5d640049f36f2037e72faa9</uuid>
+                            <expression>min(/Template-Training_Agent_Network interfaces/net.if.in[&quot;{#IFNAME}&quot;,errors],5m)&gt;{$IF.ERRORS.WARN:&quot;{#IFNAME}&quot;}
+or min(/Template-Training_Agent_Network interfaces/net.if.out[&quot;{#IFNAME}&quot;,errors],5m)&gt;{$IF.ERRORS.WARN:&quot;{#IFNAME}&quot;}</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>max(/Template-Training_Agent_Network interfaces/net.if.in[&quot;{#IFNAME}&quot;,errors],5m)&lt;{$IF.ERRORS.WARN:&quot;{#IFNAME}&quot;}*0.8
+and max(/Template-Training_Agent_Network interfaces/net.if.out[&quot;{#IFNAME}&quot;,errors],5m)&lt;{$IF.ERRORS.WARN:&quot;{#IFNAME}&quot;}*0.8</recovery_expression>
+                            <name>Interface {#IFNAME}: High error rate</name>
+                            <event_name>Interface {#IFNAME}: High error rate (&gt;{$IF.ERRORS.WARN:&quot;{#IFNAME}&quot;} for 5m)</event_name>
+                            <opdata>errors in: {ITEM.LASTVALUE1}, errors out: {ITEM.LASTVALUE2}</opdata>
+                            <priority>WARNING</priority>
+                            <description>It recovers when it is below 80% of the `{$IF.ERRORS.WARN:&quot;{#IFNAME}&quot;}` threshold.</description>
+                            <manual_close>YES</manual_close>
+                            <dependencies>
+                                <dependency>
+                                    <name>Interface {#IFNAME}: Link down</name>
+                                    <expression>{$IFCONTROL:&quot;{#IFNAME}&quot;}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;],#1)&lt;&gt;last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;],#2))</expression>
+                                    <recovery_expression>last(/Template-Training_Agent_Network interfaces/vfs.file.contents[&quot;/sys/class/net/{#IFNAME}/operstate&quot;])&lt;&gt;2 or {$IFCONTROL:&quot;{#IFNAME}&quot;}=0</recovery_expression>
+                                </dependency>
+                            </dependencies>
+                            <tags>
+                                <tag>
+                                    <tag>scope</tag>
+                                    <value>availability</value>
+                                </tag>
+                                <tag>
+                                    <tag>scope</tag>
+                                    <value>performance</value>
+                                </tag>
+                            </tags>
+                        </trigger_prototype>
+                    </trigger_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <uuid>3c3dc00c218341fab48296474ce2b6be</uuid>
+                            <name>Interface {#IFNAME}: Network traffic</name>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>GRADIENT_LINE</drawtype>
+                                    <color>199C0D</color>
+                                    <item>
+                                        <host>Template-Training_Agent_Network interfaces</host>
+                                        <key>net.if.in[&quot;{#IFNAME}&quot;]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <drawtype>BOLD_LINE</drawtype>
+                                    <color>F63100</color>
+                                    <item>
+                                        <host>Template-Training_Agent_Network interfaces</host>
+                                        <key>net.if.out[&quot;{#IFNAME}&quot;]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>2</sortorder>
+                                    <color>00611C</color>
+                                    <yaxisside>RIGHT</yaxisside>
+                                    <item>
+                                        <host>Template-Training_Agent_Network interfaces</host>
+                                        <key>net.if.out[&quot;{#IFNAME}&quot;,errors]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>3</sortorder>
+                                    <color>F7941D</color>
+                                    <yaxisside>RIGHT</yaxisside>
+                                    <item>
+                                        <host>Template-Training_Agent_Network interfaces</host>
+                                        <key>net.if.in[&quot;{#IFNAME}&quot;,errors]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>4</sortorder>
+                                    <color>FC6EA3</color>
+                                    <yaxisside>RIGHT</yaxisside>
+                                    <item>
+                                        <host>Template-Training_Agent_Network interfaces</host>
+                                        <key>net.if.out[&quot;{#IFNAME}&quot;,dropped]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>5</sortorder>
+                                    <color>6C59DC</color>
+                                    <yaxisside>RIGHT</yaxisside>
+                                    <item>
+                                        <host>Template-Training_Agent_Network interfaces</host>
+                                        <key>net.if.in[&quot;{#IFNAME}&quot;,dropped]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <tags>
+                <tag>
+                    <tag>class</tag>
+                    <value>os</value>
+                </tag>
+                <tag>
+                    <tag>target</tag>
+                    <value>linux</value>
+                </tag>
+            </tags>
+            <macros>
+                <macro>
+                    <macro>{$AGENT.TIMEOUT}</macro>
+                    <value>3m</value>
+                    <description>Timeout after which agent is considered unavailable. Works only for agents reachable from Zabbix server/proxy (passive mode).</description>
+                </macro>
+                <macro>
+                    <macro>{$CPU.UTIL.CRIT}</macro>
+                    <value>90</value>
+                </macro>
+                <macro>
+                    <macro>{$IF.ERRORS.WARN}</macro>
+                    <value>2</value>
+                </macro>
+                <macro>
+                    <macro>{$IF.UTIL.MAX}</macro>
+                    <value>90</value>
+                    <description>This macro is used as a threshold in the interface utilization trigger.</description>
+                </macro>
+                <macro>
+                    <macro>{$IFCONTROL}</macro>
+                    <value>1</value>
+                </macro>
+                <macro>
+                    <macro>{$KERNEL.MAXFILES.MIN}</macro>
+                    <value>256</value>
+                </macro>
+                <macro>
+                    <macro>{$KERNEL.MAXPROC.MIN}</macro>
+                    <value>1024</value>
+                </macro>
+                <macro>
+                    <macro>{$LOAD_AVG_PER_CPU.MAX.WARN}</macro>
+                    <value>1.5</value>
+                    <description>The CPU load per core is considered sustainable. If necessary, it can be tuned.</description>
+                </macro>
+                <macro>
+                    <macro>{$MEMORY.AVAILABLE.MIN}</macro>
+                    <value>20M</value>
+                    <description>This macro is used as a threshold in the memory available trigger.</description>
+                </macro>
+                <macro>
+                    <macro>{$MEMORY.UTIL.MAX}</macro>
+                    <value>90</value>
+                    <description>This macro is used as a threshold in the memory utilization trigger.</description>
+                </macro>
+                <macro>
+                    <macro>{$NET.IF.IFNAME.MATCHES}</macro>
+                    <value>^.*$</value>
+                </macro>
+                <macro>
+                    <macro>{$NET.IF.IFNAME.NOT_MATCHES}</macro>
+                    <value>(^Software Loopback Interface|^NULL[0-9.]*$|^[Ll]o[0-9.]*$|^[Ss]ystem$|^Nu[0-9.]*$|^veth[0-9A-z]+$|docker[0-9]+|br-[a-z0-9]{12})</value>
+                    <description>It filters out `loopbacks`, `nulls`, `docker veth` links and `docker0 bridge` by default.</description>
+                </macro>
+                <macro>
+                    <macro>{$SWAP.PFREE.MIN.WARN}</macro>
+                    <value>50</value>
+                </macro>
+                <macro>
+                    <macro>{$SYSTEM.FUZZYTIME.MAX}</macro>
+                    <value>60</value>
+                </macro>
+                <macro>
+                    <macro>{$VFS.DEV.DEVNAME.MATCHES}</macro>
+                    <value>.+</value>
+                    <description>This macro is used for a discovery of block devices. It can be overridden on host level or its linked template level.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.DEV.DEVNAME.NOT_MATCHES}</macro>
+                    <value>^(loop[0-9]*|sd[a-z][0-9]+|nbd[0-9]+|sr[0-9]+|fd[0-9]+|dm-[0-9]+|ram[0-9]+|ploop[a-z0-9]+|md[0-9]*|hcp[0-9]*|zram[0-9]*)</value>
+                    <description>This macro is used for a discovery of block devices. It can be overridden on host level or its linked template level.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.DEV.READ.AWAIT.WARN}</macro>
+                    <value>20</value>
+                    <description>The average response time (in ms) of disk read before the trigger would fire.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.DEV.WRITE.AWAIT.WARN}</macro>
+                    <value>20</value>
+                    <description>The average response time (in ms) of disk write before the trigger would fire.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.FS.FREE.MIN.CRIT}</macro>
+                    <value>5G</value>
+                    <description>The critical threshold for utilization of the filesystem.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.FS.FREE.MIN.WARN}</macro>
+                    <value>10G</value>
+                    <description>The warning threshold for utilization of the filesystem.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.FS.FSNAME.MATCHES}</macro>
+                    <value>.+</value>
+                    <description>This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.FS.FSNAME.NOT_MATCHES}</macro>
+                    <value>^(/dev|/sys|/run|/proc|.+/shm$)</value>
+                    <description>This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.FS.FSTYPE.MATCHES}</macro>
+                    <value>^(btrfs|ext2|ext3|ext4|reiser|xfs|ffs|ufs|jfs|jfs2|vxfs|hfs|apfs|refs|ntfs|fat32|zfs)$</value>
+                    <description>This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.FS.FSTYPE.NOT_MATCHES}</macro>
+                    <value>^\s$</value>
+                    <description>This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.FS.INODE.PFREE.MIN.CRIT}</macro>
+                    <value>10</value>
+                    <description>The critical threshold of the filesystem metadata utilization.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.FS.INODE.PFREE.MIN.WARN}</macro>
+                    <value>20</value>
+                    <description>The warning threshold of the filesystem metadata utilization.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.FS.PUSED.MAX.CRIT}</macro>
+                    <value>90</value>
+                    <description>The critical threshold of the filesystem utilization.</description>
+                </macro>
+                <macro>
+                    <macro>{$VFS.FS.PUSED.MAX.WARN}</macro>
+                    <value>80</value>
+                    <description>The warning threshold of the filesystem utilization.</description>
+                </macro>
+            </macros>
+            <dashboards>
+                <dashboard>
+                    <uuid>a1374bc79e8045b29df4a5bf96fab010</uuid>
+                    <name>Network interfaces</name>
+                    <pages>
+                        <page>
+                            <name>Overview</name>
+                            <widgets>
+                                <widget>
+                                    <type>GRAPH_PROTOTYPE</type>
+                                    <width>24</width>
+                                    <height>5</height>
+                                    <fields>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>columns</name>
+                                            <value>1</value>
+                                        </field>
+                                        <field>
+                                            <type>GRAPH_PROTOTYPE</type>
+                                            <name>graphid</name>
+                                            <value>
+                                                <host>Template-Training_Agent_Network interfaces</host>
+                                                <name>Interface {#IFNAME}: Network traffic</name>
+                                            </value>
+                                        </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>rows</name>
+                                            <value>1</value>
+                                        </field>
+                                    </fields>
+                                </widget>
+                            </widgets>
+                        </page>
+                    </pages>
+                </dashboard>
+            </dashboards>
+            <valuemaps>
+                <valuemap>
+                    <uuid>86c44ead6eee43ceb4c7fd3fb1bd8701</uuid>
+                    <name>ifOperStatus</name>
+                    <mappings>
+                        <mapping>
+                            <value>0</value>
+                            <newvalue>unknown</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>notpresent</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>2</value>
+                            <newvalue>down</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>3</value>
+                            <newvalue>lowerlayerdown</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>4</value>
+                            <newvalue>testing</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>5</value>
+                            <newvalue>dormant</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>6</value>
+                            <newvalue>up</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+                <valuemap>
+                    <uuid>862eaaf08d5b40b583eb2259ecfc4240</uuid>
+                    <name>Linux::Interface protocol types</name>
+                    <mappings>
+                        <mapping>
+                            <value>0</value>
+                            <newvalue>from KA9Q: NET/ROM pseudo</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>Ethernet</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>2</value>
+                            <newvalue>Experimental Ethernet</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>3</value>
+                            <newvalue>AX.25 Level 2</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>4</value>
+                            <newvalue>PROnet token ring</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>5</value>
+                            <newvalue>Chaosnet</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>6</value>
+                            <newvalue>IEEE 802.2 Ethernet/TR/TB</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>7</value>
+                            <newvalue>ARCnet</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>8</value>
+                            <newvalue>APPLEtalk</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>15</value>
+                            <newvalue>Frame Relay DLCI</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>19</value>
+                            <newvalue>ATM</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>23</value>
+                            <newvalue>Metricom STRIP (new IANA id)</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>24</value>
+                            <newvalue>IEEE 1394 IPv4 - RFC 2734</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>27</value>
+                            <newvalue>EUI-64</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>32</value>
+                            <newvalue>InfiniBand</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>256</value>
+                            <newvalue>ARPHRD_SLIP</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>257</value>
+                            <newvalue>ARPHRD_CSLIP</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>258</value>
+                            <newvalue>ARPHRD_SLIP6</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>259</value>
+                            <newvalue>ARPHRD_CSLIP6</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>260</value>
+                            <newvalue>Notional KISS type</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>264</value>
+                            <newvalue>ARPHRD_ADAPT</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>270</value>
+                            <newvalue>ARPHRD_ROSE</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>271</value>
+                            <newvalue>CCITT X.25</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>272</value>
+                            <newvalue>Boards with X.25 in firmware</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>280</value>
+                            <newvalue>Controller Area Network</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>512</value>
+                            <newvalue>ARPHRD_PPP</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>513</value>
+                            <newvalue>Cisco HDLC</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>516</value>
+                            <newvalue>LAPB</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>517</value>
+                            <newvalue>Digital's DDCMP protocol</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>518</value>
+                            <newvalue>Raw HDLC</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>519</value>
+                            <newvalue>Raw IP</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>768</value>
+                            <newvalue>IPIP tunnel</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>769</value>
+                            <newvalue>IP6IP6 tunnel</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>770</value>
+                            <newvalue>Frame Relay Access Device</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>771</value>
+                            <newvalue>SKIP vif</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>772</value>
+                            <newvalue>Loopback device</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>773</value>
+                            <newvalue>Localtalk device</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>774</value>
+                            <newvalue>Fiber Distributed Data Interface</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>775</value>
+                            <newvalue>AP1000 BIF</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>776</value>
+                            <newvalue>sit0 device - IPv6-in-IPv4</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>777</value>
+                            <newvalue>IP over DDP tunneller</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>778</value>
+                            <newvalue>GRE over IP</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>779</value>
+                            <newvalue>PIMSM register interface</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>780</value>
+                            <newvalue>High Performance Parallel Interface</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>781</value>
+                            <newvalue>Nexus 64Mbps Ash</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>782</value>
+                            <newvalue>Acorn Econet</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>783</value>
+                            <newvalue>Linux-IrDA</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>784</value>
+                            <newvalue>Point to point fibrechannel</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>785</value>
+                            <newvalue>Fibrechannel arbitrated loop</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>786</value>
+                            <newvalue>Fibrechannel public loop</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>787</value>
+                            <newvalue>Fibrechannel fabric</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>800</value>
+                            <newvalue>Magic type ident for TR</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>801</value>
+                            <newvalue>IEEE 802.11</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>802</value>
+                            <newvalue>IEEE 802.11 + Prism2 header</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>803</value>
+                            <newvalue>IEEE 802.11 + radiotap header</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>804</value>
+                            <newvalue>ARPHRD_IEEE802154</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>805</value>
+                            <newvalue>IEEE 802.15.4 network monitor</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>820</value>
+                            <newvalue>PhoNet media type</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>821</value>
+                            <newvalue>PhoNet pipe header</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>822</value>
+                            <newvalue>CAIF media type</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>823</value>
+                            <newvalue>GRE over IPv6</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>824</value>
+                            <newvalue>Netlink header</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>825</value>
+                            <newvalue>IPv6 over LoWPAN</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>826</value>
+                            <newvalue>Vsock monitor header</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+                <valuemap>
+                    <uuid>42e815bca1cc4732a86969b3cdbf5d23</uuid>
+                    <name>zabbix.host.available</name>
+                    <mappings>
+                        <mapping>
+                            <value>0</value>
+                            <newvalue>not available</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>available</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>2</value>
+                            <newvalue>unknown</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+                <valuemap>
+                    <uuid>b149e5d2a9854301af80a879dceaea6c</uuid>
+                    <name>Zabbix agent ping status</name>
+                    <mappings>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>Up</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+            </valuemaps>
+        </template>
         <template>
             <uuid>5b826463ad67427fa556294381f6238e</uuid>
             <template>Template-Training_App_Apache_Tomcat_JMX</template>
@@ -1545,6 +2552,15 @@ Template tooling version used: 0.38</description>
                             <value>Examples of item types</value>
                         </tag>
                     </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>c6871a4ce93e44969475ffe3a30a994f</uuid>
+                            <expression>find(/Template-Training_Examples-Items/log[/var/log/zabbix/zabbix_server.log,,,5,skip],600s,&quot;like&quot;,&quot;executing housekeeper&quot;)=1 and nodata(/Template-Training_Examples-Items/log[/var/log/zabbix/zabbix_server.log,,,5,skip],300s)=0</expression>
+                            <name>Housekeeper is running</name>
+                            <priority>INFO</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
                 </item>
                 <item>
                     <uuid>ce7a3abfce144222b866c436ac6a3367</uuid>
@@ -4242,11 +5258,6 @@ As with the I/O thread, this should normally be Yes.</description>
                                     <height>5</height>
                                     <fields>
                                         <field>
-                                            <type>INTEGER</type>
-                                            <name>source_type</name>
-                                            <value>0</value>
-                                        </field>
-                                        <field>
                                             <type>GRAPH</type>
                                             <name>graphid</name>
                                             <value>
@@ -4254,26 +5265,10 @@ As with the I/O thread, this should normally be Yes.</description>
                                                 <name>MySQL: Operations</name>
                                             </value>
                                         </field>
-                                    </fields>
-                                </widget>
-                                <widget>
-                                    <type>GRAPH_CLASSIC</type>
-                                    <x>12</x>
-                                    <width>12</width>
-                                    <height>5</height>
-                                    <fields>
                                         <field>
                                             <type>INTEGER</type>
                                             <name>source_type</name>
                                             <value>0</value>
-                                        </field>
-                                        <field>
-                                            <type>GRAPH</type>
-                                            <name>graphid</name>
-                                            <value>
-                                                <host>Template-Training_MySQL_by_Zabbix_agent_2</host>
-                                                <name>MySQL: Queries</name>
-                                            </value>
                                         </field>
                                     </fields>
                                 </widget>
@@ -4283,11 +5278,6 @@ As with the I/O thread, this should normally be Yes.</description>
                                     <width>12</width>
                                     <height>5</height>
                                     <fields>
-                                        <field>
-                                            <type>INTEGER</type>
-                                            <name>source_type</name>
-                                            <value>0</value>
-                                        </field>
                                         <field>
                                             <type>GRAPH</type>
                                             <name>graphid</name>
@@ -4296,6 +5286,53 @@ As with the I/O thread, this should normally be Yes.</description>
                                                 <name>MySQL: Connections</name>
                                             </value>
                                         </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>source_type</name>
+                                            <value>0</value>
+                                        </field>
+                                    </fields>
+                                </widget>
+                                <widget>
+                                    <type>GRAPH_CLASSIC</type>
+                                    <y>10</y>
+                                    <width>12</width>
+                                    <height>5</height>
+                                    <fields>
+                                        <field>
+                                            <type>GRAPH</type>
+                                            <name>graphid</name>
+                                            <value>
+                                                <host>Template-Training_MySQL_by_Zabbix_agent_2</host>
+                                                <name>MySQL: InnoDB buffer pool</name>
+                                            </value>
+                                        </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>source_type</name>
+                                            <value>0</value>
+                                        </field>
+                                    </fields>
+                                </widget>
+                                <widget>
+                                    <type>GRAPH_CLASSIC</type>
+                                    <x>12</x>
+                                    <width>12</width>
+                                    <height>5</height>
+                                    <fields>
+                                        <field>
+                                            <type>GRAPH</type>
+                                            <name>graphid</name>
+                                            <value>
+                                                <host>Template-Training_MySQL_by_Zabbix_agent_2</host>
+                                                <name>MySQL: Queries</name>
+                                            </value>
+                                        </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>source_type</name>
+                                            <value>0</value>
+                                        </field>
                                     </fields>
                                 </widget>
                                 <widget>
@@ -4306,11 +5343,6 @@ As with the I/O thread, this should normally be Yes.</description>
                                     <height>5</height>
                                     <fields>
                                         <field>
-                                            <type>INTEGER</type>
-                                            <name>source_type</name>
-                                            <value>0</value>
-                                        </field>
-                                        <field>
                                             <type>GRAPH</type>
                                             <name>graphid</name>
                                             <value>
@@ -4318,26 +5350,10 @@ As with the I/O thread, this should normally be Yes.</description>
                                                 <name>MySQL: Bandwidth</name>
                                             </value>
                                         </field>
-                                    </fields>
-                                </widget>
-                                <widget>
-                                    <type>GRAPH_CLASSIC</type>
-                                    <y>10</y>
-                                    <width>12</width>
-                                    <height>5</height>
-                                    <fields>
                                         <field>
                                             <type>INTEGER</type>
                                             <name>source_type</name>
                                             <value>0</value>
-                                        </field>
-                                        <field>
-                                            <type>GRAPH</type>
-                                            <name>graphid</name>
-                                            <value>
-                                                <host>Template-Training_MySQL_by_Zabbix_agent_2</host>
-                                                <name>MySQL: InnoDB buffer pool</name>
-                                            </value>
                                         </field>
                                     </fields>
                                 </widget>
@@ -4349,17 +5365,17 @@ As with the I/O thread, this should normally be Yes.</description>
                                     <height>5</height>
                                     <fields>
                                         <field>
-                                            <type>INTEGER</type>
-                                            <name>source_type</name>
-                                            <value>0</value>
-                                        </field>
-                                        <field>
                                             <type>GRAPH</type>
                                             <name>graphid</name>
                                             <value>
                                                 <host>Template-Training_MySQL_by_Zabbix_agent_2</host>
                                                 <name>MySQL: Threads</name>
                                             </value>
+                                        </field>
+                                        <field>
+                                            <type>INTEGER</type>
+                                            <name>source_type</name>
+                                            <value>0</value>
                                         </field>
                                     </fields>
                                 </widget>
@@ -5197,6 +6213,8 @@ As with the I/O thread, this should normally be Yes.</description>
             <uuid>a4095dae2b1d4fdabd2da9db4ee42384</uuid>
             <template>Template-Training_SNMPv2c-Interfaces</template>
             <name>Template-Training_SNMPv2c-Interfaces</name>
+            <description>Value mapping
+https://www.circitor.fr/Mibs/Html/I/IANAifType-MIB.php#IANAifType</description>
             <groups>
                 <group>
                     <name>Templates/Training</name>
@@ -5228,7 +6246,7 @@ As with the I/O thread, this should normally be Yes.</description>
                     <type>SNMP_AGENT</type>
                     <snmp_oid>discovery[{#SNMPVALUE},IF-MIB::ifDescr]</snmp_oid>
                     <key>ifDescr</key>
-                    <delay>60</delay>
+                    <delay>1h</delay>
                     <filter>
                         <conditions>
                             <condition>
@@ -5245,11 +6263,11 @@ As with the I/O thread, this should normally be Yes.</description>
                     <item_prototypes>
                         <item_prototype>
                             <uuid>fe19cf6cc10c45408a0001ab0e968c55</uuid>
-                            <name>Admin status of $1</name>
+                            <name>Admin status</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>ifAdminStatus.{#SNMPINDEX}</snmp_oid>
                             <key>ifAdminStatus[{#SNMPVALUE}]</key>
-                            <delay>60;50/1-7,00:00-24:00</delay>
+                            <delay>1m;50/1-7,00:00-24:00</delay>
                             <history>10d</history>
                             <trends>0</trends>
                             <status>DISABLED</status>
@@ -5263,15 +6281,23 @@ As with the I/O thread, this should normally be Yes.</description>
                         </item_prototype>
                         <item_prototype>
                             <uuid>4af92fdb8ed340c2af80c53447af862b</uuid>
-                            <name>Description of $1</name>
+                            <name>Description</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>ifDescr.{#SNMPINDEX}</snmp_oid>
                             <key>ifDescr[{#SNMPVALUE}]</key>
-                            <delay>3600;50/1-7,00:00-24:00</delay>
+                            <delay>1h;50/1-7,00:00-24:00</delay>
                             <history>10d</history>
                             <trends>0</trends>
                             <value_type>CHAR</value_type>
                             <description>A textual string containing information about the interface.  This string should include the name of the manufacturer, the product name and the version of the interface hardware/software.</description>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <parameters>
+                                        <parameter>12h</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
                             <tags>
                                 <tag>
                                     <tag>Application</tag>
@@ -5281,11 +6307,10 @@ As with the I/O thread, this should normally be Yes.</description>
                         </item_prototype>
                         <item_prototype>
                             <uuid>62df174a7a9344b6ba1e26148af36d6d</uuid>
-                            <name>Inbound errors on $1</name>
+                            <name>Inbound errors</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>ifInErrors.{#SNMPINDEX}</snmp_oid>
                             <key>ifInErrors[{#SNMPVALUE}]</key>
-                            <delay>60;50/1-7,00:00-24:00</delay>
                             <history>10d</history>
                             <trends>1500d</trends>
                             <status>DISABLED</status>
@@ -5307,11 +6332,10 @@ As with the I/O thread, this should normally be Yes.</description>
                         </item_prototype>
                         <item_prototype>
                             <uuid>bb63138d90c6455badea8b939c76a8a3</uuid>
-                            <name>Incoming traffic on $1</name>
+                            <name>Incoming traffic</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>ifInOctets.{#SNMPINDEX}</snmp_oid>
                             <key>ifInOctets[{#SNMPVALUE}]</key>
-                            <delay>60;50/1-7,00:00-24:00</delay>
                             <history>10d</history>
                             <trends>1500d</trends>
                             <units>bps</units>
@@ -5339,11 +6363,10 @@ As with the I/O thread, this should normally be Yes.</description>
                         </item_prototype>
                         <item_prototype>
                             <uuid>3cc3200de1a74274812dbac49fc0ccd0</uuid>
-                            <name>Operational status of $1</name>
+                            <name>Operational status</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>ifOperStatus.{#SNMPINDEX}</snmp_oid>
                             <key>ifOperStatus[{#SNMPVALUE}]</key>
-                            <delay>60;50/1-7,00:00-24:00</delay>
                             <history>10d</history>
                             <trends>0</trends>
                             <status>DISABLED</status>
@@ -5365,11 +6388,10 @@ As with the I/O thread, this should normally be Yes.</description>
                         </item_prototype>
                         <item_prototype>
                             <uuid>60193ba4ffcc45e9ba8222176c6b6497</uuid>
-                            <name>Outbound discards on $1</name>
+                            <name>Outbound discards</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>ifOutDiscards.{#SNMPINDEX}</snmp_oid>
                             <key>ifOutDiscards[{#SNMPVALUE}]</key>
-                            <delay>60;50/1-7,00:00-24:00</delay>
                             <history>10d</history>
                             <trends>1500d</trends>
                             <status>DISABLED</status>
@@ -5391,11 +6413,10 @@ As with the I/O thread, this should normally be Yes.</description>
                         </item_prototype>
                         <item_prototype>
                             <uuid>4e17488cc6c140e8b3fffcc903a29cc0</uuid>
-                            <name>Outbound errors on $1</name>
+                            <name>Outbound errors</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>ifOutErrors.{#SNMPINDEX}</snmp_oid>
                             <key>ifOutErrors[{#SNMPVALUE}]</key>
-                            <delay>60;50/1-7,00:00-24:00</delay>
                             <history>10d</history>
                             <trends>1500d</trends>
                             <status>DISABLED</status>
@@ -5417,11 +6438,10 @@ As with the I/O thread, this should normally be Yes.</description>
                         </item_prototype>
                         <item_prototype>
                             <uuid>917398e5e1e3407a8d94e95ab7b86d31</uuid>
-                            <name>Outgoing traffic on $1</name>
+                            <name>Outgoing traffic</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>ifOutOctets.{#SNMPINDEX}</snmp_oid>
                             <key>ifOutOctets[{#SNMPVALUE}]</key>
-                            <delay>60;50/1-7,00:00-24:00</delay>
                             <history>10d</history>
                             <trends>1500d</trends>
                             <units>bps</units>
@@ -5443,13 +6463,21 @@ As with the I/O thread, this should normally be Yes.</description>
                         </item_prototype>
                         <item_prototype>
                             <uuid>659e89a6846d47588394a6fe0853d993</uuid>
-                            <name>Type of interface $1</name>
+                            <name>Type of interface</name>
                             <type>SNMP_AGENT</type>
                             <snmp_oid>ifType.{#SNMPINDEX}</snmp_oid>
                             <key>ifType[{#SNMPVALUE}]</key>
-                            <delay>3600;50/1-7,00:00-24:00</delay>
+                            <delay>1h;50/1-7,00:00-24:00</delay>
                             <history>10d</history>
                             <trends>0</trends>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <parameters>
+                                        <parameter>12h</parameter>
+                                    </parameters>
+                                </step>
+                            </preprocessing>
                             <tags>
                                 <tag>
                                     <tag>Application</tag>
@@ -5492,6 +6520,42 @@ As with the I/O thread, this should normally be Yes.</description>
                     <value>Training</value>
                 </tag>
             </tags>
+            <valuemaps>
+                <valuemap>
+                    <uuid>f5e449c4db7446a4be5b2b4e25e4dca6</uuid>
+                    <name>IF-MIB::ifType</name>
+                    <mappings>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>other</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>6</value>
+                            <newvalue>ethernetCsmacd</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>224</value>
+                            <newvalue>fcipLink</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>244</value>
+                            <newvalue>wwanPP2</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>24</value>
+                            <newvalue>softwareLoopback</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>246</value>
+                            <newvalue>ifPwType</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>247</value>
+                            <newvalue>ilan</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+            </valuemaps>
         </template>
     </templates>
     <triggers>

@@ -1,0 +1,871 @@
+{
+    "zabbix_export": {
+        "version": "6.0",
+        "date": "2023-10-13T13:54:50Z",
+        "groups": [
+            {
+                "uuid": "7045cb56d4334ebeabcf3ca9be64b9eb",
+                "name": "Templates/Training"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "150a00f6f65e4c85b5c5fdd3cc92ba43",
+                "template": "Template App DNS Records pfsense.cz",
+                "name": "Template App DNS Records pfsense.cz",
+                "description": "DNS record in pfsense.cz domain",
+                "groups": [
+                    {
+                        "name": "Templates/Training"
+                    }
+                ],
+                "items": [
+                    {
+                        "uuid": "29669f2ba6964176b07b5732615cca93",
+                        "name": "Check DNS record fbsd01.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},fbsd01.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "7b54252d2eb04b828de2adfa037d56b5",
+                        "name": "Check DNS record linsrv01.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},linsrv01.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "1e016a4a41a947778d4b7c7d8e44df44",
+                        "name": "Check DNS record pfsense-edu.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},pfsense-edu.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "fc6e510d7f6543d98bdfcabc01319df7",
+                        "name": "Check DNS record pfsense.cz MX",
+                        "key": "net.dns.record[{$DNS.SERVER},pfsense.cz,MX]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "44b7008a482e4ca8ad476a9024199412",
+                        "name": "Check DNS record pfsense.cz SOA",
+                        "key": "net.dns.record[{$DNS.SERVER},pfsense.cz,SOA]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "fd5fbfedf0c0418e801862b1c70c39f6",
+                        "name": "Check DNS record pfsense.cz TXT",
+                        "key": "net.dns.record[{$DNS.SERVER},pfsense.cz,TXT]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "d14d9756be2c4c9192b8e8f414e929ab",
+                        "name": "Check DNS record pfsense01.pfsense.cz CNAME",
+                        "key": "net.dns.record[{$DNS.SERVER},pfsense01.pfsense.cz,CNAME]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "38eed89f7a3945aabbf0c87353577d31",
+                        "name": "Check DNS record winsrv01.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},winsrv01.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "status": "DISABLED",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "6ddffa3313b640fa957b500c6c57c052",
+                        "name": "Check DNS record zbx01.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx01.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "status": "DISABLED",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "0f4dff83737e4d67be5408d78287c0ad",
+                        "name": "Check DNS record zbx02.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx02.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "2bde795f4c514a9dae89335981bb4c1a",
+                        "name": "Check DNS record zbx03.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx03.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "4b69aba70ee84b1d9824fae03436962a",
+                        "name": "Check DNS record zbx04.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx04.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "a11aa8efe7754db888d74c81133c51f6",
+                        "name": "Check DNS record zbx05.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx05.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "status": "DISABLED",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "c93419576c5a403480df2b95e18416e4",
+                        "name": "Check DNS record zbx06.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx06.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "status": "DISABLED",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "ca0bfa2d98a1475b853e9f07dc3ae07c",
+                        "name": "Check DNS record zbx07.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx07.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "status": "DISABLED",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "443c066ab9c34b32bd16590e77fd7d79",
+                        "name": "Check DNS record zbx08.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx08.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "status": "DISABLED",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "c5f775e0695e4503936c653617db3153",
+                        "name": "Check DNS record zbx09.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx09.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "status": "DISABLED",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "662b1dfa37a645f484a11a287e89fa21",
+                        "name": "Check DNS record zbx10.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx10.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "status": "DISABLED",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "934c0bab7c1646dbad0518a1a32017c7",
+                        "name": "Check DNS record zbx11.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx11.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "status": "DISABLED",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "fe9f5be93533448eb0a7b14c877af30d",
+                        "name": "Check DNS record zbx12.pfsense.cz A",
+                        "key": "net.dns.record[{$DNS.SERVER},zbx12.pfsense.cz,A]",
+                        "delay": "1h",
+                        "trends": "0",
+                        "status": "DISABLED",
+                        "value_type": "CHAR",
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "071942d1572d4d7690c6bd8800c2f5e2",
+                        "name": "Check DNS fbsdsrv01.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},fbsdsrv01.pfsense.cz,A]",
+                        "delay": "5m",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "0d94f037e40f40689f8c880692d98d9a",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},fbsdsrv01.pfsense.cz,A])=0",
+                                "name": "DNS record fbsd01.pfsense.cz does not exist!",
+                                "url": "http://linsrv01.pfsense.cz",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "661ef8ee368144799f587cfb058d049c",
+                        "name": "Check DNS - linsrv01.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},linsrv01.pfsense.cz,A]",
+                        "delay": "5m",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "5c6fe74bb69c4ff1841d9f91edfb53e0",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},linsrv01.pfsense.cz,A])=0",
+                                "name": "DNS record linsrv01.pfsense.cz does not exist!",
+                                "url": "http://linsrv01.pfsense.cz",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "c5dd268112e549c28dfafab592767fde",
+                        "name": "Check DNS pfsense-edu.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},pfsense-edu.pfsense.cz,A]",
+                        "delay": "5m",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "b9b14e63a45b440791c4945364b2bfe6",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},pfsense-edu.pfsense.cz,A])=0",
+                                "name": "DNS record pfsense01.pfsense.cz does not exist!",
+                                "url": "http://pfsense01.pfsense.cz",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "39f01956680b4fe7b9b483b7c3cf0f36",
+                        "name": "Check DNS winsrv01.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},winsrv01.pfsense.cz,A]",
+                        "delay": "5m",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "6c4e838ad0ba4d8389bdc5e6fa3529c8",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},winsrv01.pfsense.cz,A])=0",
+                                "name": "DNS record winsrv01.pfsense.cz does not exist!",
+                                "url": "http://winsrv01.pfsense.cz",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "7f272189da11478c8e76171f5f6450ab",
+                        "name": "Check DNS zbx01.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx01.pfsense.cz,A]",
+                        "delay": "5m",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "64aaf02e31a249cbbc8d37e1d8b72040",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx01.pfsense.cz,A])=0",
+                                "name": "DNS record zbx01.pfsense.cz does not exist!",
+                                "url": "http://zbx01.pfsense.cz/zabbix/",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "4ca54b013e3c4baaaa0332b5a17f4eb0",
+                        "name": "Check DNS zbx02.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx02.pfsense.cz,A]",
+                        "delay": "5m",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "a926ff3afc874ae69b6049cdefe818fd",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx02.pfsense.cz,A])=0",
+                                "name": "DNS record zbx02.pfsense.cz does not exist!",
+                                "url": "http://zbx02.pfsense.cz/zabbix/",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "de6188dd3a2c4ac3a08cc6ab8b220078",
+                        "name": "Check DNS zbx03.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx03.pfsense.cz,A]",
+                        "delay": "5m",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "7478bf8d675647b2ab2fb17875355173",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx03.pfsense.cz,A])=0",
+                                "name": "DNS record zbx03.pfsense.cz does not exist!",
+                                "url": "http://zbx03.pfsense.cz/zabbix/",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "085fd3a827a04208abfc082d5029c791",
+                        "name": "Check DNS zbx04.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx04.pfsense.cz,A]",
+                        "delay": "5m",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "253c1af4954d497e8202ac37bb9c238c",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx04.pfsense.cz,A])=0",
+                                "name": "DNS record zbx04.pfsense.cz does not exist!",
+                                "url": "http://zbx04.pfsense.cz/zabbix/",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "65b5c16d3fad477c8cefc45fff4b6432",
+                        "name": "Check DNS zbx05.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx05.pfsense.cz,A]",
+                        "delay": "5m",
+                        "status": "DISABLED",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "f54cb7f2f4da414793dc7380f5ef86dd",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx05.pfsense.cz,A])=0",
+                                "name": "DNS record zbx05.pfsense.cz does not exist!",
+                                "url": "http://zbx05.pfsense.cz/zabbix/",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "fb833b5f38754b74bea53e9827a26d0a",
+                        "name": "Check DNS zbx06.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx06.pfsense.cz,A]",
+                        "delay": "5m",
+                        "status": "DISABLED",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "5c409d94a6b0489f969d52958a263c7a",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx06.pfsense.cz,A])=0",
+                                "name": "DNS record zbx06.pfsense.cz does not exist!",
+                                "url": "http://zbx06.pfsense.cz/zabbix/",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "e06f4ecf72aa46458bb2b250bc943a79",
+                        "name": "Check DNS zbx07.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx07.pfsense.cz,A]",
+                        "delay": "5m",
+                        "status": "DISABLED",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "3511619af14044b4aae479ba860eb616",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx07.pfsense.cz,A])=0",
+                                "name": "DNS record zbx07.pfsense.cz does not exist!",
+                                "url": "http://zbx07.pfsense.cz/zabbix/",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "1efda04f228340ada850e1f03c219f50",
+                        "name": "Check DNS zbx08.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx08.pfsense.cz,A]",
+                        "delay": "5m",
+                        "status": "DISABLED",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "b0092b8f107840fba390407accbb8246",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx08.pfsense.cz,A])=0",
+                                "name": "DNS record zbx08.pfsense.cz does not exist!",
+                                "url": "http://zbx08.pfsense.cz/zabbix/",
+                                "status": "DISABLED",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "c444126fcc6746799301055d74d3c7d0",
+                        "name": "Check DNS zbx09.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx09.pfsense.cz,A]",
+                        "delay": "5m",
+                        "status": "DISABLED",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "2a62855754294ba6810ace3b0486b9fa",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx09.pfsense.cz,A])=0",
+                                "name": "DNS record zbx09.pfsense.cz does not exist!",
+                                "url": "http://zbx09.pfsense.cz/zabbix/",
+                                "status": "DISABLED",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "00c8f02dce2f40b4b4c788694e4ad3ed",
+                        "name": "Check DNS zbx10.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx10.pfsense.cz,A]",
+                        "delay": "5m",
+                        "status": "DISABLED",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "8c82386ebfed4ada881dda922e70dbbe",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx10.pfsense.cz,A])=0",
+                                "name": "DNS record zbx10.pfsense.cz does not exist!",
+                                "url": "http://zbx10.pfsense.cz/zabbix/",
+                                "status": "DISABLED",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "27ab39c020f349e996d183dc5c5f8eea",
+                        "name": "Check DNS zbx11.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx11.pfsense.cz,A]",
+                        "delay": "5m",
+                        "status": "DISABLED",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "776d4fe28a4740578b605db838cfe8eb",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx11.pfsense.cz,A])=0",
+                                "name": "DNS record zbx11.pfsense.cz does not exist!",
+                                "url": "http://zbx11.pfsense.cz/zabbix/",
+                                "status": "DISABLED",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "e6ab4aee16ff4c88b9186c708fea95bb",
+                        "name": "Check DNS zbx12.pfsense.cz A",
+                        "key": "net.dns[{$DNS.SERVER},zbx12.pfsense.cz,A]",
+                        "delay": "5m",
+                        "status": "DISABLED",
+                        "valuemap": {
+                            "name": "Service state"
+                        },
+                        "tags": [
+                            {
+                                "tag": "Application",
+                                "value": "DNS Record"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "e6b1ed5eb169464dbe57b802398db8c6",
+                                "expression": "last(/Template App DNS Records pfsense.cz/net.dns[{$DNS.SERVER},zbx12.pfsense.cz,A])=0",
+                                "name": "DNS record zbx12.pfsense.cz does not exist!",
+                                "url": "http://zbx12.pfsense.cz/zabbix/",
+                                "status": "DISABLED",
+                                "priority": "WARNING",
+                                "description": "EDU server",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "Status",
+                                        "value": "DNS"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "tags": [
+                    {
+                        "tag": "Service",
+                        "value": "DNS"
+                    }
+                ],
+                "macros": [
+                    {
+                        "macro": "{$DNS.SERVER}",
+                        "value": "8.8.8.8",
+                        "description": "DNS server Google"
+                    }
+                ],
+                "valuemaps": [
+                    {
+                        "uuid": "173e8f9f26d444c9a390ec460f0f5235",
+                        "name": "Service state",
+                        "mappings": [
+                            {
+                                "value": "0",
+                                "newvalue": "Down"
+                            },
+                            {
+                                "value": "1",
+                                "newvalue": "Up"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

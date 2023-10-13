@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
-    <version>5.0</version>
-    <date>2020-11-12T09:38:09Z</date>
+    <version>6.0</version>
+    <date>2023-10-13T13:45:45Z</date>
     <groups>
         <group>
+            <uuid>6b54fd28ab94497eb0d362b83a8c0717</uuid>
             <name>Windows servers</name>
         </group>
     </groups>
@@ -11,10 +12,9 @@
         <host>
             <host>WINSRV01</host>
             <name>winsrv01</name>
-            <description>winsrv01   europe-west3-b   n1-standard-1   10.156.15.192   34.107.123.46</description>
             <templates>
                 <template>
-                    <name>Template OS Windows by Zabbix agent</name>
+                    <name>Windows by Zabbix agent</name>
                 </template>
             </templates>
             <groups>
@@ -25,7 +25,7 @@
             <interfaces>
                 <interface>
                     <useip>NO</useip>
-                    <ip>34.107.123.46</ip>
+                    <ip>34.116.143.153</ip>
                     <dns>winsrv01.pfsense.cz</dns>
                     <interface_ref>if1</interface_ref>
                 </interface>
@@ -36,6 +36,13 @@
                     <value>Windows</value>
                 </tag>
             </tags>
+            <macros>
+                <macro>
+                    <macro>{$SERVICE.NAME.NOT_MATCHES}</macro>
+                    <value>^(?:RemoteRegistry|gupdate|SysmonLog|clr_optimization_v.+|sppsvc|gpsvc|Pml Driver HPZ12|Net Driver HPZ12|MapsBroker|IntelAudioService|Intel\(R\) TPM Provisioning Service|dbupdate|DoSvc|CDPUserSvc_.+|WpnUserService_.+|OneSyncSvc_.+|WbioSrvc|tiledatamodelsvc|GISvc|ShellHWDetection|TrustedInstaller|TabletInputService|CDPSvc|wuauserv|edgeupdate|BFE)$</value>
+                    <description>This macro is used in Service discovery. Can be overridden on the host or linked template level.</description>
+                </macro>
+            </macros>
             <inventory>
                 <name>WINSRV01</name>
             </inventory>
