@@ -5,7 +5,7 @@
 # Lukas Maly <Iam@LukasMaly.NET> 14.12.2023
 #
 
-pkg install -y bash joe mc git
+pkg install -y bash joe mc git screen
 
 ### zbx user add
 openssl rand -base64 32 > /root/zbx-user.pw
@@ -18,6 +18,7 @@ echo ${ZBX_PASS} | pw usermod zbx -h 0
 
 # reconfigure ssh
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
+#echo "AuthenticationMethods publickey,password" >> /etc/ssh/sshd_config
 sed -i "" -e 's|#PasswordAuthentication no|PasswordAuthentication yes|g; s|Admin|zbx_probe|g' /etc/ssh/sshd_config
 /etc/rc.d/sshd restart
 
@@ -31,8 +32,9 @@ portsnap extract
 
 cd /usr/ports/devel/p5-JSON-RPC && make install clean
 cd /usr/ports/www/p5-LWP-Protocol-https && make install clean
+
+pkg install -y py39-lxml py39-ansible
 cd /usr/ports/devel/py-pip && make install clean
-cd /usr/ports/sysutils/ansible && make install clean
 
 pip install zabbix-api
 
