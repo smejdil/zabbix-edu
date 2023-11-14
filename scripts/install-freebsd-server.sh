@@ -2,13 +2,30 @@
 #
 # Install FreeBSD packages
 #
-# Lukas Maly <Iam@LukasMaly.NET> 10.10.2023
+# Lukas Maly <Iam@LukasMaly.NET> 14.12.2023
 #
 
 pkg install -y bash joe mc git
 
-echo "BATCH=yes" > /etc/make.conf
+### zbx user add
+openssl rand -base64 32 > /root/zbx-user.pw
+ZBX_PASS=`cat /root/zbx-user.pw`
 
+echo "--- ZABBIX ---"
+pw useradd zbx -m
+pw usermod zbx -g google-sudoers
+echo ${ZBX_PASS} | pw usermod zbx -h 0
+
+# reconfigure ssh
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
+sed -i "" -e 's|#PasswordAuthentication no|PasswordAuthentication yes|g; s|Admin|zbx_probe|g' /etc/ssh/sshd_config
+/etc/rc.d/sshd restart
+
+# edit make.conf
+echo "BATCH=yes" > /etc/make.conf
+echo "ALLOW_UNSUPPORTED_SYSTEM=yes" >> /etc/make.conf
+
+# update ports
 portsnap fetch
 portsnap extract
 

@@ -2,7 +2,7 @@
 #
 # Create GCP FreeBSD server for Zabbix API
 #
-# Lukas Maly <Iam@LukasMaly.NET> 14.2.2023
+# Lukas Maly <Iam@LukasMaly.NET> 14.11.2023
 #
 
 # GCP Set project Zabbix-EDU
@@ -14,8 +14,9 @@ gcloud config set project ${PROJECT}
 gcloud config set compute/region ${REGION}
 gcloud config set compute/zone ${ZONE}
 
-FBSD="13-1"
+FBSD="13-2"
 #IMAGE_FBD=`gcloud compute images list | grep bsd | awk '{print $1}'`
+# gcloud compute images list --project=freebsd-org-cloud-dev --no-standard-images
 
 argc=$#;
 argv=("$@");
