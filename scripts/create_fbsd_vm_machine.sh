@@ -14,16 +14,17 @@ gcloud config set project ${PROJECT}
 gcloud config set compute/region ${REGION}
 gcloud config set compute/zone ${ZONE}
 
-FBSD="13-2"
+FBSD="14-0"
 #IMAGE_FBD=`gcloud compute images list | grep bsd | awk '{print $1}'`
-# gcloud compute images list --project=freebsd-org-cloud-dev --no-standard-images
+# gcloud compute images list --project=freebsd-org-cloud-dev --no-standard-images | grep release-amd64
+# freebsd-14-0-release-amd64-ufs
 
 argc=$#;
 argv=("$@");
 
 for (( j=0; j<argc; j++ )); do
     echo "fbsdsrv${argv[j]}";
-    gcloud compute instances create fbsdsrv${argv[j]} --image freebsd-${FBSD}-release-amd64 --image-project=freebsd-org-cloud-dev --zone=${ZONE} --metadata-from-file startup-script=./zabbix-edu/scripts/install-freebsd-server.sh
+    gcloud compute instances create fbsdsrv${argv[j]} --image freebsd-${FBSD}-release-amd64-ufs --image-project=freebsd-org-cloud-dev --zone=${ZONE} --metadata-from-file startup-script=./zabbix-edu/scripts/install-freebsd-server.sh
     gcloud compute instances add-tags fbsdsrv${argv[j]} --tags=http-server --zone=${ZONE}
     gcloud compute instances add-tags fbsdsrv${argv[j]} --tags=https-server --zone=${ZONE}
     gcloud compute instances add-tags fbsdsrv${argv[j]} --tags=zabbix-agent --zone=${ZONE}
