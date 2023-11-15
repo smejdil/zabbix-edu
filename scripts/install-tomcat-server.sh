@@ -2,7 +2,7 @@
 #
 # Install Tomcat package and extra repo
 #
-# Lukas Maly <Iam@LukasMaly.NET> 13.10.2021
+# Lukas Maly <Iam@LukasMaly.NET> 15.11.2023
 #
 
 yum -y install git
@@ -18,7 +18,7 @@ yum -y install httpd-devel apr apr-devel apr-util apr-util-devel gcc make libtoo
 yum -y install ipmitool
 yum -y install net-snmp net-snmp-utils
 yum -y install golang-github-prometheus-node-exporter
-rpm -Uvh https://repo.zabbix.com/zabbix/5.0/rhel/7/x86_64/zabbix-release-5.0-1.el7.noarch.rpm
+rpm -Uvh https://repo.zabbix.com/zabbix/6.0/rhel/7/x86_64/zabbix-release-6.0-4.el7.noarch.rpm
 yum clean all
 yum -y install zabbix-agent zabbix-agent2 zabbix-sender zabbix-get
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
