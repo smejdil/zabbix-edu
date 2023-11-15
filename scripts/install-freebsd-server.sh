@@ -38,6 +38,8 @@ cd /usr/ports/www/p5-LWP-Protocol-https && make install clean
 pkg install -y py39-lxml py39-ansible jq
 cd /usr/ports/devel/py-pip && make install clean
 cd /usr/ports/net-mgmt/py-pyzabbix && make install clean
+cd /usr/ports/www/p5-HTTP-Tiny && make install clean
+cd /usr/ports/converters/p5-JSON-MaybeXS && make install clean
 
 pip install zabbix-api
 
