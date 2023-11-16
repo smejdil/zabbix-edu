@@ -23,7 +23,7 @@ mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
 
 # Import db schema
 echo "--- Import DB schema ---"
-cat /usr/share/zabbix-sql-scripts/postgresql/proxy.sql| mysql -u zabbix_proxy -p${ZABBIX_PROXY_MYSQL_PASS} zabbix_proxy
+cat /usr/share/zabbix-sql-scripts/mysql/proxy.sql | mysql -u zabbix_proxy -p${ZABBIX_PROXY_MYSQL_PASS} zabbix_proxy
 
 # Zabbix configuration
 echo "--- Configure Zabbix proxy config ---"
@@ -42,7 +42,8 @@ diff -u /etc/zabbix/zabbix_proxy.conf-orig /etc/zabbix/zabbix_proxy.conf
 
 # Restart services
 echo "--- Restart and enable services ---"
-systemctl restart zabbix-proxy
-systemctl enable zabbix-proxy
+systemctl enable zabbix-proxy.service
+systemctl restart zabbix-proxy.service
+
 
 ### EOF
