@@ -2,11 +2,11 @@
 #
 # Zabbix proxy install scpript
 #
-# Lukas Maly <Iam@LukasMaly.NET> 10.11.2021
+# Lukas Maly <Iam@LukasMaly.NET> 16.11.2023
 #
 
 # Install rpm package zabbix-proxy
-dnf -y install zabbix-proxy-mysql.x86_64
+dnf -y install zabbix-proxy-mysql
 
 echo "--- Zabbix proxy DB user ---"
 openssl rand -base64 32 > /root/mysql-zabbix-proxy.pw
@@ -23,7 +23,7 @@ mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
 
 # Import db schema
 echo "--- Import DB schema ---"
-zcat /usr/share/doc/zabbix-proxy-mysql/schema.sql.gz | mysql -u zabbix_proxy -p${ZABBIX_PROXY_MYSQL_PASS} zabbix_proxy
+cat /usr/share/zabbix-sql-scripts/postgresql/proxy.sql| mysql -u zabbix_proxy -p${ZABBIX_PROXY_MYSQL_PASS} zabbix_proxy
 
 # Zabbix configuration
 echo "--- Configure Zabbix proxy config ---"
