@@ -187,5 +187,7 @@ function exec_in_screen() {
   screen -dmS $name sh; screen -S $name -X stuff "$command\n";
 }
 
+neofetch
+
 # EOF
 
