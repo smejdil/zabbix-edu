@@ -28,13 +28,13 @@ diff -u /etc/zabbix/zabbix_agent2.conf-orig /etc/zabbix/zabbix_agent2.conf
 
 systemctl restart zabbix-agent2
 
-cp -v /etc/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf-orig
-cp -v ./zabbix-edu/zabbix/zabbix_agentd.d/training.conf /etc/zabbix/zabbix_agentd.d/
-sed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /etc/zabbix/zabbix_agentd.conf
-sed -i 's/Server=127.0.0.1/Server=enceladus.pfsense.cz,zbx01.pfsense.cz,zbx02.pfsense.cz,zbx03.pfsense.cz,zbx04.pfsense.cz,zbx05.pfsense.cz,zbx06.pfsense.cz,zbx07.pfsense.cz,zbx08.pfsense.cz,zbx09.pfsense.cz,zbx10.pfsense.cz,zbx11.pfsense.cz,zbx12.pfsense.cz/g' /etc/zabbix/zabbix_agentd.conf
-sed -i 's/ServerActive=127.0.0.1/ServerActive=enceladus.pfsense.cz,zbx01.pfsense.cz,zbx02.pfsense.cz,zbx03.pfsense.cz,zbx04.pfsense.cz,zbx05.pfsense.cz,zbx06.pfsense.cz,zbx07.pfsense.cz,zbx08.pfsense.cz,zbx09.pfsense.cz,zbx10.pfsense.cz,zbx11.pfsense.cz,zbx12.pfsense.cz/g' /etc/zabbix/zabbix_agentd.conf
-sed -i 's/# Timeout=3/Timeout=30/g' /etc/zabbix/zabbix_agentd.conf
-diff -u /etc/zabbix/zabbix_agentd.conf-orig /etc/zabbix/zabbix_agentd.conf
+#cp -v /etc/zabbix/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf-orig
+#cp -v ./zabbix-edu/zabbix/zabbix_agentd.d/training.conf /etc/zabbix/zabbix_agentd.d/
+#sed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /etc/zabbix/zabbix_agentd.conf
+#sed -i 's/Server=127.0.0.1/Server=enceladus.pfsense.cz,zbx01.pfsense.cz,zbx02.pfsense.cz,zbx03.pfsense.cz,zbx04.pfsense.cz,zbx05.pfsense.cz,zbx06.pfsense.cz,zbx07.pfsense.cz,zbx08.pfsense.cz,zbx09.pfsense.cz,zbx10.pfsense.cz,zbx11.pfsense.cz,zbx12.pfsense.cz/g' /etc/zabbix/zabbix_agentd.conf
+#sed -i 's/ServerActive=127.0.0.1/ServerActive=enceladus.pfsense.cz,zbx01.pfsense.cz,zbx02.pfsense.cz,zbx03.pfsense.cz,zbx04.pfsense.cz,zbx05.pfsense.cz,zbx06.pfsense.cz,zbx07.pfsense.cz,zbx08.pfsense.cz,zbx09.pfsense.cz,zbx10.pfsense.cz,zbx11.pfsense.cz,zbx12.pfsense.cz/g' /etc/zabbix/zabbix_agentd.conf
+#sed -i 's/# Timeout=3/Timeout=30/g' /etc/zabbix/zabbix_agentd.conf
+#diff -u /etc/zabbix/zabbix_agentd.conf-orig /etc/zabbix/zabbix_agentd.conf
 
 # systemctl restart zabbix-agentd
 
@@ -50,19 +50,19 @@ echo ${ZBX_PROBE_PASS} | passwd zbx_probe --stdin
 
 # mod_jk for Apache
 
-mkdir /tmp/install && cd /tmp/install
-wget https://dlcdn.apache.org/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.49-src.tar.gz
+#mkdir /tmp/install && cd /tmp/install
+#wget https://dlcdn.apache.org/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.49-src.tar.gz
 
-tar xvzf tomcat-connectors-1.2.49-src.tar.gz
-cd tomcat-connectors-1.2.49-src/native
+#tar xvzf tomcat-connectors-1.2.49-src.tar.gz
+#cd tomcat-connectors-1.2.49-src/native
 
-which apxs
+#which apxs
 
-./configure --with-apxs=/usr/bin/apxs
-make
+#./configure --with-apxs=/usr/bin/apxs
+#make
 
-libtool --finish /usr/lib64/httpd/modules
-make install
+#libtool --finish /usr/lib64/httpd/modules
+#make install
 
 cd
 cp -v ./zabbix-edu/files/00-jk.conf /etc/httpd/conf.modules.d/
@@ -154,7 +154,7 @@ systemctl restart snmpd.service
 # curl localhost:9100/metrics | grep -v '#'
 # http://linsrv01.pfsense.cz:9100/metrics
 
-systemctl enable node_exporter.service
-systemctl start node_exporter.service
+systemctl enable prometheus-node-exporter.service
+systemctl start prometheus-node-exporter.service
 
 # EOF
