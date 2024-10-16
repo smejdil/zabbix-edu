@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
-    <version>5.0</version>
-    <date>2020-12-08T14:26:26Z</date>
+    <version>6.0</version>
+    <date>2024-10-16T14:30:25Z</date>
     <media_types>
         <media_type>
             <name>Email Seznam</name>
@@ -13,65 +13,65 @@
             <smtp_security>SSL_OR_TLS</smtp_security>
             <smtp_authentication>PASSWORD</smtp_authentication>
             <username>zabbix-edu@seznam.cz</username>
-            <password>foZhgu7ygOQF9OLHNyAgX6bFo7RUox</password>
+            <password>3jmHtFiT5p4ngjF004UiuOIAaUPpO6</password>
             <content_type>TEXT</content_type>
             <message_templates>
                 <message_template>
                     <event_source>TRIGGERS</event_source>
-                    <operation_mode>UPDATE</operation_mode>
-                    <subject>Updated problem in {EVENT.AGE}: {EVENT.NAME}</subject>
-                    <message>{USER.FULLNAME} {EVENT.UPDATE.ACTION} problem at {EVENT.UPDATE.DATE} {EVENT.UPDATE.TIME}.&#13;
-{EVENT.UPDATE.MESSAGE}&#13;
-&#13;
-Current problem status is {EVENT.STATUS}, age is {EVENT.AGE}, acknowledged: {EVENT.ACK.STATUS}.</message>
-                </message_template>
-                <message_template>
-                    <event_source>DISCOVERY</event_source>
-                    <operation_mode>PROBLEM</operation_mode>
-                    <subject>Discovery: {DISCOVERY.DEVICE.STATUS} {DISCOVERY.DEVICE.IPADDRESS}</subject>
-                    <message>Discovery rule: {DISCOVERY.RULE.NAME}&#13;
-&#13;
-Device IP: {DISCOVERY.DEVICE.IPADDRESS}&#13;
-Device DNS: {DISCOVERY.DEVICE.DNS}&#13;
-Device status: {DISCOVERY.DEVICE.STATUS}&#13;
-Device uptime: {DISCOVERY.DEVICE.UPTIME}&#13;
-&#13;
-Device service name: {DISCOVERY.SERVICE.NAME}&#13;
-Device service port: {DISCOVERY.SERVICE.PORT}&#13;
-Device service status: {DISCOVERY.SERVICE.STATUS}&#13;
-Device service uptime: {DISCOVERY.SERVICE.UPTIME}</message>
-                </message_template>
-                <message_template>
-                    <event_source>AUTOREGISTRATION</event_source>
-                    <operation_mode>PROBLEM</operation_mode>
-                    <subject>Autoregistration: {HOST.HOST}</subject>
-                    <message>Host name: {HOST.HOST}&#13;
-Host IP: {HOST.IP}&#13;
-Agent port: {HOST.PORT}</message>
-                </message_template>
-                <message_template>
-                    <event_source>TRIGGERS</event_source>
                     <operation_mode>PROBLEM</operation_mode>
                     <subject>Problem: {EVENT.NAME}</subject>
-                    <message>Problem started at {EVENT.TIME} on {EVENT.DATE}&#13;
-Problem name: {EVENT.NAME}&#13;
-Host: {HOST.NAME} - {HOST.IP}&#13;
-Severity: {EVENT.SEVERITY}&#13;
-Operational data: {EVENT.OPDATA}&#13;
-Original problem ID: {EVENT.ID}&#13;
+                    <message>Problem started at {EVENT.TIME} on {EVENT.DATE}
+Problem name: {EVENT.NAME}
+Host: {HOST.NAME} - {HOST.IP}
+Severity: {EVENT.SEVERITY}
+Operational data: {EVENT.OPDATA}
+Original problem ID: {EVENT.ID}
 {TRIGGER.URL}</message>
                 </message_template>
                 <message_template>
                     <event_source>TRIGGERS</event_source>
                     <operation_mode>RECOVERY</operation_mode>
                     <subject>Resolved in {EVENT.DURATION}: {EVENT.NAME}</subject>
-                    <message>Problem has been resolved at {EVENT.RECOVERY.TIME} on {EVENT.RECOVERY.DATE}&#13;
-Problem name: {EVENT.NAME}&#13;
-Problem duration: {EVENT.DURATION}&#13;
-Host: {HOST.NAME} - {HOST.IP}&#13;
-Severity: {EVENT.SEVERITY}&#13;
-Original problem ID: {EVENT.ID}&#13;
+                    <message>Problem has been resolved at {EVENT.RECOVERY.TIME} on {EVENT.RECOVERY.DATE}
+Problem name: {EVENT.NAME}
+Problem duration: {EVENT.DURATION}
+Host: {HOST.NAME} - {HOST.IP}
+Severity: {EVENT.SEVERITY}
+Original problem ID: {EVENT.ID}
 {TRIGGER.URL}</message>
+                </message_template>
+                <message_template>
+                    <event_source>TRIGGERS</event_source>
+                    <operation_mode>UPDATE</operation_mode>
+                    <subject>Updated problem in {EVENT.AGE}: {EVENT.NAME}</subject>
+                    <message>{USER.FULLNAME} {EVENT.UPDATE.ACTION} problem at {EVENT.UPDATE.DATE} {EVENT.UPDATE.TIME}.
+{EVENT.UPDATE.MESSAGE}
+
+Current problem status is {EVENT.STATUS}, age is {EVENT.AGE}, acknowledged: {EVENT.ACK.STATUS}.</message>
+                </message_template>
+                <message_template>
+                    <event_source>DISCOVERY</event_source>
+                    <operation_mode>PROBLEM</operation_mode>
+                    <subject>Discovery: {DISCOVERY.DEVICE.STATUS} {DISCOVERY.DEVICE.IPADDRESS}</subject>
+                    <message>Discovery rule: {DISCOVERY.RULE.NAME}
+
+Device IP: {DISCOVERY.DEVICE.IPADDRESS}
+Device DNS: {DISCOVERY.DEVICE.DNS}
+Device status: {DISCOVERY.DEVICE.STATUS}
+Device uptime: {DISCOVERY.DEVICE.UPTIME}
+
+Device service name: {DISCOVERY.SERVICE.NAME}
+Device service port: {DISCOVERY.SERVICE.PORT}
+Device service status: {DISCOVERY.SERVICE.STATUS}
+Device service uptime: {DISCOVERY.SERVICE.UPTIME}</message>
+                </message_template>
+                <message_template>
+                    <event_source>AUTOREGISTRATION</event_source>
+                    <operation_mode>PROBLEM</operation_mode>
+                    <subject>Autoregistration: {HOST.HOST}</subject>
+                    <message>Host name: {HOST.HOST}
+Host IP: {HOST.IP}
+Agent port: {HOST.PORT}</message>
                 </message_template>
             </message_templates>
         </media_type>
