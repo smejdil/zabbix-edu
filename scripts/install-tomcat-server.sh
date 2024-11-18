@@ -2,7 +2,7 @@
 #
 # Install Tomcat package and extra repo
 #
-# Lukas Maly <Iam@LukasMaly.NET> 14.10.2024
+# Lukas Maly <Iam@LukasMaly.NET> 18.11.2024
 #
 
 yum -y install git
@@ -13,6 +13,7 @@ yum -y install bind-utils
 yum -y install openssl
 yum -y install httpd
 yum -y install tomcat.noarch tomcat-native tomcat-webapps tomcat-admin-webapps tomcat-docs-webapp mod_jk
+yum -y install patch
 yum -y install yum-utils device-mapper-persistent-data 
 yum -y install httpd-devel apr apr-devel apr-util apr-util-devel gcc make libtool autoconf libtool-ltdl-devel
 yum -y install ipmitool

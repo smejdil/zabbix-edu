@@ -2,7 +2,7 @@
 #
 # Tomcat install scpript and Other SW
 #
-# Lukas Maly <Iam@LukasMaly.NET> 7.11.2022
+# Lukas Maly <Iam@LukasMaly.NET> 18.11.2024
 #
 
 ### Firewall
@@ -80,6 +80,10 @@ systemctl enable tomcat.service
 
 cd /etc/tomcat
 echo "CATALINA_OPTS=\"-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=10059 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false\"" >> tomcat.conf
+
+cp -v /etc/tomcat/server.xml /etc/tomcat/server.xml-orig
+cp -v ./zabbix-edu/files/server.xml.patch /etc/tomcat
+cd /etc/tomcat && patch < server.xml.patch
 
 systemctl restart tomcat.service
 
