@@ -52,7 +52,7 @@ ansible-galaxy role install geerlingguy.php
 export ZABBIX_USER=Admin
 export ZABBIX_PASSWORD=zabbix
 export ZBX_PROBE_PASS
-ansible-playbook -i /root/zabbix-edu/zabbix/ansible/host.ini /root/zabbix-edu/zabbix/ansible/install-zabbix-server-mysql.yml
+ansible-playbook /root/zabbix-edu/zabbix/ansible/install-zabbix-server-mysql.yml
 ansible-playbook /root/zabbix-edu/zabbix/ansible/add-host-group-training.yml
 ansible-playbook /root/zabbix-edu/zabbix/ansible/add-user-zbx_probe.yml
 ansible-playbook /root/zabbix-edu/zabbix/ansible/add-template-training.yml

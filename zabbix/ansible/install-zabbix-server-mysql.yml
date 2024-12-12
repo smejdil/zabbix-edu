@@ -1,6 +1,6 @@
 ---
 - name: Install EDU Zabbix Server with MySQL
-  hosts: zabbix
+  hosts: localhost
   become: true
 
   roles:
