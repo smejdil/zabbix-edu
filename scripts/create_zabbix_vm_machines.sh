@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Create GCP CentOS Stream 9 VM
+# Create GCP Ubuntu 24.04 VM
 #
-# Lukas Maly <Iam@LukasMaly.NET> 4.5.2023
+# Lukas Maly <Iam@LukasMaly.NET> 12.12.2024
 #
 
 # GCP Set project Zabbix-EDU
@@ -14,14 +14,14 @@ gcloud config set project ${PROJECT}
 gcloud config set compute/region ${REGION}
 gcloud config set compute/zone ${ZONE}
 
-IMAGE_CENTOSSTREAM9=`gcloud compute images list | grep centos-stream-9 | awk '{print $1}'`
+IMAGE_UBUNTU2404=`gcloud compute images list | grep ubuntu-2404-noble-amd64 | awk '{print $1}'`
 
 argc=$#;
 argv=("$@");
 
 for (( j=0; j<argc; j++ )); do
     echo "zbx${argv[j]}";
-    gcloud compute instances create zbx${argv[j]} --image ${IMAGE_CENTOSSTREAM9} --image-project=centos-cloud --zone=${ZONE} --metadata-from-file startup-script=./zabbix-edu/scripts/install-gcp.sh
+    gcloud compute instances create zbx${argv[j]} --image ${IMAGE_UBUNTU2404} --image-project=ubuntu-os-cloud --zone=${ZONE} --metadata-from-file startup-script=./zabbix-edu/scripts/install-zabbix-gcp.sh
     gcloud compute instances add-tags zbx${argv[j]} --tags=http-server --zone=${ZONE}
     gcloud compute instances add-tags zbx${argv[j]} --tags=https-server --zone=${ZONE}
     gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-agent --zone=${ZONE}

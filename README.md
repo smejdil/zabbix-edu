@@ -1,6 +1,6 @@
 ## Deploy zabbix servers on GCP
 
-This small project is used for install EDU servers with Zabbix 6.0 LTS on CentOS Stream release 9.
+This small project is used for install EDU servers with Zabbix 7.0 LTS on Ubuntu 24.04 LTS.
 
 ## Dependencies
 
@@ -13,14 +13,13 @@ By Google Cloud SDK is intalled servers zbx01-0X. After instalation run scripts 
 
 ## Features
 
-- Install and configure MariaDB
+- Install and configure MySQL
 - Install and configure zabbix_server
-- Install and configure zabbix_agentd with mysql modul
 - Install and configure zabbix_agent2
-- Install and configure Apache httpd and PHP7
-- Install and configure ODBC driver for MariaDB
+- Install and configure Apache 2.4 and PHP 8.3
+- Install and configure ODBC driver for MySQL
 - Install and configure Zabbix API scripts Perl and CPAN modul
-- Install and configure Ansible collection zabbix
+- Install and configure Ansible collection community.zabbix
 - Install and configure crontab file
 - Install and configure Windows server 2019
 - Install and configure Tomcat, PostgreSQL, Memcached, Docker ...

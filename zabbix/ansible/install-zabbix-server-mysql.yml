@@ -1,0 +1,63 @@
+---
+- name: Install EDU Zabbix Server with MySQL
+  hosts: zabbix
+  become: true
+
+  roles:
+    - role: geerlingguy.mysql
+      vars:
+        mysql_users:
+          - name: zbx_monitor
+            host: "%"
+            password: zabbix-server
+            priv: "zabbix-server.*:ALL"
+    - role: geerlingguy.apache
+    - role: geerlingguy.php
+      vars:
+        php_memory_limit: "128M"
+        php_max_execution_time: "300"
+        php_upload_max_filesize: "256M"
+    - role: community.zabbix.zabbix_agent
+      vars:
+        zabbix_agent2: true
+        zabbix_agent_server: localhost
+        zabbix_agent_serveractive: localhost
+        zabbix_agent_host_state: present
+    - role: community.zabbix.zabbix_server
+      vars:
+        zabbix_version: "7.0"
+        zabbix_server_database: mysql
+        zabbix_server_db_name: zabbix
+        zabbix_server_db_user: zabbix
+        zabbix_server_db_password: EDU-Zabbix-2024!
+        zabbix_server_db_host: localhost
+        zabbix_server_repo: "zabbix-official"
+        zabbix_server_cachesize: "64M"
+        zabbix_server_historycachesize: "32M"
+        zabbix_server_historyindexcachesize: "8M"
+        zabbix_server_valuecachesize: "16M"
+        zabbix_server_startpollers: "6"
+        zabbix_server_startagentpollers: "3"
+        zabbix_server_startpingers: "3"
+        zabbix_server_startjavapollers: "1"
+        zabbix_server_startipmipollers: "1"
+        zabbix_server_startreportwriters: "0"
+        zabbix_server_startsnmptrapper: "0"
+        zabbix_server_startvmwarecollectors: "1"
+        zabbix_server_javagateway: localhost
+        zabbix_server_javagatewayport: "10052"
+    - role: community.zabbix.zabbix_javagateway
+      vars:
+        zabbix_javagateway_listenip: localhost
+        zabbix_javagateway_listenport: "10052"
+        zabbix_javagateway_startpollers: "3"
+    - role: community.zabbix.zabbix_web
+      vars:
+        zabbix_server_name: "EDU Zabbix"
+        zabbix_web_http_server: apache
+        zabbix_timezone: Europe/Prague
+        zabbix_server_hostname: localhost
+        zabbix_server_database: mysql
+        zabbix_db_type_long: mysql
+        zabbix_server_dbport: 3306
+...

@@ -1,0 +1,81 @@
+---
+- name: Install Zabbix Server
+  hosts: zabbix
+  vars:
+    ansible_network_os: community.zabbix.zabbix
+    ansible_connection: httpapi
+    ansible_httpapi_port: 80
+    ansible_httpapi_use_ssl: false
+    ansible_httpapi_validate_certs: false
+    ansible_zabbix_url_path: "zabbix"
+    ansible_host: localhost
+
+  tasks:
+    - name: Set credentials to access Zabbix Server API
+      ansible.builtin.set_fact:
+        ansible_user: Admin
+        ansible_httpapi_pass: zabbix
+
+    - name: create a new hosts groups Web Certificate
+      community.zabbix.zabbix_group:
+        state: present
+        host_groups:
+          - Web Certificate
+
+    - name: Create a new host sposdk.cz
+      community.zabbix.zabbix_host:
+        state: present
+        host_name: sposdk.cz
+        visible_name: SPOS Web Cert
+        description: Web server SPOS
+        host_groups:
+          - Web Certificate
+        link_templates:
+          - Website certificate by Zabbix agent 2
+        status: enabled
+        inventory_mode: automatic
+        interfaces:
+          - type: 1
+            main: 1
+            useip: 1
+            ip: 127.0.0.1
+            dns: ""
+            port: "10050"
+        macros:
+          - macro: "{$CERT.WEBSITE.HOSTNAME}"
+            value: sposdk.cz
+            description: The website DNS name for the connection.
+        tags:
+          - tag: target
+            value: cert
+
+    - name: Create a new host mysql
+      community.zabbix.zabbix_host:
+        state: present
+        host_name: mysql
+        visible_name: Zabbix MySQL
+        description: Zabbix Database MySQL
+        host_groups:
+          - Databases
+        link_templates:
+          - MySQL by Zabbix agent 2
+        status: enabled
+        inventory_mode: automatic
+        interfaces:
+          - type: 1
+            main: 1
+            useip: 1
+            ip: 127.0.0.1
+            dns: ""
+            port: "10050"
+        macros:
+          - macro: "{$MYSQL.USER}"
+            value: zbx_monitor
+          - macro: "{$MYSQL.PASSWORD}"
+            value: zabbix-server
+          - macro: "{$MYSQL.DSN}"
+            value: unix:/var/run/mysqld/mysqld.sock
+        tags:
+          - tag: target
+            value: mysql
+...
