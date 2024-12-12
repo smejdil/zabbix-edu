@@ -9,7 +9,7 @@
         mysql_users:
           - name: zbx_monitor
             host: "%"
-            password: zabbix-server
+            password: zabbix-monitor
             priv: "zabbix-server.*:ALL"
     - role: geerlingguy.apache
     - role: geerlingguy.php
