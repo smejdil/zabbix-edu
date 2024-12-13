@@ -23,9 +23,11 @@
         zabbix_agent_server: 127.0.0.1,enceladus.pfsense.cz
         zabbix_agent_serveractive: 127.0.0.1
         zabbix_agent_logremotecommands: "True"
-        zabbix_agent_userparamater:
-          - zbx.cmd.date[*],/bin/date +%$1 2>/dev/null
-          - zbx.cmd.random,/usr/bin/awk 'BEGIN {srand();print int(1 + rand() * 100)}' 2>/dev/null
+        zabbix_agent_userparameters:
+          - key: "zbx.cmd.date[*]"
+            command: "/bin/date +%$1 2>/dev/null"
+          - key: "zbx.cmd.random"
+            command: "/usr/bin/awk 'BEGIN {srand();print int(1 + rand() * 100)}' 2>/dev/null"
         zabbix_agent_host_state: present
     - role: community.zabbix.zabbix_server
       vars:
