@@ -23,6 +23,8 @@
         zabbix_agent_server: 127.0.0.1,enceladus.pfsense.cz
         zabbix_agent_serveractive: 127.0.0.1
         zabbix_agent_logremotecommands: "True"
+        zabbix_agent_include_dir: "/etc/zabbix/zabbix_agent2.d/"
+        zabbix_agent_userparameter_file: "training.conf"
         zabbix_agent_userparameters:
           - key: "zbx.cmd.date[*]"
             command: "/bin/date +%$1 2>/dev/null"
