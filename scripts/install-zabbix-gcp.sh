@@ -25,6 +25,9 @@ cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 
 #sed -i 's/^PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config
 sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config.d/60-cloudimg-settings.conf
+sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config
+echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
 
 diff -u /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 
@@ -42,9 +45,31 @@ echo "--- ROOT ---"
 echo "root:${ROOT_PASS}" | chpasswd
 
 echo "--- ZABBIX ---"
-useradd -G adm,google-sudoers -p zabbix zbx
+useradd -m -G adm,google-sudoers -p zabbix zbx
 #echo ${ZBX_PASS} | passwd zbx --stdin
 echo "root:${ZBX_PASS}" | chpasswd
+
+echo "--- MYSQL ROOT ---"
+openssl rand -base64 32 > /root/mysql-root.pw
+MYSQL_ROOT_PASS=`cat /root/mysql-root.pw`
+
+# Set up root password
+#echo "--- MaiaDB root pw ---"
+#mysqladmin -u root password ${MYSQL_ROOT_PASS};
+
+echo "--- Zabbix DB user ---"
+openssl rand -base64 32 > /root/mysql-zabbix.pw
+ZABBIX_MYSQL_PASS=`cat /root/mysql-zabbix.pw`
+
+# ODBC
+echo "--- ODBC ---"
+openssl rand -base64 32 > /root/mysql-zbx_probe.pw
+ZBX_PROBE_MYSQL_PASS=`cat /root/mysql-zbx_probe.pw`
+
+# Agent2 monitoring MySQL
+echo "--- Monitoring DB user ---"
+openssl rand -base64 32 > /root/mysql-monitoring.pw
+MONITORING_MYSQL_PASS=`cat /root/mysql-monitoring.pw`
 
 # disable SELinux
 echo "--- SELinux ---"

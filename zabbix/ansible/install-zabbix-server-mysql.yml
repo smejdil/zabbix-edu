@@ -9,7 +9,7 @@
         mysql_users:
           - name: zbx_monitor
             host: "%"
-            password: zabbix-monitor
+            password: "{{ lookup('env','MONITORING_MYSQL_PASS') }}"
             priv: "zabbix-server.*:ALL"
     - role: geerlingguy.apache
     - role: geerlingguy.php
@@ -34,7 +34,7 @@
         zabbix_server_database: mysql
         zabbix_server_db_name: zabbix
         zabbix_server_db_user: zabbix
-        zabbix_server_db_password: EDU-Zabbix-2024!
+        zabbix_server_db_password: "{{ lookup('env','ZABBIX_MYSQL_PASS') }}"
         zabbix_server_db_host: localhost
         zabbix_server_repo: "zabbix-official"
         zabbix_server_cachesize: "64M"
