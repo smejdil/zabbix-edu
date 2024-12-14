@@ -3,6 +3,52 @@
   hosts: localhost
   become: true
 
+  tasks:
+    - name: Ensure cron is installed
+      ansible.builtin.package:
+        name: cron
+        state: present
+
+    - name: Upload crontab file
+      ansible.builtin.copy:
+        src: ../../crontab/zabbix-training
+        dest: /etc/cron.d/zabbix-training
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Ensure correct permissions for cron files
+      ansible.builtin.file:
+        path: /etc/cron.d/zabbix-training
+        mode: '0644'
+        owner: root
+        group: root
+
+    - name: Restart cron service
+      ansible.builtin.service:
+        name: cron
+        state: restarted
+        enabled: true
+
+    - name: Získání aktuálního hostname
+      ansible.builtin.command: /bin/hostname
+      register: current_hostname
+
+    - name: Extrakce první části hostname
+      set_fact:
+        new_hostname: "{{ current_hostname.stdout.split('.')[0] }}"
+
+    - name: Nastavení nového hostname
+      ansible.builtin.hostname:
+        name: "{{ new_hostname }}"
+
+    - name: Aktualizace /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        regexp: "^127\\.0\\.1\\.1"
+        line: "127.0.1.1 {{ new_hostname }}"
+        state: present
+
   roles:
     - role: geerlingguy.mysql
       vars:
