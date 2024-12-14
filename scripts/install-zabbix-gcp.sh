@@ -48,6 +48,14 @@ echo "--- Zabbix DB user ---"
 openssl rand -base64 32 > /root/mysql-zabbix.pw
 ZABBIX_MYSQL_PASS=`cat /root/mysql-zabbix.pw`
 
+echo "--- ODBC ---"
+openssl rand -base64 32 > /root/mysql-zbx_probe.pw
+ZBX_PROBE_MYSQL_PASS=`cat /root/mysql-zbx_probe.pw`
+
+echo "--- Monitoring DB user ---"
+openssl rand -base64 32 > /root/mysql-monitoring.pw
+MONITORING_MYSQL_PASS=`cat /root/mysql-monitoring.pw`
+
 echo "--- ROOT ---"
 #echo ${ROOT_PASS} | passwd root --stdin
 echo "root:${ROOT_PASS}" | sudo chpasswd
@@ -56,16 +64,6 @@ echo "--- ZABBIX ---"
 useradd -m -G adm,google-sudoers -p zabbix zbx
 #echo ${ZBX_PASS} | passwd zbx --stdin
 echo "zbx:${ZBX_PASS}" | sudo chpasswd
-
-# ODBC
-echo "--- ODBC ---"
-openssl rand -base64 32 > /root/mysql-zbx_probe.pw
-ZBX_PROBE_MYSQL_PASS=`cat /root/mysql-zbx_probe.pw`
-
-# Agent2 monitoring MySQL
-echo "--- Monitoring DB user ---"
-openssl rand -base64 32 > /root/mysql-monitoring.pw
-MONITORING_MYSQL_PASS=`cat /root/mysql-monitoring.pw`
 
 # Set up root password
 #echo "--- MaiaDB root pw ---"
@@ -91,6 +89,7 @@ ansible-galaxy role install geerlingguy.php
 export ZABBIX_USER=Admin
 export ZABBIX_PASSWORD=zabbix
 export ZBX_PROBE_PASS
+export ZABBIX_MYSQL_PASS
 
 # Install Zabbix server
 sudo ansible-playbook /root/zabbix-edu/zabbix/ansible/install-zabbix-server-mysql.yml > /tmp/install-zabbix-server-mysql.yml.log
