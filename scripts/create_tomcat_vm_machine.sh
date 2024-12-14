@@ -2,7 +2,7 @@
 #
 # Create GCP Linux server with Tomcat VM
 #
-# Lukas Maly <Iam@LukasMaly.NET> 14.10.2024
+# Lukas Maly <Iam@LukasMaly.NET> 14.12.2024
 #
 
 # GCP Set project Zabbix-EDU
@@ -14,7 +14,7 @@ gcloud config set project ${PROJECT}
 gcloud config set compute/region ${REGION}
 gcloud config set compute/zone ${ZONE}
 
-IMAGE_LIN=`gcloud compute images list | grep centos-stream-9 | awk '{print $1}'`
+IMAGE_LIN=`gcloud compute images list | grep centos-stream-9-v | awk '{print $1}'`
 
 argc=$#;
 argv=("$@");

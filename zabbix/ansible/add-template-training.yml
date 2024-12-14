@@ -14,5 +14,5 @@
 
     - name: Import Zabbix Training from XML
       community.zabbix.zabbix_template:
-        template_xml: "{{ lookup('file', '../templates/Templates-Training-Zabbix-6.0.xml') }}"
+        template_xml: "{{ lookup('file', '../templates/Templates-Training-Zabbix-7.0.xml') }}"
         state: present

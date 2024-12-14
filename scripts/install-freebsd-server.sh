@@ -2,7 +2,7 @@
 #
 # Install FreeBSD packages
 #
-# Lukas Maly <Iam@LukasMaly.NET> 14.12.2023
+# Lukas Maly <Iam@LukasMaly.NET> 14.12.2024
 #
 
 pkg install -y bash joe mc git screen
@@ -44,14 +44,14 @@ cd /usr/ports/converters/p5-JSON-MaybeXS && make install clean
 pip install zabbix-api
 
 # Zabbix agentd
-pkg install -y zabbix6-agent
+pkg install -y zabbix7-agent
 /usr/local/etc/rc.d/zabbix_agentd enable
-cp -v /usr/local/etc/zabbix6/zabbix_agentd.conf /usr/local/etc/zabbix6/zabbix_agentd.conf-orig
-gsed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /usr/local/etc/zabbix6/zabbix_agentd.conf
-gsed -i 's/Server=127.0.0.1/Server=127.0.0.1,enceladus.pfsense.cz/g' /usr/local/etc/zabbix6/zabbix_agentd.conf
-gsed -i 's/# LogRemoteCommands=0/LogRemoteCommands=1/g' /usr/local/etc/zabbix6/zabbix_agentd.conf
-gsed -i 's/# DenyKey=system.run\[\*\]/AllowKey=system.run\[\*\]/g' /usr/local/etc/zabbix6/zabbix_agentd.conf
-diff -u /usr/local/etc/zabbix6/zabbix_agentd.conf-orig /usr/local/etc/zabbix6/zabbix_agentd.conf
+cp -v /usr/local/etc/zabbix7/zabbix_agentd.conf /usr/local/etc/zabbix7/zabbix_agentd.conf-orig
+gsed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /usr/local/etc/zabbix7/zabbix_agentd.conf
+gsed -i 's/Server=127.0.0.1/Server=127.0.0.1,enceladus.pfsense.cz/g' /usr/local/etc/zabbix7/zabbix_agentd.conf
+gsed -i 's/# LogRemoteCommands=0/LogRemoteCommands=1/g' /usr/local/etc/zabbix7/zabbix_agentd.conf
+gsed -i 's/# DenyKey=system.run\[\*\]/AllowKey=system.run\[\*\]/g' /usr/local/etc/zabbix7/zabbix_agentd.conf
+diff -u /usr/local/etc/zabbix7/zabbix_agentd.conf-orig /usr/local/etc/zabbix7/zabbix_agentd.conf
 /usr/local/etc/rc.d/zabbix_agentd restart
 
 # project zabbix-api

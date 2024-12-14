@@ -1,0 +1,4375 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 7045cb56d4334ebeabcf3ca9be64b9eb
+      name: Templates/Training
+  templates:
+    - uuid: ad6096be151747aea5ed324b0f1bc4cc
+      template: 'Template-Training_Agent_Network interfaces'
+      name: 'Template-Training_Agent_Network interfaces'
+      vendor:
+        name: Open-Tech
+        version: 7.0-0
+      groups:
+        - name: Templates/Training
+      discovery_rules:
+        - uuid: 8ad1700d1362458087087b6dbe1440e7
+          name: 'Network interface discovery'
+          key: net.if.discovery
+          delay: 1h
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#IFNAME}'
+                value: '{$NET.IF.IFNAME.MATCHES}'
+                formulaid: A
+              - macro: '{#IFNAME}'
+                value: '{$NET.IF.IFNAME.NOT_MATCHES}'
+                operator: NOT_MATCHES_REGEX
+                formulaid: B
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'The discovery of network interfaces.'
+          item_prototypes:
+            - uuid: 681b4d656b704b1ca5cabe73e24bd6be
+              name: 'Interface {#IFNAME}: Inbound packets discarded'
+              key: 'net.if.in["{#IFNAME}",dropped]'
+              delay: 3m
+              history: 7d
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: component
+                  value: network
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: 3d715a6bbb614ad3a0d28957c3f16edb
+              name: 'Interface {#IFNAME}: Inbound packets with errors'
+              key: 'net.if.in["{#IFNAME}",errors]'
+              delay: 3m
+              history: 7d
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: component
+                  value: network
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: bafc8107488840628e725d83f1af894c
+              name: 'Interface {#IFNAME}: Bits received'
+              key: 'net.if.in["{#IFNAME}"]'
+              delay: 3m
+              history: 7d
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: component
+                  value: network
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: ea80af6a665841c0b2819f061ebb0c61
+              name: 'Interface {#IFNAME}: Outbound packets discarded'
+              key: 'net.if.out["{#IFNAME}",dropped]'
+              delay: 3m
+              history: 7d
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: component
+                  value: network
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: 8dae4d8e9ca04f59b85b9dec3e9c950f
+              name: 'Interface {#IFNAME}: Outbound packets with errors'
+              key: 'net.if.out["{#IFNAME}",errors]'
+              delay: 3m
+              history: 7d
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: component
+                  value: network
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: 4cf573f2a04241fd9bc21e7f90a75474
+              name: 'Interface {#IFNAME}: Bits sent'
+              key: 'net.if.out["{#IFNAME}"]'
+              delay: 3m
+              history: 7d
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: component
+                  value: network
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: 7be8c34c5d97461d99416fb52fdfe59f
+              name: 'Interface {#IFNAME}: Operational status'
+              key: 'vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"]'
+              history: 7d
+              trends: '0'
+              description: 'Reference: https://www.kernel.org/doc/Documentation/networking/operstates.txt'
+              valuemap:
+                name: ifOperStatus
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      var newvalue;
+                      switch(value) {
+                        case "unknown":
+                          newvalue = 0;
+                          break;
+                        case "notpresent":
+                          newvalue = 1;
+                          break;
+                        case "down":
+                          newvalue = 2;
+                          break;
+                        case "lowerlayerdown":
+                          newvalue = 3;
+                          break;
+                        case "testing":
+                          newvalue = 4;
+                          break;
+                        case "dormant":
+                          newvalue = 5;
+                          break;
+                        case "up":
+                          newvalue = 6;
+                          break;  default:
+                          newvalue = "Problem parsing interface operstate in JS";
+                      }
+                      return newvalue;
+              tags:
+                - tag: component
+                  value: network
+                - tag: interface
+                  value: '{#IFNAME}'
+              trigger_prototypes:
+                - uuid: 43dff94f271749989642eb165f317c37
+                  expression: '{$IFCONTROL:"{#IFNAME}"}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"],#1)<>last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"],#2))'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"])<>2 or {$IFCONTROL:"{#IFNAME}"}=0'
+                  name: 'Interface {#IFNAME}: Link down'
+                  opdata: 'Current state: {ITEM.LASTVALUE1}'
+                  priority: AVERAGE
+                  description: |
+                    This trigger expression works as follows:
+                    1. It can be triggered if the operations status is down.
+                    2. `{$IFCONTROL:"{#IFNAME}"}=1` - a user can redefine context macro to value - 0. That marks this interface as not important. No new trigger will be fired if this interface is down.
+                    3. `{TEMPLATE_NAME:METRIC.diff()}=1` - the trigger fires only if the operational status was up to (1) sometime before (so, do not fire for the 'eternal off' interfaces.)
+                    
+                    WARNING: if closed manually - it will not fire again on the next poll, because of .diff.
+                  manual_close: 'YES'
+                  tags:
+                    - tag: scope
+                      value: availability
+            - uuid: c128be4c5fe64b2baf5373e4c0683dfe
+              name: 'Interface {#IFNAME}: Speed'
+              key: 'vfs.file.contents["/sys/class/net/{#IFNAME}/speed"]'
+              delay: 5m
+              history: 7d
+              trends: '0'
+              units: bps
+              description: |
+                It indicates the latest or current speed value of the interface. The value is an integer representing the link speed expressed in bits/sec.
+                This attribute is only valid for the interfaces that implement the ethtool `get_link_ksettings` method (mostly Ethernet).
+                
+                Reference: https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-net
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '1000000'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              tags:
+                - tag: component
+                  value: network
+                - tag: interface
+                  value: '{#IFNAME}'
+            - uuid: 537e798f2a54496eadc2a99bcb61b4c0
+              name: 'Interface {#IFNAME}: Interface type'
+              key: 'vfs.file.contents["/sys/class/net/{#IFNAME}/type"]'
+              delay: 1h
+              history: 7d
+              trends: '0'
+              description: |
+                It indicates the interface protocol type as a decimal value.
+                See `include/uapi/linux/if_arp.h` for all possible values.
+                Reference: https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-net
+              valuemap:
+                name: 'Linux::Interface protocol types'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1d
+              tags:
+                - tag: component
+                  value: network
+                - tag: interface
+                  value: '{#IFNAME}'
+          trigger_prototypes:
+            - uuid: 8ffa721e8713485eaf98249593847717
+              expression: |
+                change(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/speed"])<0 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/speed"])>0
+                and
+                (last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/type"])=6 or last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/type"])=1)
+                and
+                (last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"])<>2)
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: |
+                (change(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/speed"])>0 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/speed"],#2)>0) or
+                (last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"])=2)
+              name: 'Interface {#IFNAME}: Ethernet has changed to lower speed than it was before'
+              opdata: 'Current reported speed: {ITEM.LASTVALUE1}'
+              priority: INFO
+              description: 'This Ethernet connection has transitioned down from its known maximum speed. This might be a sign of autonegotiation issues. Acknowledge to close the problem manually.'
+              manual_close: 'YES'
+              dependencies:
+                - name: 'Interface {#IFNAME}: Link down'
+                  expression: '{$IFCONTROL:"{#IFNAME}"}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"],#1)<>last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"],#2))'
+                  recovery_expression: 'last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"])<>2 or {$IFCONTROL:"{#IFNAME}"}=0'
+              tags:
+                - tag: scope
+                  value: performance
+            - uuid: d782af28cbe046f2a556ff5d339d5b15
+              expression: |
+                (avg(/Template-Training_Agent_Network interfaces/net.if.in["{#IFNAME}"],15m)>({$IF.UTIL.MAX:"{#IFNAME}"}/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/speed"]) or
+                avg(/Template-Training_Agent_Network interfaces/net.if.out["{#IFNAME}"],15m)>({$IF.UTIL.MAX:"{#IFNAME}"}/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/speed"])) and
+                last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/speed"])>0
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: |
+                avg(/Template-Training_Agent_Network interfaces/net.if.in["{#IFNAME}"],15m)<(({$IF.UTIL.MAX:"{#IFNAME}"}-3)/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/speed"]) and
+                avg(/Template-Training_Agent_Network interfaces/net.if.out["{#IFNAME}"],15m)<(({$IF.UTIL.MAX:"{#IFNAME}"}-3)/100)*last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/speed"])
+              name: 'Interface {#IFNAME}: High bandwidth usage'
+              event_name: 'Interface {#IFNAME}: High bandwidth usage (>{$IF.UTIL.MAX:"{#IFNAME}"}%)'
+              opdata: 'In: {ITEM.LASTVALUE1}, out: {ITEM.LASTVALUE3}, speed: {ITEM.LASTVALUE2}'
+              priority: WARNING
+              description: 'The utilization of the network interface is close to its estimated maximum bandwidth.'
+              manual_close: 'YES'
+              dependencies:
+                - name: 'Interface {#IFNAME}: Link down'
+                  expression: '{$IFCONTROL:"{#IFNAME}"}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"],#1)<>last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"],#2))'
+                  recovery_expression: 'last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"])<>2 or {$IFCONTROL:"{#IFNAME}"}=0'
+              tags:
+                - tag: scope
+                  value: performance
+            - uuid: d601dd19e5d640049f36f2037e72faa9
+              expression: |
+                min(/Template-Training_Agent_Network interfaces/net.if.in["{#IFNAME}",errors],5m)>{$IF.ERRORS.WARN:"{#IFNAME}"}
+                or min(/Template-Training_Agent_Network interfaces/net.if.out["{#IFNAME}",errors],5m)>{$IF.ERRORS.WARN:"{#IFNAME}"}
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: |
+                max(/Template-Training_Agent_Network interfaces/net.if.in["{#IFNAME}",errors],5m)<{$IF.ERRORS.WARN:"{#IFNAME}"}*0.8
+                and max(/Template-Training_Agent_Network interfaces/net.if.out["{#IFNAME}",errors],5m)<{$IF.ERRORS.WARN:"{#IFNAME}"}*0.8
+              name: 'Interface {#IFNAME}: High error rate'
+              event_name: 'Interface {#IFNAME}: High error rate (>{$IF.ERRORS.WARN:"{#IFNAME}"} for 5m)'
+              opdata: 'errors in: {ITEM.LASTVALUE1}, errors out: {ITEM.LASTVALUE2}'
+              priority: WARNING
+              description: 'It recovers when it is below 80% of the `{$IF.ERRORS.WARN:"{#IFNAME}"}` threshold.'
+              manual_close: 'YES'
+              dependencies:
+                - name: 'Interface {#IFNAME}: Link down'
+                  expression: '{$IFCONTROL:"{#IFNAME}"}=1 and last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"])=2 and (last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"],#1)<>last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"],#2))'
+                  recovery_expression: 'last(/Template-Training_Agent_Network interfaces/vfs.file.contents["/sys/class/net/{#IFNAME}/operstate"])<>2 or {$IFCONTROL:"{#IFNAME}"}=0'
+              tags:
+                - tag: scope
+                  value: availability
+                - tag: scope
+                  value: performance
+          graph_prototypes:
+            - uuid: 3c3dc00c218341fab48296474ce2b6be
+              name: 'Interface {#IFNAME}: Network traffic'
+              graph_items:
+                - drawtype: GRADIENT_LINE
+                  color: 199C0D
+                  item:
+                    host: 'Template-Training_Agent_Network interfaces'
+                    key: 'net.if.in["{#IFNAME}"]'
+                - sortorder: '1'
+                  drawtype: BOLD_LINE
+                  color: F63100
+                  item:
+                    host: 'Template-Training_Agent_Network interfaces'
+                    key: 'net.if.out["{#IFNAME}"]'
+                - sortorder: '2'
+                  color: 00611C
+                  yaxisside: RIGHT
+                  item:
+                    host: 'Template-Training_Agent_Network interfaces'
+                    key: 'net.if.out["{#IFNAME}",errors]'
+                - sortorder: '3'
+                  color: F7941D
+                  yaxisside: RIGHT
+                  item:
+                    host: 'Template-Training_Agent_Network interfaces'
+                    key: 'net.if.in["{#IFNAME}",errors]'
+                - sortorder: '4'
+                  color: FC6EA3
+                  yaxisside: RIGHT
+                  item:
+                    host: 'Template-Training_Agent_Network interfaces'
+                    key: 'net.if.out["{#IFNAME}",dropped]'
+                - sortorder: '5'
+                  color: 6C59DC
+                  yaxisside: RIGHT
+                  item:
+                    host: 'Template-Training_Agent_Network interfaces'
+                    key: 'net.if.in["{#IFNAME}",dropped]'
+      tags:
+        - tag: class
+          value: os
+        - tag: target
+          value: linux
+      macros:
+        - macro: '{$AGENT.TIMEOUT}'
+          value: 3m
+          description: 'Timeout after which agent is considered unavailable. Works only for agents reachable from Zabbix server/proxy (passive mode).'
+        - macro: '{$CPU.UTIL.CRIT}'
+          value: '90'
+        - macro: '{$IF.ERRORS.WARN}'
+          value: '2'
+        - macro: '{$IF.UTIL.MAX}'
+          value: '90'
+          description: 'This macro is used as a threshold in the interface utilization trigger.'
+        - macro: '{$IFCONTROL}'
+          value: '1'
+        - macro: '{$KERNEL.MAXFILES.MIN}'
+          value: '256'
+        - macro: '{$KERNEL.MAXPROC.MIN}'
+          value: '1024'
+        - macro: '{$LOAD_AVG_PER_CPU.MAX.WARN}'
+          value: '1.5'
+          description: 'The CPU load per core is considered sustainable. If necessary, it can be tuned.'
+        - macro: '{$MEMORY.AVAILABLE.MIN}'
+          value: 20M
+          description: 'This macro is used as a threshold in the memory available trigger.'
+        - macro: '{$MEMORY.UTIL.MAX}'
+          value: '90'
+          description: 'This macro is used as a threshold in the memory utilization trigger.'
+        - macro: '{$NET.IF.IFNAME.MATCHES}'
+          value: '^.*$'
+        - macro: '{$NET.IF.IFNAME.NOT_MATCHES}'
+          value: '(^Software Loopback Interface|^NULL[0-9.]*$|^[Ll]o[0-9.]*$|^[Ss]ystem$|^Nu[0-9.]*$|^veth[0-9A-z]+$|docker[0-9]+|br-[a-z0-9]{12})'
+          description: 'It filters out `loopbacks`, `nulls`, `docker veth` links and `docker0 bridge` by default.'
+        - macro: '{$SWAP.PFREE.MIN.WARN}'
+          value: '50'
+        - macro: '{$SYSTEM.FUZZYTIME.MAX}'
+          value: '60'
+        - macro: '{$VFS.DEV.DEVNAME.MATCHES}'
+          value: .+
+          description: 'This macro is used for a discovery of block devices. It can be overridden on host level or its linked template level.'
+        - macro: '{$VFS.DEV.DEVNAME.NOT_MATCHES}'
+          value: '^(loop[0-9]*|sd[a-z][0-9]+|nbd[0-9]+|sr[0-9]+|fd[0-9]+|dm-[0-9]+|ram[0-9]+|ploop[a-z0-9]+|md[0-9]*|hcp[0-9]*|zram[0-9]*)'
+          description: 'This macro is used for a discovery of block devices. It can be overridden on host level or its linked template level.'
+        - macro: '{$VFS.DEV.READ.AWAIT.WARN}'
+          value: '20'
+          description: 'The average response time (in ms) of disk read before the trigger would fire.'
+        - macro: '{$VFS.DEV.WRITE.AWAIT.WARN}'
+          value: '20'
+          description: 'The average response time (in ms) of disk write before the trigger would fire.'
+        - macro: '{$VFS.FS.FREE.MIN.CRIT}'
+          value: 5G
+          description: 'The critical threshold for utilization of the filesystem.'
+        - macro: '{$VFS.FS.FREE.MIN.WARN}'
+          value: 10G
+          description: 'The warning threshold for utilization of the filesystem.'
+        - macro: '{$VFS.FS.FSNAME.MATCHES}'
+          value: .+
+          description: 'This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level.'
+        - macro: '{$VFS.FS.FSNAME.NOT_MATCHES}'
+          value: ^(/dev|/sys|/run|/proc|.+/shm$)
+          description: 'This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level.'
+        - macro: '{$VFS.FS.FSTYPE.MATCHES}'
+          value: ^(btrfs|ext2|ext3|ext4|reiser|xfs|ffs|ufs|jfs|jfs2|vxfs|hfs|apfs|refs|ntfs|fat32|zfs)$
+          description: 'This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level.'
+        - macro: '{$VFS.FS.FSTYPE.NOT_MATCHES}'
+          value: ^\s$
+          description: 'This macro is used for discovery of the filesystems. It can be overridden on host level or its linked template level.'
+        - macro: '{$VFS.FS.INODE.PFREE.MIN.CRIT}'
+          value: '10'
+          description: 'The critical threshold of the filesystem metadata utilization.'
+        - macro: '{$VFS.FS.INODE.PFREE.MIN.WARN}'
+          value: '20'
+          description: 'The warning threshold of the filesystem metadata utilization.'
+        - macro: '{$VFS.FS.PUSED.MAX.CRIT}'
+          value: '90'
+          description: 'The critical threshold of the filesystem utilization.'
+        - macro: '{$VFS.FS.PUSED.MAX.WARN}'
+          value: '80'
+          description: 'The warning threshold of the filesystem utilization.'
+      dashboards:
+        - uuid: a1374bc79e8045b29df4a5bf96fab010
+          name: 'Network interfaces'
+          pages:
+            - name: Overview
+              widgets:
+                - type: graphprototype
+                  width: '72'
+                  height: '5'
+                  fields:
+                    - type: INTEGER
+                      name: columns
+                      value: '1'
+                    - type: GRAPH_PROTOTYPE
+                      name: graphid
+                      value:
+                        host: 'Template-Training_Agent_Network interfaces'
+                        name: 'Interface {#IFNAME}: Network traffic'
+                    - type: STRING
+                      name: reference
+                      value: AAAAA
+                    - type: INTEGER
+                      name: rows
+                      value: '1'
+      valuemaps:
+        - uuid: 86c44ead6eee43ceb4c7fd3fb1bd8701
+          name: ifOperStatus
+          mappings:
+            - value: '0'
+              newvalue: unknown
+            - value: '1'
+              newvalue: notpresent
+            - value: '2'
+              newvalue: down
+            - value: '3'
+              newvalue: lowerlayerdown
+            - value: '4'
+              newvalue: testing
+            - value: '5'
+              newvalue: dormant
+            - value: '6'
+              newvalue: up
+        - uuid: 862eaaf08d5b40b583eb2259ecfc4240
+          name: 'Linux::Interface protocol types'
+          mappings:
+            - value: '0'
+              newvalue: 'from KA9Q: NET/ROM pseudo'
+            - value: '1'
+              newvalue: Ethernet
+            - value: '2'
+              newvalue: 'Experimental Ethernet'
+            - value: '3'
+              newvalue: 'AX.25 Level 2'
+            - value: '4'
+              newvalue: 'PROnet token ring'
+            - value: '5'
+              newvalue: Chaosnet
+            - value: '6'
+              newvalue: 'IEEE 802.2 Ethernet/TR/TB'
+            - value: '7'
+              newvalue: ARCnet
+            - value: '8'
+              newvalue: APPLEtalk
+            - value: '15'
+              newvalue: 'Frame Relay DLCI'
+            - value: '19'
+              newvalue: ATM
+            - value: '23'
+              newvalue: 'Metricom STRIP (new IANA id)'
+            - value: '24'
+              newvalue: 'IEEE 1394 IPv4 - RFC 2734'
+            - value: '27'
+              newvalue: EUI-64
+            - value: '32'
+              newvalue: InfiniBand
+            - value: '256'
+              newvalue: ARPHRD_SLIP
+            - value: '257'
+              newvalue: ARPHRD_CSLIP
+            - value: '258'
+              newvalue: ARPHRD_SLIP6
+            - value: '259'
+              newvalue: ARPHRD_CSLIP6
+            - value: '260'
+              newvalue: 'Notional KISS type'
+            - value: '264'
+              newvalue: ARPHRD_ADAPT
+            - value: '270'
+              newvalue: ARPHRD_ROSE
+            - value: '271'
+              newvalue: 'CCITT X.25'
+            - value: '272'
+              newvalue: 'Boards with X.25 in firmware'
+            - value: '280'
+              newvalue: 'Controller Area Network'
+            - value: '512'
+              newvalue: ARPHRD_PPP
+            - value: '513'
+              newvalue: 'Cisco HDLC'
+            - value: '516'
+              newvalue: LAPB
+            - value: '517'
+              newvalue: 'Digital''s DDCMP protocol'
+            - value: '518'
+              newvalue: 'Raw HDLC'
+            - value: '519'
+              newvalue: 'Raw IP'
+            - value: '768'
+              newvalue: 'IPIP tunnel'
+            - value: '769'
+              newvalue: 'IP6IP6 tunnel'
+            - value: '770'
+              newvalue: 'Frame Relay Access Device'
+            - value: '771'
+              newvalue: 'SKIP vif'
+            - value: '772'
+              newvalue: 'Loopback device'
+            - value: '773'
+              newvalue: 'Localtalk device'
+            - value: '774'
+              newvalue: 'Fiber Distributed Data Interface'
+            - value: '775'
+              newvalue: 'AP1000 BIF'
+            - value: '776'
+              newvalue: 'sit0 device - IPv6-in-IPv4'
+            - value: '777'
+              newvalue: 'IP over DDP tunneller'
+            - value: '778'
+              newvalue: 'GRE over IP'
+            - value: '779'
+              newvalue: 'PIMSM register interface'
+            - value: '780'
+              newvalue: 'High Performance Parallel Interface'
+            - value: '781'
+              newvalue: 'Nexus 64Mbps Ash'
+            - value: '782'
+              newvalue: 'Acorn Econet'
+            - value: '783'
+              newvalue: Linux-IrDA
+            - value: '784'
+              newvalue: 'Point to point fibrechannel'
+            - value: '785'
+              newvalue: 'Fibrechannel arbitrated loop'
+            - value: '786'
+              newvalue: 'Fibrechannel public loop'
+            - value: '787'
+              newvalue: 'Fibrechannel fabric'
+            - value: '800'
+              newvalue: 'Magic type ident for TR'
+            - value: '801'
+              newvalue: 'IEEE 802.11'
+            - value: '802'
+              newvalue: 'IEEE 802.11 + Prism2 header'
+            - value: '803'
+              newvalue: 'IEEE 802.11 + radiotap header'
+            - value: '804'
+              newvalue: ARPHRD_IEEE802154
+            - value: '805'
+              newvalue: 'IEEE 802.15.4 network monitor'
+            - value: '820'
+              newvalue: 'PhoNet media type'
+            - value: '821'
+              newvalue: 'PhoNet pipe header'
+            - value: '822'
+              newvalue: 'CAIF media type'
+            - value: '823'
+              newvalue: 'GRE over IPv6'
+            - value: '824'
+              newvalue: 'Netlink header'
+            - value: '825'
+              newvalue: 'IPv6 over LoWPAN'
+            - value: '826'
+              newvalue: 'Vsock monitor header'
+        - uuid: 42e815bca1cc4732a86969b3cdbf5d23
+          name: zabbix.host.available
+          mappings:
+            - value: '0'
+              newvalue: 'not available'
+            - value: '1'
+              newvalue: available
+            - value: '2'
+              newvalue: unknown
+        - uuid: b149e5d2a9854301af80a879dceaea6c
+          name: 'Zabbix agent ping status'
+          mappings:
+            - value: '1'
+              newvalue: Up
+    - uuid: 5b826463ad67427fa556294381f6238e
+      template: Template-Training_App_Apache_Tomcat_JMX
+      name: Template-Training_App_Apache_Tomcat_JMX
+      description: |
+        The template to monitor Apache Tomcat by Zabbix that work without any external scripts.
+        The metrics are collected by JMX.
+        
+        
+        You can discuss this template or leave feedback on our forum https://www.zabbix.com/forum/zabbix-suggestions-and-feedback/411862-discussion-thread-for-official-zabbix-template-tomcat
+        
+        Template tooling version used: 0.38
+      vendor:
+        name: Open-Tech
+        version: 7.0-0
+      groups:
+        - name: Templates/Training
+      items:
+        - uuid: 2cb4f1765a3d4e14b55c43ad202fc73d
+          name: 'Tomcat: Version'
+          type: JMX
+          key: 'jmx["Catalina:type=Server",serverInfo]'
+          history: 7d
+          value_type: CHAR
+          trends: '0'
+          username: '{$TOMCAT.USER}'
+          password: '{$TOMCAT.PASSWORD}'
+          description: 'The version of the Tomcat.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: Tomcat
+          triggers:
+            - uuid: 608c1b6987214745be632b6f54ce9e96
+              expression: '(last(/Template-Training_App_Apache_Tomcat_JMX/jmx["Catalina:type=Server",serverInfo],#1)<>last(/Template-Training_App_Apache_Tomcat_JMX/jmx["Catalina:type=Server",serverInfo],#2))=1 and length(last(/Template-Training_App_Apache_Tomcat_JMX/jmx["Catalina:type=Server",serverInfo]))>0'
+              name: 'Tomcat: Version has been changed'
+              priority: INFO
+              description: 'Tomcat version has changed. Ack to close.'
+              manual_close: 'YES'
+      discovery_rules:
+        - uuid: 0d9b7954f9c949dfa9a1e9ee589aecec
+          name: 'Protocol handlers discovery'
+          type: JMX
+          key: 'jmx.discovery[attributes,"Catalina:type=ProtocolHandler,port=*"]'
+          delay: 1h
+          status: DISABLED
+          username: '{$TOMCAT.USER}'
+          password: '{$TOMCAT.PASSWORD}'
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#JMXATTR}'
+                value: ^name$
+                formulaid: A
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'Discovery for ProtocolHandler'
+          item_prototypes:
+            - uuid: dc57a97e67314385aeeb036d4817bb08
+              name: '{#JMXVALUE}: Gzip compression status'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},compression]'
+              history: 7d
+              value_type: CHAR
+              trends: '0'
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Gzip compression status on {#JMXNAME}. Enabling gzip compression may save server bandwidth.'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: ProtocolHandler {#JMXVALUE}'
+              trigger_prototypes:
+                - uuid: 75a15e352d274dc4bea054af921f7197
+                  expression: 'find(/Template-Training_App_Apache_Tomcat_JMX/jmx[{#JMXOBJ},compression],,"like","off") = 1'
+                  name: '{#JMXVALUE}: Gzip compression is disabled'
+                  priority: INFO
+                  description: 'gzip compression is disabled for connector {#JMXVALUE}.'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+        - uuid: 9a94cb1bd02c466385ace3ec176254a2
+          name: 'Global request processors discovery'
+          type: JMX
+          key: 'jmx.discovery[beans,"Catalina:type=GlobalRequestProcessor,name=*"]'
+          delay: 1h
+          username: '{$TOMCAT.USER}'
+          password: '{$TOMCAT.PASSWORD}'
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#JMXNAME}'
+                value: '{$TOMCAT.LLD.FILTER.MATCHES:"GlobalRequesProcessor"}'
+                formulaid: A
+              - macro: '{#JMXNAME}'
+                value: '{$TOMCAT.LLD.FILTER.NOT_MATCHES:"GlobalRequesProcessor"}'
+                operator: NOT_MATCHES_REGEX
+                formulaid: B
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'Discovery for GlobalRequesProcessor'
+          item_prototypes:
+            - uuid: 57f1fdd51f4c4ffea89a09adca5466e6
+              name: '{#JMXNAME}: Bytes received per second'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},bytesReceived]'
+              history: 7d
+              units: B
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Bytes received rate by processor {#JMXNAME}'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: {#JMXTYPE} {#JMXNAME}'
+            - uuid: 953bd35e4bc84a37902db665c7fd70b4
+              name: '{#JMXNAME}: Bytes sent per second'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},bytesSent]'
+              history: 7d
+              units: B
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Bytes sent rate by processor {#JMXNAME}'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: {#JMXTYPE} {#JMXNAME}'
+            - uuid: fd158f6922d84277b1fc67d11c2aa54f
+              name: '{#JMXNAME}: Errors per second'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},errorCount]'
+              history: 7d
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Error rate of request processor {#JMXNAME}'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: {#JMXTYPE} {#JMXNAME}'
+            - uuid: 26641a70f209413691baf2f72d55600a
+              name: '{#JMXNAME}: Requests processing time'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},processingTime]'
+              history: 7d
+              units: s
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'The total time to process all incoming requests of request processor {#JMXNAME}'
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: {#JMXTYPE} {#JMXNAME}'
+            - uuid: 1c3be860e5fd469e9a95dd22c78c2e6d
+              name: '{#JMXNAME}: Requests per second'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},requestCount]'
+              history: 7d
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Rate of requests served by request processor {#JMXNAME}'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: {#JMXTYPE} {#JMXNAME}'
+          graph_prototypes:
+            - uuid: 3e47568eddc54218ae03764e551dcf2e
+              name: '{#JMXNAME}: Traffic'
+              graph_items:
+                - drawtype: GRADIENT_LINE
+                  color: 1A7C11
+                  item:
+                    host: Template-Training_App_Apache_Tomcat_JMX
+                    key: 'jmx[{#JMXOBJ},bytesSent]'
+                - sortorder: '1'
+                  drawtype: GRADIENT_LINE
+                  color: 2774A4
+                  item:
+                    host: Template-Training_App_Apache_Tomcat_JMX
+                    key: 'jmx[{#JMXOBJ},bytesReceived]'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+        - uuid: fb134ff82e894ce39c8d567be9067986
+          name: 'Contexts discovery'
+          type: JMX
+          key: 'jmx.discovery[beans,"Catalina:type=Manager,host=*,context=*"]'
+          delay: 1h
+          username: '{$TOMCAT.USER}'
+          password: '{$TOMCAT.PASSWORD}'
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#JMXHOST}'
+                value: '{$TOMCAT.LLD.FILTER.MATCHES:"Manager"}'
+                formulaid: A
+              - macro: '{#JMXHOST}'
+                value: '{$TOMCAT.LLD.FILTER.NOT_MATCHES:"Manager"}'
+                operator: NOT_MATCHES_REGEX
+                formulaid: B
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'Discovery for contexts'
+          item_prototypes:
+            - uuid: 528ddce397724637a3adaa7255e71224
+              name: '{#JMXHOST}{#JMXCONTEXT}: Sessions active'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},activeSessions]'
+              history: 7d
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Active sessions of the application.'
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: Context {#JMXHOST}{#JMXCONTEXT}'
+            - uuid: 259bf2012beb47cb8693e4f486279d7a
+              name: '{#JMXHOST}{#JMXCONTEXT}: Sessions allowed maximum'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},maxActiveSessions]'
+              history: 7d
+              value_type: FLOAT
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'The maximum number of active Sessions allowed, or -1 for no limit.'
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: Context {#JMXHOST}{#JMXCONTEXT}'
+            - uuid: 374f12483f2844dc8a0c3b080c31151c
+              name: '{#JMXHOST}{#JMXCONTEXT}: Sessions active maximum so far'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},maxActive]'
+              history: 7d
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Maximum number of active sessions so far.'
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: Context {#JMXHOST}{#JMXCONTEXT}'
+            - uuid: 3b4b2f14cd5346b9a1a9d56012425b59
+              name: '{#JMXHOST}{#JMXCONTEXT}: Sessions rejected per second'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},rejectedSessions]'
+              history: 7d
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Rate of sessions we rejected due to maxActive being reached.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: Context {#JMXHOST}{#JMXCONTEXT}'
+            - uuid: 7e00624165844b0e9aaad1b5a115225d
+              name: '{#JMXHOST}{#JMXCONTEXT}: Sessions created per second'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},sessionCounter]'
+              history: 7d
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Rate of sessions created by this application per second.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: Context {#JMXHOST}{#JMXCONTEXT}'
+          graph_prototypes:
+            - uuid: 932251e78365438d9fcfd58ac48f24d0
+              name: '{#JMXHOST}{#JMXCONTEXT}: Sessions'
+              graph_items:
+                - drawtype: GRADIENT_LINE
+                  color: 1A7C11
+                  item:
+                    host: Template-Training_App_Apache_Tomcat_JMX
+                    key: 'jmx[{#JMXOBJ},maxActive]'
+                - sortorder: '1'
+                  drawtype: GRADIENT_LINE
+                  color: 2774A4
+                  item:
+                    host: Template-Training_App_Apache_Tomcat_JMX
+                    key: 'jmx[{#JMXOBJ},activeSessions]'
+                - sortorder: '2'
+                  drawtype: GRADIENT_LINE
+                  color: F63100
+                  item:
+                    host: Template-Training_App_Apache_Tomcat_JMX
+                    key: 'jmx[{#JMXOBJ},rejectedSessions]'
+                - sortorder: '3'
+                  drawtype: GRADIENT_LINE
+                  color: A54F10
+                  item:
+                    host: Template-Training_App_Apache_Tomcat_JMX
+                    key: 'jmx[{#JMXOBJ},maxActiveSessions]'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+        - uuid: 8b8f5958ff8348c4aa1c7b9801567381
+          name: 'Thread pools discovery'
+          type: JMX
+          key: 'jmx.discovery[beans,"Catalina:type=ThreadPool,name=*"]'
+          delay: 1h
+          username: '{$TOMCAT.USER}'
+          password: '{$TOMCAT.PASSWORD}'
+          filter:
+            evaltype: AND
+            conditions:
+              - macro: '{#JMXNAME}'
+                value: '{$TOMCAT.LLD.FILTER.MATCHES:"ThreadPool"}'
+                formulaid: A
+              - macro: '{#JMXNAME}'
+                value: '{$TOMCAT.LLD.FILTER.NOT_MATCHES:"ThreadPool"}'
+                operator: NOT_MATCHES_REGEX
+                formulaid: B
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'Discovery for ThreadPool'
+          item_prototypes:
+            - uuid: 3f869b9b19a14b398865a205f7fa3b3f
+              name: '{#JMXNAME}: Threads count'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},currentThreadCount]'
+              history: 7d
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Amount of threads the thread pool has right now, both busy and free.'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 10m
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: {#JMXTYPE} {#JMXNAME}'
+            - uuid: 0b81ef2755a6476c84ccfd612d9f91c2
+              name: '{#JMXNAME}: Threads busy'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},currentThreadsBusy]'
+              history: 7d
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Number of the requests that are being currently handled.'
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: {#JMXTYPE} {#JMXNAME}'
+            - uuid: 77c22c1d3ff74fe388ba1258b6ebbb1f
+              name: '{#JMXNAME}: Threads limit'
+              type: JMX
+              key: 'jmx[{#JMXOBJ},maxThreads]'
+              history: 7d
+              username: '{$TOMCAT.USER}'
+              password: '{$TOMCAT.PASSWORD}'
+              description: 'Limit of the threads count. When currentThreadsBusy counter reaches the maxThreads limit, no more requests could be handled, and the application chokes.'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 10m
+              jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+              tags:
+                - tag: Application
+                  value: 'Tomcat: {#JMXTYPE} {#JMXNAME}'
+          trigger_prototypes:
+            - uuid: 93f4e80cbde145ea8f7a5d0f034ea567
+              expression: 'min(/Template-Training_App_Apache_Tomcat_JMX/jmx[{#JMXOBJ},currentThreadsBusy],{$TOMCAT.THREADS.MAX.TIME:"{#JMXNAME}"})>last(/Template-Training_App_Apache_Tomcat_JMX/jmx[{#JMXOBJ},maxThreads])*{$TOMCAT.THREADS.MAX.PCT:"{#JMXNAME}"}/100'
+              name: '{#JMXNAME}: Busy worker threads count are more than {$TOMCAT.THREADS.MAX.PCT:"{#JMXNAME}"}% of the limit for {$TOMCAT.THREADS.MAX.TIME:"{#JMXNAME}"}'
+              priority: HIGH
+              description: 'When current threads busy counter reaches the limit, no more requests could be handled, and the application chokes.'
+          graph_prototypes:
+            - uuid: 71203a6328864aa7929c2b104dc46f63
+              name: '{#JMXNAME}: Worker threads'
+              graph_items:
+                - drawtype: GRADIENT_LINE
+                  color: 1A7C11
+                  item:
+                    host: Template-Training_App_Apache_Tomcat_JMX
+                    key: 'jmx[{#JMXOBJ},maxThreads]'
+                - sortorder: '1'
+                  drawtype: GRADIENT_LINE
+                  color: 2774A4
+                  item:
+                    host: Template-Training_App_Apache_Tomcat_JMX
+                    key: 'jmx[{#JMXOBJ},currentThreadCount]'
+                - sortorder: '2'
+                  drawtype: GRADIENT_LINE
+                  color: F63100
+                  item:
+                    host: Template-Training_App_Apache_Tomcat_JMX
+                    key: 'jmx[{#JMXOBJ},currentThreadsBusy]'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+      tags:
+        - tag: Template
+          value: Training
+      macros:
+        - macro: '{$TOMCAT.LLD.FILTER.MATCHES}'
+          value: '.*'
+          description: 'Filter for discoverable objects. Can be used with following contexts: "GlobalRequestProcessor", "ThreadPool", "Manager"'
+        - macro: '{$TOMCAT.LLD.FILTER.NOT_MATCHES}'
+          value: 'CHANGE IF NEEDED'
+          description: 'Filter to exclude discovered objects. Can be used with following contexts: "GlobalRequestProcessor", "ThreadPool", "Manager"'
+        - macro: '{$TOMCAT.PASSWORD}'
+          description: 'Password for JMX'
+        - macro: '{$TOMCAT.THREADS.MAX.PCT}'
+          value: '75'
+          description: 'Threshold for busy worker threads trigger. Can be used with {#JMXNAME} as context.'
+        - macro: '{$TOMCAT.THREADS.MAX.TIME}'
+          value: 5m
+          description: 'The time during which the number of busy threads can exceed the threshold. Can be used with {#JMXNAME} as context.'
+        - macro: '{$TOMCAT.USER}'
+          description: 'User for JMX'
+    - uuid: d72d302685a14068afac4bccce4bf621
+      template: Template-Training_App_Generic_Java_JMX
+      name: Template-Training_App_Generic_Java_JMX
+      description: 'Template tooling version used: 0.38'
+      vendor:
+        name: Open-Tech
+        version: 7.0-0
+      groups:
+        - name: Templates/Training
+      items:
+        - uuid: c827ac83e1a04554a93f01f346ab8d53
+          name: 'ClassLoading: Loaded class count'
+          type: JMX
+          key: 'jmx["java.lang:type=ClassLoading","LoadedClassCount"]'
+          history: 7d
+          description: 'Displays number of classes that are currently loaded in the Java virtual machine.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 86f3289ef40e4d0fa6365c9b72f5184c
+          name: 'ClassLoading: Total loaded class count'
+          type: JMX
+          key: 'jmx["java.lang:type=ClassLoading","TotalLoadedClassCount"]'
+          history: 7d
+          description: 'Displays the total number of classes that have been loaded since the Java virtual machine has started execution.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: ccc7a2f74f33427a9b4f52303f648d67
+          name: 'ClassLoading: Unloaded class count'
+          type: JMX
+          key: 'jmx["java.lang:type=ClassLoading","UnloadedClassCount"]'
+          history: 7d
+          description: 'Displays the total number of classes that have been loaded since the Java virtual machine has started execution.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 17076522abc442b1819bbc4937dccc22
+          name: 'Compilation: Name of the current JIT compiler'
+          type: JMX
+          key: 'jmx["java.lang:type=Compilation","Name"]'
+          history: 7d
+          value_type: CHAR
+          trends: '0'
+          description: 'Displays the total number of classes unloaded since the Java virtual machine has started execution.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 30m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+          triggers:
+            - uuid: a97187f652024664b01b759ed6317f75
+              expression: 'find(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=Compilation","Name"],,"like","Client")=1'
+              name: 'Compilation: {HOST.NAME} uses suboptimal JIT compiler'
+              priority: INFO
+              manual_close: 'YES'
+        - uuid: 2cd7d924953f465b873b3bed08c586ad
+          name: 'Compilation: Accumulated time spent'
+          type: JMX
+          key: 'jmx["java.lang:type=Compilation","TotalCompilationTime"]'
+          history: 7d
+          value_type: FLOAT
+          units: s
+          description: 'Displays the approximate accumulated elapsed time spent in compilation, in seconds.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 9c31266eee9c44a984604cab0db12403
+          name: 'GarbageCollector: Copy number of collections per second'
+          type: JMX
+          key: 'jmx["java.lang:type=GarbageCollector,name=Copy","CollectionCount"]'
+          history: 7d
+          value_type: FLOAT
+          description: 'Displays the total number of collections that have occurred per second.'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 5894303e2f6b4f67b40f8cb10e9b4f9e
+          name: 'GarbageCollector: Copy accumulated time spent in collection'
+          type: JMX
+          key: 'jmx["java.lang:type=GarbageCollector,name=Copy","CollectionTime"]'
+          history: 7d
+          value_type: FLOAT
+          units: s
+          description: 'Displays the approximate accumulated collection elapsed time, in seconds.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: cd3a34acf77748559ac1d277d18528b3
+          name: 'GarbageCollector: MarkSweepCompact number of collections per second'
+          type: JMX
+          key: 'jmx["java.lang:type=GarbageCollector,name=MarkSweepCompact","CollectionCount"]'
+          history: 7d
+          value_type: FLOAT
+          description: 'Displays the total number of collections that have occurred per second.'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: ed4f51c2662440e49766dfeeb151ef2c
+          name: 'GarbageCollector: MarkSweepCompact accumulated time spent in collection'
+          type: JMX
+          key: 'jmx["java.lang:type=GarbageCollector,name=MarkSweepCompact","CollectionTime"]'
+          history: 7d
+          value_type: FLOAT
+          units: s
+          description: 'Displays the approximate accumulated collection elapsed time, in seconds.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 5ca948591fcc4bfda4f42f077a8725e9
+          name: 'Memory: Heap memory committed'
+          type: JMX
+          key: 'jmx["java.lang:type=Memory","HeapMemoryUsage.committed"]'
+          history: 7d
+          units: B
+          description: 'Current heap memory allocated. This amount of memory is guaranteed for the Java virtual machine to use.'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 5e0da0cd5bfb40b8bbff64eb35b0dae4
+          name: 'Memory: Heap memory maximum size'
+          type: JMX
+          key: 'jmx["java.lang:type=Memory","HeapMemoryUsage.max"]'
+          history: 7d
+          units: B
+          description: 'Maximum amount of heap that can be used for memory management. This amount of memory is not guaranteed to be available if it is greater than the amount of committed memory. The Java virtual machine may fail to allocate memory even if the amount of used memory does not exceed this maximum size.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 05175be2bf0f46318fc928e52ad81c44
+          name: 'Memory: Heap memory used'
+          type: JMX
+          key: 'jmx["java.lang:type=Memory","HeapMemoryUsage.used"]'
+          history: 7d
+          units: B
+          description: 'Current memory usage outside the heap.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 4bf1ceb8b2804e3c8d8f96cb281aa6a8
+          name: 'Memory: Non-Heap memory committed'
+          type: JMX
+          key: 'jmx["java.lang:type=Memory","NonHeapMemoryUsage.committed"]'
+          history: 7d
+          units: B
+          description: 'Current memory allocated outside the heap. This amount of memory is guaranteed for the Java virtual machine to use.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: d1fcaa7c7094437296fc6a549487b55d
+          name: 'Memory: Non-Heap memory used'
+          type: JMX
+          key: 'jmx["java.lang:type=Memory","NonHeapMemoryUsage.used"]'
+          history: 7d
+          units: B
+          description: 'Current memory usage outside the heap'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 7acd3f0faffc48b08fec8920d013cf3a
+          name: 'Memory: Object pending finalization count'
+          type: JMX
+          key: 'jmx["java.lang:type=Memory","ObjectPendingFinalizationCount"]'
+          history: 7d
+          description: 'The approximate number of objects for which finalization is pending.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 65581f6d7bca49e9bc8705e010270e6e
+          name: 'MemoryPool: Code Cache committed'
+          type: JMX
+          key: 'jmx["java.lang:type=MemoryPool,name=Code Cache","Usage.committed"]'
+          history: 7d
+          units: B
+          description: 'Current memory allocated'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: a35336b573da41f8a538d8655689e928
+          name: 'MemoryPool: CodeCache maximum size'
+          type: JMX
+          key: 'jmx["java.lang:type=MemoryPool,name=Code Cache","Usage.max"]'
+          history: 7d
+          units: B
+          description: 'Maximum amount of memory that can be used for memory management. This amount of memory is not guaranteed to be available if it is greater than the amount of committed memory. The Java virtual machine may fail to allocate memory even if the amount of used memory does not exceed this maximum size.'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 348460618adc4cba86ab677f8bc031e6
+          name: 'MemoryPool: Code Cache used'
+          type: JMX
+          key: 'jmx["java.lang:type=MemoryPool,name=Code Cache","Usage.used"]'
+          history: 7d
+          units: B
+          description: 'Current memory usage'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: b3d1f4c5391f418db69484187bdff765
+          name: 'MemoryPool: Tenured Gen committed'
+          type: JMX
+          key: 'jmx["java.lang:type=MemoryPool,name=Tenured Gen","Usage.committed"]'
+          history: 7d
+          units: B
+          description: 'Current memory allocated'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 48de10a77f1d4b7db11c2ce12fd77313
+          name: 'MemoryPool: Tenured Gen maximum size'
+          type: JMX
+          key: 'jmx["java.lang:type=MemoryPool,name=Tenured Gen","Usage.max"]'
+          history: 7d
+          units: B
+          description: 'Maximum amount of memory that can be used for memory management. This amount of memory is not guaranteed to be available if it is greater than the amount of committed memory. The Java virtual machine may fail to allocate memory even if the amount of used memory does not exceed this maximum size.'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: b03fa3bdbf9c4cc797599c93336e2008
+          name: 'MemoryPool: Tenured Gen used'
+          type: JMX
+          key: 'jmx["java.lang:type=MemoryPool,name=Tenured Gen","Usage.used"]'
+          history: 7d
+          units: B
+          description: 'Current memory usage'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: bf133a201c204c508b5a98aa80ad5944
+          name: 'OperatingSystem: File descriptors maximum count'
+          type: JMX
+          key: 'jmx["java.lang:type=OperatingSystem","MaxFileDescriptorCount"]'
+          history: 7d
+          description: 'This is the number of file descriptors we can have opened in the same process, as determined by the operating system. You can never have more file descriptors than this number.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 6b7e033a4a9047fe8b4f68d4a40224ec
+          name: 'OperatingSystem: File descriptors opened'
+          type: JMX
+          key: 'jmx["java.lang:type=OperatingSystem","OpenFileDescriptorCount"]'
+          history: 7d
+          description: 'This is the number of opened file descriptors at the moment, if this reaches the MaxFileDescriptorCount, the application will throw an IOException: Too many open files. This could mean you’re are opening file descriptors and never closing them.'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 67464e6974ce4efeb6991015886f2894
+          name: 'OperatingSystem: Process CPU Load'
+          type: JMX
+          key: 'jmx["java.lang:type=OperatingSystem","ProcessCpuLoad"]'
+          history: 7d
+          value_type: FLOAT
+          units: '%'
+          description: 'ProcessCpuLoad represents the CPU load in this process.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '100'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+          triggers:
+            - uuid: b7ffbcde226d478e9926983cef311968
+              expression: 'min(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=OperatingSystem","ProcessCpuLoad"],{$JMX.CPU.LOAD.TIME})>{$JMX.CPU.LOAD.MAX}'
+              name: 'OperatingSystem: Process CPU Load more than {$JMX.CPU.LOAD.MAX}% for {$JMX.CPU.LOAD.TIME}'
+              priority: AVERAGE
+        - uuid: c288f170cdeb406f9d33df13ad767d5c
+          name: 'Runtime: JVM uptime'
+          type: JMX
+          key: 'jmx["java.lang:type=Runtime","Uptime"]'
+          history: 7d
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+          triggers:
+            - uuid: 374fd4a4f8714d319b4d0a56f87a0603
+              expression: 'nodata(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=Runtime","Uptime"],5m)=1'
+              name: 'Runtime: JVM is not reachable'
+              priority: AVERAGE
+              manual_close: 'YES'
+        - uuid: e294ae0f9fca42c9a22203ff6fa112c4
+          name: 'Runtime: JVM name'
+          type: JMX
+          key: 'jmx["java.lang:type=Runtime","VmName"]'
+          delay: 1h
+          history: 7d
+          value_type: CHAR
+          trends: '0'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 30m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+          triggers:
+            - uuid: 743fde04af694af0b012e8f651d7894a
+              expression: 'find(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=Runtime","VmName"],,"like","Server")<>1'
+              name: 'Runtime: {HOST.NAME} runs suboptimal VM type'
+              priority: INFO
+              manual_close: 'YES'
+        - uuid: af49c614010c413e8c0a04271af7a566
+          name: 'Runtime: JVM version'
+          type: JMX
+          key: 'jmx["java.lang:type=Runtime","VmVersion"]'
+          delay: 1h
+          history: 7d
+          value_type: CHAR
+          trends: '0'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 30m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 83a6828136c144debe3a1434744f2a56
+          name: 'Threading: Daemon thread count'
+          type: JMX
+          key: 'jmx["java.lang:type=Threading","DaemonThreadCount"]'
+          history: 7d
+          description: 'Number of daemon threads running.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: ab4c7fe3328246cea8d3e45c90d0acba
+          name: 'Threading: Peak thread count'
+          type: JMX
+          key: 'jmx["java.lang:type=Threading","PeakThreadCount"]'
+          history: 7d
+          description: 'Maximum number of threads being executed at the same time since the JVM was started or the peak was reset.'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: 433d2fb53c1a407e84c89818fc125f5e
+          name: 'Threading: Thread count'
+          type: JMX
+          key: 'jmx["java.lang:type=Threading","ThreadCount"]'
+          history: 7d
+          description: 'The number of threads running at the current moment.'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+        - uuid: c04dcaf684e4407f9a3e70aea8f61103
+          name: 'Threading: Total started thread count'
+          type: JMX
+          key: 'jmx["java.lang:type=Threading","TotalStartedThreadCount"]'
+          history: 7d
+          description: 'The number of threads started since the JVM was launched.'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: JMX
+      tags:
+        - tag: Template
+          value: Training
+      macros:
+        - macro: '{$JMX.CPU.LOAD.MAX}'
+          value: '85'
+          description: 'A threshold in percent for CPU utilization trigger.'
+        - macro: '{$JMX.CPU.LOAD.TIME}'
+          value: 5m
+          description: 'The time during which the CPU utilization may exceed the threshold.'
+        - macro: '{$JMX.FILE.DESCRIPTORS.MAX}'
+          value: '85'
+          description: 'A threshold in percent for file descriptors count trigger.'
+        - macro: '{$JMX.FILE.DESCRIPTORS.TIME}'
+          value: 3m
+          description: 'The time during which the file descriptors count may exceed the threshold.'
+        - macro: '{$JMX.HEAP.MEM.USAGE.MAX}'
+          value: '85'
+          description: 'A threshold in percent for Heap memory utilization trigger.'
+        - macro: '{$JMX.HEAP.MEM.USAGE.TIME}'
+          value: 10m
+          description: 'The time during which the Heap memory utilization may exceed the threshold.'
+        - macro: '{$JMX.MP.USAGE.MAX}'
+          value: '85'
+          description: 'A threshold in percent for memory pools utilization trigger. Use a context to change the threshold for a specific pool.'
+        - macro: '{$JMX.MP.USAGE.TIME}'
+          value: 10m
+          description: 'The time during which the memory pools utilization may exceed the threshold.'
+        - macro: '{$JMX.NONHEAP.MEM.USAGE.MAX}'
+          value: '85'
+          description: 'A threshold in percent for Non-heap memory utilization trigger.'
+        - macro: '{$JMX.NONHEAP.MEM.USAGE.TIME}'
+          value: 10m
+          description: 'The time during which the Non-heap memory utilization may exceed the threshold.'
+    - uuid: 524f1214f9304e83b7425f789868c3d9
+      template: Template-Training_Examples-Items
+      name: Template-Training_Examples-Items
+      vendor:
+        name: Open-Tech
+        version: 7.0-0
+      groups:
+        - name: Templates/Training
+      items:
+        - uuid: 95c85fec7ac240b798b6b74a629db7be
+          name: 'Date - command over Zabbix server'
+          type: EXTERNAL
+          key: date.sh
+          delay: '30'
+          history: 1d
+          value_type: CHAR
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: 151fcab641ab46deb3f40373a5dc24f4
+          name: 'Zabbix DB size'
+          type: ODBC
+          key: 'db.odbc.select[zabbix.dbsize,zabbix]'
+          history: 90d
+          units: B
+          params: 'select SUM(data_length) from information_schema.tables where table_schema = ''zabbix'''
+          username: zbx_probe
+          password: '{$ZBX_PROBE_MYSQL_PASS}'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: e4aff9fb2294411da7f35a7460ccf71f
+          name: 'Ping to the server (ICMP loss)'
+          type: SIMPLE
+          key: 'icmppingloss[,5,1000,99,3000]'
+          delay: '30'
+          history: 90d
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: c8e4d137922d42d38d8390bab42dad95
+          name: 'Java VM uptime'
+          type: JMX
+          key: 'jmx[java.lang:type=Runtime,Uptime]'
+          delay: '30'
+          history: 90d
+          value_type: FLOAT
+          units: s
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+          jmx_endpoint: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: ea1b1ff0b2ec4b51b797a93fbba14593
+          name: 'Zabbix Server - log'
+          type: ZABBIX_ACTIVE
+          key: 'log[/var/log/zabbix/zabbix_server.log,,,5,skip]'
+          delay: '30'
+          history: 1d
+          value_type: LOG
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+          triggers:
+            - uuid: c6871a4ce93e44969475ffe3a30a994f
+              expression: 'find(/Template-Training_Examples-Items/log[/var/log/zabbix/zabbix_server.log,,,5,skip],600s,"like","executing housekeeper")=1 and nodata(/Template-Training_Examples-Items/log[/var/log/zabbix/zabbix_server.log,,,5,skip],300s)=0'
+              name: 'Housekeeper is running'
+              priority: INFO
+              manual_close: 'YES'
+        - uuid: ce7a3abfce144222b866c436ac6a3367
+          name: 'Ping to the server (TCP)'
+          type: SIMPLE
+          key: 'net.tcp.service[tcp,,10050]'
+          delay: '60'
+          history: 90d
+          valuemap:
+            name: 'Service state'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: d450ecd6cdbb4b2ca7f985dd4414d597
+          name: 'Date - command over SSH'
+          type: SSH
+          key: 'ssh.run[ssh.date]'
+          delay: '60'
+          history: 1d
+          value_type: CHAR
+          trends: '0'
+          params: /bin/date
+          username: zbx_probe
+          password: '{$SSH_USER_PASS}'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: d526e2eaddba46318984168289cee68e
+          name: 'CPU load'
+          key: 'system.cpu.load[,avg15]'
+          delay: '30'
+          history: 90d
+          value_type: FLOAT
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: b25b898762e94afc876eae7a129f06c9
+          name: 'CPU util'
+          type: ZABBIX_ACTIVE
+          key: 'system.cpu.util[,,avg15]'
+          delay: '30'
+          history: 90d
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: 08c4e77bc7e946aa8f9db8f8ca817416
+          name: 'VMware version'
+          type: SIMPLE
+          key: 'vmware.version[https://10.2.0.23/sdk]'
+          history: 1d
+          value_type: CHAR
+          trends: '0'
+          username: zbx_probe
+          password: ZBXlab00
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: 3ac9684c05e64b3faf4cf19d3736abc9
+          name: 'Zabbix agent availability'
+          type: INTERNAL
+          key: 'zabbix[host,agent,available]'
+          history: 1d
+          valuemap:
+            name: 'Host availability status'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: 9b2dbee43ce847b689938c266413d08d
+          name: 'Zabbix Server - count of unsupported items'
+          type: INTERNAL
+          key: 'zabbix[items_unsupported]'
+          delay: '30'
+          history: 90d
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: 84afa78b78584c17b9e6f7450d61e0ed
+          name: 'Date - minute'
+          key: 'zbx.cmd.date[M]'
+          delay: '30'
+          history: 90d
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+          triggers:
+            - uuid: 71d4b31987d342be99aa7ad6c66db611
+              expression: 'last(/Template-Training_Examples-Items/zbx.cmd.date[M])>45 and last(/Template-Training_Examples-Items/zbx.cmd.date[M])<50'
+              name: 'Minute is >45 and <50'
+              priority: HIGH
+        - uuid: 7a8f92c7e42644acaaff7516efcb1407
+          name: 'Random number'
+          key: zbx.cmd.random
+          delay: '30'
+          history: 90d
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: a7bd820f63544305b99e190d6bcfba30
+          name: 'Date - sent by zabbix_sender utility'
+          type: TRAP
+          key: zbx.date.trapper
+          delay: '0'
+          history: 1d
+          value_type: CHAR
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: d83abb761a8b4b7b95785ba3ad59186e
+          name: 'Get page www.root.cz'
+          type: HTTP_AGENT
+          key: zbx.http
+          history: 90d
+          value_type: CHAR
+          trends: '0'
+          url: 'https://www.root.cz/'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+      tags:
+        - tag: Template
+          value: Training
+      macros:
+        - macro: '{$SSH_USER_PASS}'
+          type: SECRET_TEXT
+          description: 'User pass zbx_probe (cat /root/zbx_probe.pw)'
+        - macro: '{$ZBX_PROBE_MYSQL_PASS}'
+          type: SECRET_TEXT
+          description: 'MySQL user pass zbx_probe (cat /root/mysql-zbx_probe.pw)'
+      valuemaps:
+        - uuid: 79486a95db7e4027b71acd316bd0e543
+          name: 'Host availability status'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up
+            - value: '2'
+              newvalue: Unknown
+        - uuid: 695b854c812d4949a3e04287e18b3ee3
+          name: 'Service state'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up
+    - uuid: 260b97b1372f40a395fec8f5ae29a477
+      template: Template-Training_Examples-Windows
+      name: Template-Training_Examples-Windows
+      vendor:
+        name: Open-Tech
+        version: 7.0-0
+      groups:
+        - name: Templates/Training
+      items:
+        - uuid: 86597cae7e6e4a80a69236993031e860
+          name: 'ICMP loss'
+          type: SIMPLE
+          key: 'icmppingloss[,5,1000,99,3000]'
+          delay: '300'
+          history: 90d
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: 6ec0cbd10b6c42dc99c35e0ccb1e8780
+          name: 'WindowsPerformanceCounter - $1'
+          key: 'perf_counter[\Memory\Pages Output/sec]'
+          delay: '300'
+          history: 1d
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: 5d45b9234d0f4add9fc6058d7ccbaf55
+          name: 'WindowsPerformanceCounter - $1'
+          key: 'perf_counter[\PhysicalDisk(_Total)\Avg. Disk Read Queue Length]'
+          delay: '300'
+          history: 1d
+          value_type: FLOAT
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: 20f771babcc545c781c5e7ed82ba7f12
+          name: 'Services not running'
+          key: 'services[automatic,stopped,"exceptions"]'
+          delay: '300'
+          history: 1d
+          value_type: TEXT
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: 4f58711c73474baaaf926a61c3c7836a
+          name: 'Service state - $1'
+          key: 'service_state[Zabbix Agent]'
+          delay: '300'
+          history: 90d
+          valuemap:
+            name: 'Windows service state'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: 331b6f24b3014500b4c36c3cae4527d7
+          name: 'CPU load'
+          key: 'system.cpu.load[,avg15]'
+          delay: '300'
+          history: 90d
+          value_type: FLOAT
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+        - uuid: af19839a45694e44949e457e4626900a
+          name: 'CPU util'
+          key: 'system.cpu.util[,,avg15]'
+          delay: '300'
+          history: 90d
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: 'Examples of item types'
+      tags:
+        - tag: Template
+          value: Training
+      valuemaps:
+        - uuid: bd400b633fce42f48fca552c1583de2f
+          name: 'Windows service state'
+          mappings:
+            - value: '0'
+              newvalue: Running
+            - value: '1'
+              newvalue: Paused
+            - value: '2'
+              newvalue: 'Start pending'
+            - value: '3'
+              newvalue: 'Pause pending'
+            - value: '4'
+              newvalue: 'Continue pending'
+            - value: '5'
+              newvalue: 'Stop pending'
+            - value: '6'
+              newvalue: Stopped
+            - value: '7'
+              newvalue: Unknown
+            - value: '255'
+              newvalue: 'No such service'
+    - uuid: 287661b5aca3463393c65199cb0e870b
+      template: Template-Training_MySQL_by_Zabbix_agent_2
+      name: Template-Training_MySQL_by_Zabbix_agent_2
+      description: |
+        Requirements for template operation:
+        1. Create MySQL user for monitoring. For example:
+        CREATE USER 'zbx_monitor'@'%' IDENTIFIED BY '<password>';
+        GRANT REPLICATION CLIENT,PROCESS,SHOW DATABASES,SHOW VIEW ON *.* TO 'zbx_monitor'@'%';
+        For more information please read the MySQL documentation https://dev.mysql.com/doc/refman/8.0/en/grant.html.
+        2. Set in the {$MYSQL.DSN} macro the data source name of the MySQL instance either session name from Zabbix agent 2 configuration file or URI.
+        Examples: MySQL1, tcp://localhost:3306, tcp://172.16.0.10, unix:/var/run/mysql.sock
+        For more information about MySQL Unix socket file please read the MySQL documentation https://dev.mysql.com/doc/refman/8.0/en/problems-with-mysql-sock.html.
+        3. If you had set URI in the {$MYSQL.DSN}, please define the user name and password in host macros ({$MYSQL.USER} and {$MYSQL.PASSWORD}).
+        Leave macros {$MYSQL.USER} and {$MYSQL.PASSWORD} empty if you use a session name. Set the user name and password in the Plugins.Mysql.<...> section of your Zabbix agent 2 configuration file.
+        For more information about configuring the Zabbix MySQL plugin please read the documentation https://git.zabbix.com/projects/ZBX/repos/zabbix/browse/src/go/plugins/mysql/README.md.
+        
+        
+        You can discuss this template or leave feedback on our forum https://www.zabbix.com/forum/zabbix-suggestions-and-feedback/384189-discussion-thread-for-official-zabbix-template-db-mysql
+        
+        Template tooling version used: 0.41
+      vendor:
+        name: Open-Tech
+        version: 7.0-0
+      groups:
+        - name: Templates/Training
+      items:
+        - uuid: d161ba5022bd4eeba9dc63e80ba66034
+          name: 'MySQL: Aborted clients per second'
+          type: DEPENDENT
+          key: mysql.aborted_clients.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of connections that were aborted because the client died without closing the connection properly.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Aborted_clients
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: connections
+        - uuid: bac4919f68114da7a09e9818fafb6607
+          name: 'MySQL: Aborted connections per second'
+          type: DEPENDENT
+          key: mysql.aborted_connects.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of failed attempts to connect to the MySQL server.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Aborted_connects
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: connections
+          triggers:
+            - uuid: 5a0f793c785f4e82aadde1a8581d5fbd
+              expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.aborted_connects.rate,5m)>{$MYSQL.ABORTED_CONN.MAX.WARN}'
+              name: 'MySQL: Server has aborted connections'
+              event_name: 'MySQL: Server has aborted connections (over {$MYSQL.ABORTED_CONN.MAX.WARN} for 5m)'
+              priority: AVERAGE
+              description: 'The number of failed attempts to connect to the MySQL server is more than {$MYSQL.ABORTED_CONN.MAX.WARN} in the last 5 minutes.'
+              dependencies:
+                - name: 'MySQL: Refused connections'
+                  expression: last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.connection_errors_max_connections.rate)>0
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: 81dc243ff54841a680f156b32bf07abc
+          name: 'MySQL: Binlog cache disk use'
+          type: DEPENDENT
+          key: mysql.binlog_cache_disk_use
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of transactions that used a temporary disk cache because they could not fit in the regular binary log cache, being larger than binlog_cache_size.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Binlog_cache_disk_use
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: cache
+        - uuid: 816aa31bcc16464da85debc9afbef8b7
+          name: 'MySQL: Buffer pool efficiency'
+          type: CALCULATED
+          key: mysql.buffer_pool_efficiency
+          history: 7d
+          value_type: FLOAT
+          units: '%'
+          params: |
+            last(//mysql.innodb_buffer_pool_reads) / 
+            ( last(//mysql.innodb_buffer_pool_read_requests) + 
+            ( last(//mysql.innodb_buffer_pool_read_requests) = 0 ) ) * 100 * 
+            ( last(//mysql.innodb_buffer_pool_read_requests) > 0 )
+          description: 'The item shows how effectively the buffer pool is serving reads.'
+          tags:
+            - tag: component
+              value: memory
+        - uuid: 3e26932f7d2d4801bf57cefa0528d1f3
+          name: 'MySQL: Buffer pool utilization'
+          type: CALCULATED
+          key: mysql.buffer_pool_utilization
+          history: 7d
+          value_type: FLOAT
+          units: '%'
+          params: |
+            ( last(//mysql.innodb_buffer_pool_pages_total) - 
+            last(//mysql.innodb_buffer_pool_pages_free) ) / 
+            ( last(//mysql.innodb_buffer_pool_pages_total) + 
+            ( last(//mysql.innodb_buffer_pool_pages_total) = 0 ) ) * 100 * 
+            ( last(//mysql.innodb_buffer_pool_pages_total) > 0 )
+          description: 'Ratio of used to total pages in the buffer pool.'
+          tags:
+            - tag: component
+              value: memory
+          triggers:
+            - uuid: 8486c8809c4d4b5daacdce15a6030b55
+              expression: 'max(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.buffer_pool_utilization,5m)<{$MYSQL.BUFF_UTIL.MIN.WARN}'
+              name: 'MySQL: Buffer pool utilization is too low'
+              event_name: 'MySQL: Buffer pool utilization is too low (less than {$MYSQL.BUFF_UTIL.MIN.WARN}% for 5m)'
+              priority: WARNING
+              description: 'The buffer pool utilization is less than {$MYSQL.BUFF_UTIL.MIN.WARN}% in the last 5 minutes. This means that there is a lot of unused RAM allocated for the buffer pool, which you can easily reallocate at the moment.'
+              tags:
+                - tag: scope
+                  value: notice
+        - uuid: 3b2c8dc7159b4217914a5ee3f967a9a4
+          name: 'MySQL: Bytes received'
+          type: DEPENDENT
+          key: mysql.bytes_received.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          units: Bps
+          description: 'Number of bytes received from all clients.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Bytes_received
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: network
+        - uuid: 2e3f3c1af2f8448b915373fc4b73e4cb
+          name: 'MySQL: Bytes sent'
+          type: DEPENDENT
+          key: mysql.bytes_sent.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          units: Bps
+          description: 'Number of bytes sent to all clients.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Bytes_sent
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: network
+        - uuid: e39e1927903c483b8ed430453e423859
+          name: 'MySQL: Command Delete per second'
+          type: DEPENDENT
+          key: mysql.com_delete.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'The Com_delete counter variable indicates the number of times the delete statement has been executed.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Com_delete
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: operations
+        - uuid: fcad9a3191a7458ea482cb7c1b13f840
+          name: 'MySQL: Command Insert per second'
+          type: DEPENDENT
+          key: mysql.com_insert.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'The Com_insert counter variable indicates the number of times the insert statement has been executed.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Com_insert
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: operations
+        - uuid: 751d100fce4848abb0e11991075dd6ef
+          name: 'MySQL: Command Select per second'
+          type: DEPENDENT
+          key: mysql.com_select.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'The Com_select counter variable indicates the number of times the select statement has been executed.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Com_select
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: operations
+        - uuid: e645263bbdfa4cd493a4e0f7a297e5b4
+          name: 'MySQL: Command Update per second'
+          type: DEPENDENT
+          key: mysql.com_update.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'The Com_update counter variable indicates the number of times the update statement has been executed.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Com_update
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: operations
+        - uuid: 63d9dec8b975458dade3dce477efa40f
+          name: 'MySQL: Connections per second'
+          type: DEPENDENT
+          key: mysql.connections.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of connection attempts (successful or not) to the MySQL server.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Connections
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: connections
+        - uuid: 0829f6f4f96b46cc918faa10df7b1fab
+          name: 'MySQL: Connection errors accept per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_accept.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of errors that occurred during calls to accept() on the listening port.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Connection_errors_accept
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: connections
+        - uuid: bec3f7a9dda74abe950d2ae79ee0edca
+          name: 'MySQL: Connection errors internal per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_internal.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of refused connections due to internal server errors, for example, out of memory errors, or failed thread starts.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Connection_errors_internal
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: connections
+        - uuid: a5251a75ee8d47cb86fb3d6bcb30459b
+          name: 'MySQL: Connection errors max connections per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_max_connections.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of refused connections due to the max_connections limit being reached.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Connection_errors_max_connections
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: connections
+          triggers:
+            - uuid: f4085bac41bc49438504ccfce01a7fe2
+              expression: last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.connection_errors_max_connections.rate)>0
+              name: 'MySQL: Refused connections'
+              event_name: 'MySQL: Refused connections (max_connections limit reached)'
+              priority: AVERAGE
+              description: 'Number of refused connections due to the max_connections limit being reached.'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: 56e446da5e7f4aae90aab29b069f1dcf
+          name: 'MySQL: Connection errors peer address per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_peer_address.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of errors while searching for the connecting client IP address.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Connection_errors_peer_address
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: connections
+        - uuid: 00d39d7485564f3abd262a6106941603
+          name: 'MySQL: Connection errors select per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_select.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of errors during calls to select() or poll() on the listening port. The client would not necessarily have been rejected in these cases.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Connection_errors_select
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: connections
+        - uuid: 43908d7ac0e4444c893373054cf0bdfb
+          name: 'MySQL: Connection errors tcpwrap per second'
+          type: DEPENDENT
+          key: mysql.connection_errors_tcpwrap.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of connections the libwrap library has refused.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Connection_errors_tcpwrap
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: connections
+        - uuid: f25400f2998f4ff4b8e7a38bb40ba00d
+          name: 'MySQL: Created tmp tables on disk per second'
+          type: DEPENDENT
+          key: mysql.created_tmp_disk_tables.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of internal on-disk temporary tables created by the server while executing statements.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Created_tmp_disk_tables
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: storage
+            - tag: component
+              value: tables
+          triggers:
+            - uuid: 1b6ae0a737c6441799d3a67879dd706a
+              expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.created_tmp_disk_tables.rate,5m)>{$MYSQL.CREATED_TMP_DISK_TABLES.MAX.WARN}'
+              name: 'MySQL: Number of on-disk temporary tables created per second is high'
+              event_name: 'MySQL: Number of on-disk temporary tables created per second is high (over {$MYSQL.CREATED_TMP_DISK_TABLES.MAX.WARN} for 5m)'
+              priority: WARNING
+              description: 'Possibly the application using the database is in need of query optimization.'
+              tags:
+                - tag: scope
+                  value: performance
+        - uuid: d5778380514a49bd846818f548c5dd21
+          name: 'MySQL: Created tmp files on disk per second'
+          type: DEPENDENT
+          key: mysql.created_tmp_files.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'How many temporary files mysqld has created.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Created_tmp_files
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: storage
+          triggers:
+            - uuid: 7c45188cb3e44fa8b64b06853ab1bfe7
+              expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.created_tmp_files.rate,5m)>{$MYSQL.CREATED_TMP_FILES.MAX.WARN}'
+              name: 'MySQL: Number of temporary files created per second is high'
+              event_name: 'MySQL: Number of temporary files created per second is high (over {$MYSQL.CREATED_TMP_FILES.MAX.WARN} for 5m)'
+              priority: WARNING
+              description: 'Possibly the application using the database is in need of query optimization.'
+              tags:
+                - tag: scope
+                  value: performance
+        - uuid: 8c4c262e3a484431b214221658b42ac6
+          name: 'MySQL: Created tmp tables on memory per second'
+          type: DEPENDENT
+          key: mysql.created_tmp_tables.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of internal temporary tables created by the server while executing statements.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Created_tmp_tables
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: memory
+            - tag: component
+              value: tables
+          triggers:
+            - uuid: 69d87f68c1444f29811d42b8b5910b38
+              expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.created_tmp_tables.rate,5m)>{$MYSQL.CREATED_TMP_TABLES.MAX.WARN}'
+              name: 'MySQL: Number of internal temporary tables created per second is high'
+              event_name: 'MySQL: Number of internal temporary tables created per second is high (over {$MYSQL.CREATED_TMP_TABLES.MAX.WARN} for 5m)'
+              priority: WARNING
+              description: 'Possibly the application using the database is in need of query optimization.'
+              tags:
+                - tag: scope
+                  value: performance
+        - uuid: bbf3c268dcaf472a8d4ab7be9fdc7f87
+          name: 'MySQL: Get status variables'
+          key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          history: '0'
+          value_type: TEXT
+          trends: '0'
+          description: 'The item gets server global status information.'
+          tags:
+            - tag: component
+              value: raw
+        - uuid: c39e8cdb8525452d8193b9f5c60c0b74
+          name: 'MySQL: InnoDB buffer pool pages free'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_pages_free
+          delay: '0'
+          history: 7d
+          description: 'The total size of the InnoDB buffer pool, in pages.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_pages_free
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: memory
+        - uuid: e4c6ec928292409fa0929eedb05b7511
+          name: 'MySQL: InnoDB buffer pool pages total'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_pages_total
+          delay: '0'
+          history: 7d
+          description: 'The total size of the InnoDB buffer pool, in pages.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_pages_total
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: memory
+        - uuid: 1a8a2631071a48e1b44e3f935bd28e8e
+          name: 'MySQL: InnoDB buffer pool reads'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_reads
+          delay: '0'
+          history: 7d
+          description: 'Number of logical reads that InnoDB could not satisfy from the buffer pool, and had to read directly from the disk.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_reads
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: memory
+        - uuid: 13042e24a6794b109887b1354a5ef1d6
+          name: 'MySQL: InnoDB buffer pool reads per second'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_reads.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of logical reads per second that InnoDB could not satisfy from the buffer pool, and had to read directly from the disk.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_reads
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: memory
+        - uuid: 3ec62051d51642af9fc5333705c97a53
+          name: 'MySQL: InnoDB buffer pool read requests'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_read_requests
+          delay: '0'
+          history: 7d
+          description: 'Number of logical read requests.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_read_requests
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: memory
+        - uuid: 7ff741b3125f4ef385504bd61798bf7d
+          name: 'MySQL: InnoDB buffer pool read requests per second'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_read_requests.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of logical read requests per second.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_read_requests
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: memory
+        - uuid: f382347b9f154e8e9b7b15bcd9aca3c7
+          name: 'MySQL: Innodb buffer pool wait free'
+          type: DEPENDENT
+          key: mysql.innodb_buffer_pool_wait_free
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of times InnoDB waited for a free page before reading or creating a page. Normally, writes to the InnoDB buffer pool happen in the background. When no clean pages are available, dirty pages are flushed first in order to free some up. This counts the numbers of wait for this operation to finish. If this value is not small, look at the increasing innodb_buffer_pool_size.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_buffer_pool_wait_free
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: memory
+        - uuid: 455ab7719f44408b9e7493eac0c35752
+          name: 'MySQL: Calculated value of innodb_log_file_size'
+          type: CALCULATED
+          key: mysql.innodb_log_file_size
+          history: 7d
+          value_type: FLOAT
+          params: '(last(//mysql.innodb_os_log_written) - last(//mysql.innodb_os_log_written,#1:now-1h)) / {$MYSQL.INNODB_LOG_FILES}'
+          description: 'Calculated by (innodb_os_log_written-innodb_os_log_written(time shift -1h))/{$MYSQL.INNODB_LOG_FILES} value of the innodb_log_file_size. Innodb_log_file_size is the size in bytes of the each InnoDB redo log file in the log group. The combined size can be no more than 512GB. Larger values mean less disk I/O due to less flushing checkpoint activity, but also slower recovery from a crash.'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          tags:
+            - tag: component
+              value: system
+        - uuid: 27abce9766a24b5e9baebb5b590e9b91
+          name: 'MySQL: Innodb number open files'
+          type: DEPENDENT
+          key: mysql.innodb_num_open_files
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of open files held by InnoDB. InnoDB only.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_num_open_files
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: system
+        - uuid: bb9d4eea576f435690336cd3b9d63773
+          name: 'MySQL: Innodb log written'
+          type: DEPENDENT
+          key: mysql.innodb_os_log_written
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          units: B
+          description: 'Number of bytes written to the InnoDB log.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_os_log_written
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: system
+        - uuid: 34f24f7ba4234283aa691fc5a60d3606
+          name: 'MySQL: InnoDB row lock time'
+          type: DEPENDENT
+          key: mysql.innodb_row_lock_time
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          units: s
+          description: 'The total time spent in acquiring row locks for InnoDB tables, in milliseconds.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_row_lock_time
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: tables
+        - uuid: d346a737a4ab4ab48ef7387810db51eb
+          name: 'MySQL: InnoDB row lock time max'
+          type: DEPENDENT
+          key: mysql.innodb_row_lock_time_max
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          units: s
+          description: 'The maximum time to acquire a row lock for InnoDB tables, in milliseconds.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_row_lock_time_max
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: tables
+        - uuid: 8418e4dc06a942b1857160f63c7f05c8
+          name: 'MySQL: InnoDB row lock waits'
+          type: DEPENDENT
+          key: mysql.innodb_row_lock_waits
+          delay: '0'
+          history: 7d
+          description: 'Number of times operations on InnoDB tables had to wait for a row lock.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Innodb_row_lock_waits
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: innodb
+            - tag: component
+              value: tables
+        - uuid: 8cbcb34e5d9e401faff36d5fdc2d52b3
+          name: 'MySQL: Max used connections'
+          type: DEPENDENT
+          key: mysql.max_used_connections
+          delay: '0'
+          history: 7d
+          description: 'The maximum number of connections that have been in use simultaneously since the server start.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Max_used_connections
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: connections
+        - uuid: 2fca95d1d5af42d4b82c86d849559cb8
+          name: 'MySQL: Open tables'
+          type: DEPENDENT
+          key: mysql.open_tables
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of tables that are open.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Open_tables
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: tables
+        - uuid: d0a6cc00856841d59b6c37ee53d0eea2
+          name: 'MySQL: Open table definitions'
+          type: DEPENDENT
+          key: mysql.open_table_definitions
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of cached table definitions.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Open_table_definitions
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: tables
+        - uuid: aaf5e95a3f9f4e9e9643039e6f690563
+          name: 'MySQL: Status'
+          key: 'mysql.ping["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          history: 7d
+          valuemap:
+            name: 'Service state'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          tags:
+            - tag: component
+              value: application
+            - tag: component
+              value: health
+          triggers:
+            - uuid: 1eb71d292bd44980a4e2ae38cea930ab
+              expression: 'last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.ping["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"])=0'
+              name: 'MySQL: Service is down'
+              priority: HIGH
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: f52f6765a5d74a1cb031081e1f7ac236
+          name: 'MySQL: Queries per second'
+          type: DEPENDENT
+          key: mysql.queries.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of statements executed by the server. This variable includes statements executed within stored programs, unlike the Questions variable.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Queries
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: queries
+        - uuid: 41e39304cf704a6dbea0b7c3f1d5f735
+          name: 'MySQL: Questions per second'
+          type: DEPENDENT
+          key: mysql.questions.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of statements executed by the server. This includes only statements sent to the server by clients and not statements executed within stored programs, unlike the Queries variable.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Questions
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: queries
+        - uuid: a21c7a282879491199527b52680154db
+          name: 'MySQL: Slow queries per second'
+          type: DEPENDENT
+          key: mysql.slow_queries.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of queries that have taken more than long_query_time seconds.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Slow_queries
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: queries
+          triggers:
+            - uuid: 3af472ed42c04612a1e5bd6bc9de3d00
+              expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.slow_queries.rate,5m)>{$MYSQL.SLOW_QUERIES.MAX.WARN}'
+              name: 'MySQL: Server has slow queries'
+              event_name: 'MySQL: Server has slow queries (over {$MYSQL.SLOW_QUERIES.MAX.WARN} for 5m)'
+              priority: WARNING
+              description: 'The number of slow queries is more than {$MYSQL.SLOW_QUERIES.MAX.WARN} in the last 5 minutes.'
+              tags:
+                - tag: scope
+                  value: performance
+        - uuid: f011f881cf534a02beed6bd8a79d1a66
+          name: 'MySQL: Threads cached'
+          type: DEPENDENT
+          key: mysql.threads_cached
+          delay: '0'
+          history: 7d
+          description: 'Number of threads in the thread cache.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Threads_cached
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: threads
+        - uuid: 579e6543a24a40b88dcf77cdf4a20c93
+          name: 'MySQL: Threads connected'
+          type: DEPENDENT
+          key: mysql.threads_connected
+          delay: '0'
+          history: 7d
+          description: 'Number of currently open connections.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Threads_connected
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: threads
+        - uuid: 4d88d0c6a9c74e9289d0d3584baffbca
+          name: 'MySQL: Threads created per second'
+          type: DEPENDENT
+          key: mysql.threads_created.rate
+          delay: '0'
+          history: 7d
+          value_type: FLOAT
+          description: 'Number of threads created to handle connections. If Threads_created is big, you may want to increase the thread_cache_size value. The cache miss rate can be calculated as Threads_created/Connections.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Threads_created
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: threads
+        - uuid: 81e895eacf724a2b884279792e97ef1d
+          name: 'MySQL: Threads running'
+          type: DEPENDENT
+          key: mysql.threads_running
+          delay: '0'
+          history: 7d
+          description: 'Number of threads which are not sleeping.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Threads_running
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: threads
+        - uuid: 8bfb6eca3e7d427cb16bf26c3b0ed67f
+          name: 'MySQL: Uptime'
+          type: DEPENDENT
+          key: mysql.uptime
+          delay: '0'
+          history: 7d
+          units: uptime
+          description: 'The amount of seconds that the server has been up.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Uptime
+          master_item:
+            key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          tags:
+            - tag: component
+              value: application
+          triggers:
+            - uuid: 83a9995c3963466da674e171e73204dc
+              expression: 'nodata(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.uptime,30m)=1'
+              name: 'MySQL: Failed to fetch info data'
+              event_name: 'MySQL: Failed to fetch info data (or no data for 30m)'
+              priority: INFO
+              description: 'Zabbix has not received data for items for the last 30 minutes.'
+              dependencies:
+                - name: 'MySQL: Service is down'
+                  expression: 'last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.ping["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"])=0'
+              tags:
+                - tag: scope
+                  value: availability
+            - uuid: 97aac08a7ccb44a097eb5572eddcdbc1
+              expression: last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.uptime)<10m
+              name: 'MySQL: Service has been restarted'
+              event_name: 'MySQL: Service has been restarted (uptime < 10m)'
+              priority: INFO
+              description: 'MySQL uptime is less than 10 minutes.'
+              tags:
+                - tag: scope
+                  value: notice
+        - uuid: a8a71af334ec4c43a3943a0147af88e3
+          name: 'MySQL: Version'
+          key: 'mysql.version["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          delay: 15m
+          history: 7d
+          value_type: CHAR
+          trends: '0'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          tags:
+            - tag: component
+              value: application
+          triggers:
+            - uuid: 141bbd9c2050492dbcc6f10b719bc358
+              expression: 'last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.version["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"],#1)<>last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.version["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"],#2) and length(last(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.version["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]))>0'
+              name: 'MySQL: Version has changed'
+              event_name: 'MySQL: Version has changed (new version value received: {ITEM.VALUE})'
+              priority: INFO
+              description: 'MySQL version has changed. Ack to close.'
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: notice
+      discovery_rules:
+        - uuid: 8dc8dfa2fda44ef592dac56e7710d984
+          name: 'Database discovery'
+          key: 'mysql.db.discovery["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#DATABASE}'
+                value: information_schema
+                operator: NOT_MATCHES_REGEX
+                formulaid: A
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'Scanning databases in DBMS.'
+          item_prototypes:
+            - uuid: 14bf445bc7854f119ed2d8cef1a10743
+              name: 'MySQL: Size of database {#DATABASE}'
+              key: 'mysql.db.size["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#DATABASE}"]'
+              delay: 5m
+              history: 7d
+              units: B
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              tags:
+                - tag: component
+                  value: storage
+                - tag: database
+                  value: '{#DATABASE}'
+          lld_macro_paths:
+            - lld_macro: '{#DATABASE}'
+              path: $.Database
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+        - uuid: e91b5ed83589496c9b6fd33b99438da6
+          name: 'MariaDB discovery'
+          type: DEPENDENT
+          key: mysql.extra_metric.discovery
+          delay: '0'
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'Additional metrics if MariaDB is used.'
+          item_prototypes:
+            - uuid: 4e770424b4fd4b989a8a64d698d80577
+              name: 'MySQL: Binlog commits'
+              type: DEPENDENT
+              key: 'mysql.binlog_commits[{#SINGLETON}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              description: 'Total number of transactions committed to the binary log.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.Binlog_commits
+              master_item:
+                key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+              tags:
+                - tag: component
+                  value: transactions
+            - uuid: 494cd20a94dc4b0fb97bc2b60487304e
+              name: 'MySQL: Binlog group commits'
+              type: DEPENDENT
+              key: 'mysql.binlog_group_commits[{#SINGLETON}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              description: 'Total number of group commits done to the binary log.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.Binlog_group_commits
+              master_item:
+                key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+              tags:
+                - tag: component
+                  value: transactions
+            - uuid: ff77076ddc51424693bcdeaa3cef86a2
+              name: 'MySQL: Master GTID wait count'
+              type: DEPENDENT
+              key: 'mysql.master_gtid_wait_count[{#SINGLETON}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              description: 'The number of times MASTER_GTID_WAIT called.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.Master_gtid_wait_count
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 6h
+              master_item:
+                key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+              tags:
+                - tag: component
+                  value: transactions
+            - uuid: ee65f564d22248e5a370fc2d01d3dfa1
+              name: 'MySQL: Master GTID wait timeouts'
+              type: DEPENDENT
+              key: 'mysql.master_gtid_wait_timeouts[{#SINGLETON}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              description: 'Number of timeouts occurring in MASTER_GTID_WAIT.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.Master_gtid_wait_timeouts
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 6h
+              master_item:
+                key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+              tags:
+                - tag: component
+                  value: transactions
+            - uuid: cb5763b45fee4a288822569161f4fcab
+              name: 'MySQL: Master GTID wait time'
+              type: DEPENDENT
+              key: 'mysql.master_gtid_wait_time[{#SINGLETON}]'
+              delay: '0'
+              history: 7d
+              value_type: FLOAT
+              description: 'Total number of time spent in MASTER_GTID_WAIT.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.Master_gtid_wait_time
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 6h
+              master_item:
+                key: 'mysql.get_status_variables["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+              tags:
+                - tag: component
+                  value: transactions
+          master_item:
+            key: 'mysql.version["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return JSON.stringify(value.search(''MariaDB'')>-1 ? [{''{#SINGLETON}'': ''''}] : []);'
+        - uuid: 63e52240e9b448648083e59ea3814fb0
+          name: 'Replication discovery'
+          key: 'mysql.replication.discovery["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}"]'
+          delay: 1h
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'If "show slave status" returns Master_Host, "Replication: *" items are created.'
+          item_prototypes:
+            - uuid: edacb716362449209d4f5c34b5400063
+              name: 'MySQL: Replication Slave status {#MASTER_HOST}'
+              key: 'mysql.replication.get_slave_status["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#MASTER_HOST}"]'
+              history: '0'
+              value_type: TEXT
+              trends: '0'
+              description: 'The item gets status information on the essential parameters of the slave threads.'
+              tags:
+                - tag: component
+                  value: raw
+            - uuid: 1096bb7570e94933a19ee54ab6de077b
+              name: 'MySQL: Replication Seconds Behind Master {#MASTER_HOST}'
+              type: DEPENDENT
+              key: 'mysql.replication.seconds_behind_master["{#MASTER_HOST}"]'
+              delay: '0'
+              history: 7d
+              units: s
+              description: |
+                Number of seconds that the slave SQL thread is behind processing the master binary log.
+                A high number (or an increasing one) can indicate that the slave is unable to handle events
+                from the master in a timely fashion.
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.Seconds_Behind_Master
+                - type: MATCHES_REGEX
+                  parameters:
+                    - \d+
+                  error_handler: CUSTOM_ERROR
+                  error_handler_params: 'Replication is not performed.'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              master_item:
+                key: 'mysql.replication.get_slave_status["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#MASTER_HOST}"]'
+              tags:
+                - tag: component
+                  value: replication
+              trigger_prototypes:
+                - uuid: b2ccdfb9bc8741d885204015c5070927
+                  expression: 'min(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.seconds_behind_master["{#MASTER_HOST}"],5m)>{$MYSQL.REPL_LAG.MAX.WARN}'
+                  name: 'MySQL: Replication lag is too high'
+                  event_name: 'MySQL: Replication lag is too high (over {$MYSQL.REPL_LAG.MAX.WARN} for 5m)'
+                  priority: WARNING
+                  tags:
+                    - tag: scope
+                      value: notice
+            - uuid: 24c7a9f10c244af48f4c4bd803052276
+              name: 'MySQL: Replication Slave IO Running {#MASTER_HOST}'
+              type: DEPENDENT
+              key: 'mysql.replication.slave_io_running["{#MASTER_HOST}"]'
+              delay: '0'
+              history: 7d
+              value_type: CHAR
+              trends: '0'
+              description: |
+                Whether the I/O thread for reading the master's binary log is running.
+                Normally, you want this to be Yes unless you have not yet started a replication or have
+                explicitly stopped it with STOP SLAVE.
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.Slave_IO_Running
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              master_item:
+                key: 'mysql.replication.get_slave_status["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#MASTER_HOST}"]'
+              tags:
+                - tag: component
+                  value: replication
+              trigger_prototypes:
+                - uuid: 38cf87c7db724c86a58e6409933945e6
+                  expression: 'count(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.slave_io_running["{#MASTER_HOST}"],#1,"ne","Yes")=1'
+                  name: 'MySQL: The slave I/O thread is not connected to a replication master'
+                  priority: WARNING
+                  dependencies:
+                    - name: 'MySQL: The slave I/O thread is not running'
+                      expression: 'count(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.slave_io_running["{#MASTER_HOST}"],#1,"eq","No")=1'
+                  tags:
+                    - tag: scope
+                      value: availability
+                - uuid: b48fc08f81cf45f88f7cf6329b5f41ff
+                  expression: 'count(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.slave_io_running["{#MASTER_HOST}"],#1,"eq","No")=1'
+                  name: 'MySQL: The slave I/O thread is not running'
+                  priority: AVERAGE
+                  description: 'Whether the I/O thread for reading the master''s binary log is running.'
+                  tags:
+                    - tag: scope
+                      value: notice
+            - uuid: bb50480f0c164726996c0542156fe3bd
+              name: 'MySQL: Replication Slave SQL Running {#MASTER_HOST}'
+              type: DEPENDENT
+              key: 'mysql.replication.slave_sql_running["{#MASTER_HOST}"]'
+              delay: '0'
+              history: 7d
+              value_type: CHAR
+              trends: '0'
+              description: |
+                Whether the SQL thread for executing events in the relay log is running.
+                As with the I/O thread, this should normally be Yes.
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.Slave_SQL_Running
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              master_item:
+                key: 'mysql.replication.get_slave_status["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#MASTER_HOST}"]'
+              tags:
+                - tag: component
+                  value: replication
+              trigger_prototypes:
+                - uuid: 05cdd5201c6242288f56b379c96db025
+                  expression: 'count(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.slave_sql_running["{#MASTER_HOST}"],#1,"eq","No")=1'
+                  name: 'MySQL: The SQL thread is not running'
+                  priority: WARNING
+                  description: 'Whether the SQL thread for executing events in the relay log is running.'
+                  dependencies:
+                    - name: 'MySQL: The slave I/O thread is not running'
+                      expression: 'count(/Template-Training_MySQL_by_Zabbix_agent_2/mysql.replication.slave_io_running["{#MASTER_HOST}"],#1,"eq","No")=1'
+                  tags:
+                    - tag: scope
+                      value: notice
+            - uuid: cc4f70bc4d9648a3b09d25facc955509
+              name: 'MySQL: Replication Slave SQL Running State {#MASTER_HOST}'
+              type: DEPENDENT
+              key: 'mysql.replication.slave_sql_running_state["{#MASTER_HOST}"]'
+              delay: '0'
+              history: 7d
+              value_type: TEXT
+              trends: '0'
+              description: 'This shows the state of the SQL driver threads.'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.Slave_SQL_Running_State
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 6h
+              master_item:
+                key: 'mysql.replication.get_slave_status["{$MYSQL.DSN}","{$MYSQL.USER}","{$MYSQL.PASSWORD}","{#MASTER_HOST}"]'
+              tags:
+                - tag: component
+                  value: replication
+          lld_macro_paths:
+            - lld_macro: '{#MASTER_HOST}'
+              path: $.Master_Host
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+      tags:
+        - tag: class
+          value: database
+        - tag: target
+          value: mysql
+      macros:
+        - macro: '{$MYSQL.ABORTED_CONN.MAX.WARN}'
+          value: '3'
+          description: 'Number of failed attempts to connect to the MySQL server for trigger expression.'
+        - macro: '{$MYSQL.BUFF_UTIL.MIN.WARN}'
+          value: '50'
+          description: 'The minimum buffer pool utilization percentage for trigger expression.'
+        - macro: '{$MYSQL.CREATED_TMP_DISK_TABLES.MAX.WARN}'
+          value: '10'
+          description: 'The maximum number of created tmp tables on a disk per second for trigger expressions.'
+        - macro: '{$MYSQL.CREATED_TMP_FILES.MAX.WARN}'
+          value: '10'
+          description: 'The maximum number of created tmp files on a disk per second for trigger expressions.'
+        - macro: '{$MYSQL.CREATED_TMP_TABLES.MAX.WARN}'
+          value: '30'
+          description: 'The maximum number of created tmp tables in memory per second for trigger expressions.'
+        - macro: '{$MYSQL.DSN}'
+          value: 'unix:/var/lib/mysql/mysql.sock'
+          description: 'System data source name such as <tcp://host:port or unix:/path/to/socket)/>.'
+        - macro: '{$MYSQL.INNODB_LOG_FILES}'
+          value: '2'
+          description: 'Number of physical files in the InnoDB redo log for calculating innodb_log_file_size.'
+        - macro: '{$MYSQL.PASSWORD}'
+          description: 'MySQL user password.'
+        - macro: '{$MYSQL.REPL_LAG.MAX.WARN}'
+          value: 30m
+          description: 'The lag of slave from master for trigger expression.'
+        - macro: '{$MYSQL.SLOW_QUERIES.MAX.WARN}'
+          value: '3'
+          description: 'The number of slow queries for trigger expression.'
+        - macro: '{$MYSQL.USER}'
+          value: monitoring
+          description: 'MySQL user name.'
+      dashboards:
+        - uuid: b30b464d4cea48b898f782733dd8c7c1
+          name: 'MySQL performance'
+          pages:
+            - widgets:
+                - type: graph
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: Operations'
+                    - type: STRING
+                      name: reference
+                      value: AAAAA
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+                - type: graph
+                  'y': '5'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: Connections'
+                    - type: STRING
+                      name: reference
+                      value: AAAAB
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+                - type: graph
+                  'y': '10'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: InnoDB buffer pool'
+                    - type: STRING
+                      name: reference
+                      value: AAAAC
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+                - type: graph
+                  x: '36'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: Queries'
+                    - type: STRING
+                      name: reference
+                      value: AAAAD
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+                - type: graph
+                  x: '36'
+                  'y': '5'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: Bandwidth'
+                    - type: STRING
+                      name: reference
+                      value: AAAAE
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+                - type: graph
+                  x: '36'
+                  'y': '10'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: Template-Training_MySQL_by_Zabbix_agent_2
+                        name: 'MySQL: Threads'
+                    - type: STRING
+                      name: reference
+                      value: AAAAF
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+      valuemaps:
+        - uuid: f89798bc7e9f451ba3b0ca5a1fee2582
+          name: 'Service state'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up
+    - uuid: a2030c9672f1463ebcb4e9c33e1d6489
+      template: Template-Training_MySQL_Service_Active
+      name: Template-Training_MySQL_Service_Active
+      vendor:
+        name: Open-Tech
+        version: 7.0-0
+      groups:
+        - name: Templates/Training
+      discovery_rules:
+        - uuid: c7d28b1960054770917fd1b38484e117
+          name: 'MySQL instance discovery'
+          type: ZABBIX_ACTIVE
+          key: mysql.discovery
+          delay: '60'
+          lifetime: 1d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'auto discovery mysql instance port'
+          item_prototypes:
+            - uuid: 7770c5f2be57422394b543ede1eeef3f
+              name: 'MySQL status'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.ping[{#MYSQLHOST},{#MYSQLPORT}]'
+              delay: '60'
+              history: 7d
+              trends: 3650d
+              valuemap:
+                name: 'Service state'
+              tags:
+                - tag: Application
+                  value: MySQL
+              trigger_prototypes:
+                - uuid: 83e93108b7b5493c8d998a724d567d2a
+                  expression: 'last(/Template-Training_MySQL_Service_Active/mysql.ping[{#MYSQLHOST},{#MYSQLPORT}])=0'
+                  name: 'MySQL is down'
+                  priority: HIGH
+            - uuid: 91022351a2a444959a3e719b0302aa89
+              name: 'MySQL bytes received per second'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Bytes_received]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: Bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: db6a7ee587b0462a94f4ca61060bda69
+              name: 'MySQL bytes sent per second'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Bytes_sent]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: Bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: 62cc49284bbd4ced9272b6fa8e989689
+              name: 'MySQL begin operations per second'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_begin]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: qps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: 16439d8dc2574df2b8746b155bc47d4c
+              name: 'MySQL commit operations per second'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_commit]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: qps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: a8e358836d1249cc9fe26c80ae92432d
+              name: 'MySQL delete operations per second'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_delete]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: qps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: 3f01d85a21994c6fbbe45f02aede9210
+              name: 'MySQL insert operations per second'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_insert]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: qps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: 77c46538172f4f8d8a8f0db36eca4686
+              name: 'MySQL rollback operations per second'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_rollback]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: qps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: af816ded27cd4727acbaf180fa592708
+              name: 'MySQL select operations per second'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_select]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: qps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: a141f278aa0441e38aac2c4778693324
+              name: 'MySQL update operations per second'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_update]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: qps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: 9e56ee426ee94fa5a1b2d2398d75e7b4
+              name: 'MySQL max used connections'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Max_used_connections]'
+              delay: '60'
+              history: 7d
+              trends: 3650d
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: 0e798afa2a76416880d2a3b7354e650e
+              name: 'MySQL QPS'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Questions]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: qps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: 84514dc6f9e84881a4417b5c7c2fc3c4
+              name: 'MySQL slow queries'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Slow_queries]'
+              delay: '60'
+              history: 7d
+              trends: 3650d
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: a8a5124f0e2b4907897281fb62046361
+              name: 'MySQL threads connected'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Threads_connected]'
+              delay: '60'
+              history: 7d
+              trends: 3650d
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: 01be5bddcbdb466cbb57704557488f93
+              name: 'MySQL TPS'
+              type: CALCULATED
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},tps]'
+              delay: '60'
+              history: 7d
+              value_type: FLOAT
+              trends: 3650d
+              units: tps
+              params: 'last(//mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_commit])+last(//mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_rollback])'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: 4f3db13f222b4ce8a983aa6a13075414
+              name: 'MySQL uptime'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Uptime]'
+              delay: '60'
+              history: 7d
+              trends: 3650d
+              units: uptime
+              tags:
+                - tag: Application
+                  value: MySQL
+            - uuid: 9a2f4ad23c874246a709c9db9d8a4c4f
+              name: 'MySQL version'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.version[{#MYSQLHOST},{#MYSQLPORT}]'
+              delay: '3600'
+              history: 7d
+              value_type: CHAR
+              trends: '0'
+              tags:
+                - tag: Application
+                  value: MySQL
+          graph_prototypes:
+            - uuid: 78feb9022b974e2ea7062cf821797d98
+              name: 'MySQL bandwidth {#MYSQLHOST}:{#MYSQLPORT}'
+              graph_items:
+                - drawtype: GRADIENT_LINE
+                  color: 00AA00
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Bytes_received]'
+                - sortorder: '1'
+                  color: 3333FF
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Bytes_sent]'
+            - uuid: 8f8cb99d85514e2ab6629f774fd5acb2
+              name: 'MySQL connection {#MYSQLHOST}:{#MYSQLPORT}'
+              graph_items:
+                - color: 00C800
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Threads_connected]'
+                - sortorder: '1'
+                  color: C80000
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Max_used_connections]'
+            - uuid: 331028c6b12945c9869c7e6e98a37e3a
+              name: 'MySQL operations {#MYSQLHOST}:{#MYSQLPORT}'
+              graph_items:
+                - color: C8C800
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_begin]'
+                - sortorder: '1'
+                  color: '006400'
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_commit]'
+                - sortorder: '2'
+                  color: C80000
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_delete]'
+                - sortorder: '3'
+                  color: 0000EE
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_insert]'
+                - sortorder: '4'
+                  color: '640000'
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_rollback]'
+                - sortorder: '5'
+                  color: 00C800
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_select]'
+                - sortorder: '6'
+                  color: C800C8
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Com_update]'
+            - uuid: d47e015cce7c455b8df0b6fa596061ae
+              name: 'MySQL QPS / TPS {#MYSQLHOST}:{#MYSQLPORT}'
+              graph_items:
+                - color: 00C800
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},Questions]'
+                - sortorder: '1'
+                  color: C80000
+                  item:
+                    host: Template-Training_MySQL_Service_Active
+                    key: 'mysql.status[{#MYSQLHOST},{#MYSQLPORT},tps]'
+      tags:
+        - tag: Template
+          value: Training
+      valuemaps:
+        - uuid: 8161a379377347cfbf41026b4ab545c7
+          name: 'Service state'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up
+    - uuid: 291b1cd93d9947bb889e78f705147216
+      template: Template-Training_MySQL_Service_Slave
+      name: Template-Training_MySQL_Service_Slave
+      vendor:
+        name: Open-Tech
+        version: 7.0-0
+      groups:
+        - name: Templates/Training
+      discovery_rules:
+        - uuid: 6a5a6e2ecc0d4d349583801524b5c240
+          name: 'MySQL slave instance discovery'
+          type: ZABBIX_ACTIVE
+          key: mysql.slave.discovery
+          delay: '3600'
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'auto discovery mysql slave instance port'
+          item_prototypes:
+            - uuid: 5ddd28d3615449a6b94aff730bdf7311
+              name: 'MySQL slave seconds behind master'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.slave.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Seconds_Behind_Master]'
+              delay: '60'
+              history: 7d
+              trends: 3650d
+              units: second
+              description: 'The number of seconds that the slave SQL thread is behind processing the master binary log.'
+              tags:
+                - tag: Application
+                  value: 'MySQL slave'
+            - uuid: d1b4ab0827264b0cacb8fbc2841cfd57
+              name: 'MySQL slave I/O thread'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.slave.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Slave_IO_Running]'
+              delay: '60'
+              history: 7d
+              value_type: TEXT
+              trends: '0'
+              tags:
+                - tag: Application
+                  value: 'MySQL slave'
+            - uuid: 9826907147014566afd9166b8254b08a
+              name: 'MySQL slave SQL thread'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.slave.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Slave_SQL_Running]'
+              delay: '60'
+              history: 7d
+              value_type: TEXT
+              trends: '0'
+              tags:
+                - tag: Application
+                  value: 'MySQL slave'
+            - uuid: a1e8e029616c4d19b5ae81c2e28fa5b2
+              name: 'MySQL slave status'
+              type: ZABBIX_ACTIVE
+              key: 'mysql.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Slave_running]'
+              delay: '60'
+              history: 7d
+              value_type: TEXT
+              trends: '0'
+              tags:
+                - tag: Application
+                  value: 'MySQL slave'
+              trigger_prototypes:
+                - uuid: da79fb4495654e8dbaf2b246b6e2e695
+                  expression: 'length(last(/Template-Training_MySQL_Service_Slave/mysql.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Slave_running]))<>2'
+                  name: 'MySQL Slave is down'
+                  priority: HIGH
+          graph_prototypes:
+            - uuid: b7d4e160f4e149ef854682e5b2eddf88
+              name: 'MySQL slave behind master {#MYSQLSLAVEHOST}:{#MYSQLSLAVEPORT}'
+              graph_items:
+                - color: 00C800
+                  item:
+                    host: Template-Training_MySQL_Service_Slave
+                    key: 'mysql.slave.status[{#MYSQLSLAVEHOST},{#MYSQLSLAVEPORT},Seconds_Behind_Master]'
+      tags:
+        - tag: Template
+          value: Training
+      macros:
+        - macro: '{$MYSQL_HOST}'
+          value: 127.0.0.1
+    - uuid: 23becc8f08ec4c44b16a4ccb9ddc911e
+      template: Template-Training_SNMPv2c-Base
+      name: Template-Training_SNMPv2c-Base
+      vendor:
+        name: Open-Tech
+        version: 7.0-0
+      groups:
+        - name: Templates/Training
+      items:
+        - uuid: 8318f153954b4a9896b1194e62f4d4f8
+          name: 'Ping to the device (ICMP loss)'
+          type: SIMPLE
+          key: 'icmppingloss[,5,1000,999,3000]'
+          delay: '60'
+          history: 10d
+          value_type: FLOAT
+          trends: 1500d
+          units: '%'
+          tags:
+            - tag: Application
+              value: 'SNMP Base'
+          triggers:
+            - uuid: de5457e2d0dc4ef282cf4f30a51b9c22
+              expression: 'min(/Template-Training_SNMPv2c-Base/icmppingloss[,5,1000,999,3000],150s)=100'
+              name: 'Zarizeni je nedostupne po siti'
+              priority: HIGH
+              description: 'Zarizeni neodpovida na ICMP ping. Overte sitovou dostupnost zarizeni.'
+        - uuid: 21e180ef5ec54f26a40aa455185eadfb
+          name: System_Descr
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.1.0
+          key: system.descr
+          delay: '14400'
+          history: 10d
+          value_type: CHAR
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'SNMP Base'
+        - uuid: 7f07745cbbf14d70bb0c28848776fc10
+          name: System_Name
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.5.0
+          key: system.name
+          delay: '14400'
+          history: 10d
+          value_type: CHAR
+          trends: '0'
+          tags:
+            - tag: Application
+              value: 'SNMP Base'
+          triggers:
+            - uuid: 5aa77b01483843c08d2264e0f9ea26c7
+              expression: '(last(/Template-Training_SNMPv2c-Base/system.name,#1)<>last(/Template-Training_SNMPv2c-Base/system.name,#2))>0'
+              name: 'Jmeno zarizeni bylo zmeneno'
+              priority: INFO
+              description: 'Upozorneni na zmenu SNMP sysName zarizeni.'
+        - uuid: 668349be2298459abf990f826242cc1e
+          name: System_Uptime
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.1.3.0
+          key: system.uptime
+          delay: '60'
+          history: 10d
+          trends: '0'
+          units: s
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: 'SNMP Base'
+          triggers:
+            - uuid: 363335d9641c4e3db6adab9d56837e1a
+              expression: 'last(/Template-Training_SNMPv2c-Base/system.uptime)<900 and last(/Template-Training_SNMPv2c-Base/system.uptime,#10)<42948900'
+              name: 'Zarizeni bylo restartovano'
+              priority: INFO
+              description: 'Uptime zarizeni indikuje jeho restart. 42948900'
+            - uuid: e4b1458fd575455a94b89aa2a517dd9c
+              expression: 'nodata(/Template-Training_SNMPv2c-Base/system.uptime,900s)=1'
+              name: 'Zarizeni je nedostupne pro monitoring'
+              priority: AVERAGE
+              description: 'SNMP data ze zarizeni nejsou dostupna dele nez 15 minut.'
+              dependencies:
+                - name: 'Zarizeni je nedostupne po siti'
+                  expression: 'min(/Template-Training_SNMPv2c-Base/icmppingloss[,5,1000,999,3000],150s)=100'
+      tags:
+        - tag: Template
+          value: Training
+    - uuid: a4095dae2b1d4fdabd2da9db4ee42384
+      template: Template-Training_SNMPv2c-Interfaces
+      name: Template-Training_SNMPv2c-Interfaces
+      description: |
+        Value mapping
+        https://www.circitor.fr/Mibs/Html/I/IANAifType-MIB.php#IANAifType
+      vendor:
+        name: Open-Tech
+        version: 7.0-0
+      groups:
+        - name: Templates/Training
+      items:
+        - uuid: 58b779e78dd9499f807c368ac134fd0c
+          name: 'Registered number of network interfaces'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.2.1.0
+          key: ifNumber
+          delay: '60'
+          history: 10d
+          trends: '0'
+          description: 'The number of network interfaces (regardless of their current state) present on this system.'
+          tags:
+            - tag: Application
+              value: 'Network Interfaces'
+      discovery_rules:
+        - uuid: 07f88c7a192c44d398ac64c1bdb46932
+          name: 'Network interfaces'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},IF-MIB::ifDescr]'
+          key: ifDescr
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#SNMPVALUE}'
+                value: ^e
+                formulaid: A
+          lifetime: 1d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: |
+            You may also consider using {#SNMPVALUE} macro to filter results.
+            
+            {$SNMP_COMMUNITY} is a global macro.
+          item_prototypes:
+            - uuid: fe19cf6cc10c45408a0001ab0e968c55
+              name: 'Admin status'
+              type: SNMP_AGENT
+              snmp_oid: 'ifAdminStatus.{#SNMPINDEX}'
+              key: 'ifAdminStatus[{#SNMPVALUE}]'
+              delay: '1m;50/1-7,00:00-24:00'
+              history: 10d
+              trends: '0'
+              status: DISABLED
+              description: 'The desired state of the interface.'
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+            - uuid: 4af92fdb8ed340c2af80c53447af862b
+              name: Description
+              type: SNMP_AGENT
+              snmp_oid: 'ifDescr.{#SNMPINDEX}'
+              key: 'ifDescr[{#SNMPVALUE}]'
+              delay: '1h;50/1-7,00:00-24:00'
+              history: 10d
+              value_type: CHAR
+              trends: '0'
+              description: 'A textual string containing information about the interface.  This string should include the name of the manufacturer, the product name and the version of the interface hardware/software.'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 12h
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+            - uuid: 62df174a7a9344b6ba1e26148af36d6d
+              name: 'Inbound errors'
+              type: SNMP_AGENT
+              snmp_oid: 'ifInErrors.{#SNMPINDEX}'
+              key: 'ifInErrors[{#SNMPVALUE}]'
+              history: 10d
+              trends: 1500d
+              status: DISABLED
+              description: 'For packet-oriented interfaces, the number of inbound packets that contained errors preventing them from being deliverable to a higher-layer protocol.  For character-oriented or fixed-length interfaces, the number of inbound transmission units that contained errors preventing them from being deliverable to a higher-layer protocol.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+            - uuid: bb63138d90c6455badea8b939c76a8a3
+              name: 'Incoming traffic'
+              type: SNMP_AGENT
+              snmp_oid: 'ifInOctets.{#SNMPINDEX}'
+              key: 'ifInOctets[{#SNMPVALUE}]'
+              history: 10d
+              trends: 1500d
+              units: bps
+              description: 'The number of octets in valid MAC frames received on this interface, including the MAC header and FCS.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+            - uuid: 3cc3200de1a74274812dbac49fc0ccd0
+              name: 'Operational status'
+              type: SNMP_AGENT
+              snmp_oid: 'ifOperStatus.{#SNMPINDEX}'
+              key: 'ifOperStatus[{#SNMPVALUE}]'
+              history: 10d
+              trends: '0'
+              status: DISABLED
+              description: 'The current operational state of the interface.'
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+              trigger_prototypes:
+                - uuid: 68a3f85a3dd9469e8e21130b98e4871a
+                  expression: '(last(/Template-Training_SNMPv2c-Interfaces/ifOperStatus[{#SNMPVALUE}],#1)<>last(/Template-Training_SNMPv2c-Interfaces/ifOperStatus[{#SNMPVALUE}],#2))=1'
+                  name: 'Operational status changed on interface {#SNMPVALUE}'
+                  priority: WARNING
+            - uuid: 60193ba4ffcc45e9ba8222176c6b6497
+              name: 'Outbound discards'
+              type: SNMP_AGENT
+              snmp_oid: 'ifOutDiscards.{#SNMPINDEX}'
+              key: 'ifOutDiscards[{#SNMPVALUE}]'
+              history: 10d
+              trends: 1500d
+              status: DISABLED
+              description: 'The number of outbound packets which were chosen to be discarded even though no errors had been detected to prevent their being transmitted.  One possible reason for discarding such a packet could be to free up buffer space.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+            - uuid: 4e17488cc6c140e8b3fffcc903a29cc0
+              name: 'Outbound errors'
+              type: SNMP_AGENT
+              snmp_oid: 'ifOutErrors.{#SNMPINDEX}'
+              key: 'ifOutErrors[{#SNMPVALUE}]'
+              history: 10d
+              trends: 1500d
+              status: DISABLED
+              description: 'For packet-oriented interfaces, the number of outbound packets that could not be transmitted because of errors. For character-oriented or fixed-length interfaces, the number of outbound transmission units that could not be transmitted because of errors.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+            - uuid: 917398e5e1e3407a8d94e95ab7b86d31
+              name: 'Outgoing traffic'
+              type: SNMP_AGENT
+              snmp_oid: 'ifOutOctets.{#SNMPINDEX}'
+              key: 'ifOutOctets[{#SNMPVALUE}]'
+              history: 10d
+              trends: 1500d
+              units: bps
+              description: 'The number of octets transmitted in MAC frames on this interface, including the MAC header and FCS.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+            - uuid: 659e89a6846d47588394a6fe0853d993
+              name: 'Type of interface'
+              type: SNMP_AGENT
+              snmp_oid: 'ifType.{#SNMPINDEX}'
+              key: 'ifType[{#SNMPVALUE}]'
+              delay: '1h;50/1-7,00:00-24:00'
+              history: 10d
+              trends: '0'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 12h
+              tags:
+                - tag: Application
+                  value: 'Network Interfaces'
+          graph_prototypes:
+            - uuid: 2aaf191c8828492c8f879ffa2c88ac42
+              name: 'Network traffic on {#SNMPVALUE}'
+              ymin_type_1: FIXED
+              graph_items:
+                - drawtype: GRADIENT_LINE
+                  color: 00AA00
+                  item:
+                    host: Template-Training_SNMPv2c-Interfaces
+                    key: 'ifInOctets[{#SNMPVALUE}]'
+                - sortorder: '1'
+                  drawtype: GRADIENT_LINE
+                  color: 3333FF
+                  item:
+                    host: Template-Training_SNMPv2c-Interfaces
+                    key: 'ifOutOctets[{#SNMPVALUE}]'
+      tags:
+        - tag: Template
+          value: Training
+      valuemaps:
+        - uuid: f5e449c4db7446a4be5b2b4e25e4dca6
+          name: 'IF-MIB::ifType'
+          mappings:
+            - value: '1'
+              newvalue: other
+            - value: '6'
+              newvalue: ethernetCsmacd
+            - value: '224'
+              newvalue: fcipLink
+            - value: '244'
+              newvalue: wwanPP2
+            - value: '24'
+              newvalue: softwareLoopback
+            - value: '246'
+              newvalue: ifPwType
+            - value: '247'
+              newvalue: ilan
+  triggers:
+    - uuid: 1fccf7011a874bf4bd6a9e74dd58c0be
+      expression: 'last(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=GarbageCollector,name=MarkSweepCompact","CollectionCount"])>last(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=GarbageCollector,name=Copy","CollectionCount"])'
+      name: 'GarbageCollector: Mark Sweep Compact in fire fighting mode'
+      priority: AVERAGE
+    - uuid: 44c91fd3be824196b94539d4ed291527
+      expression: 'min(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=Memory","HeapMemoryUsage.used"],{$JMX.HEAP.MEM.USAGE.TIME})>(last(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=Memory","HeapMemoryUsage.max"])*{$JMX.HEAP.MEM.USAGE.MAX}/100)'
+      name: 'Memory: Heap memory usage more than {$JMX.HEAP.USAGE.MAX}% for {$JMX.HEAP.MEM.USAGE.TIME}'
+      priority: WARNING
+    - uuid: 093bd11161154146a2676095af87fe0e
+      expression: 'min(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=MemoryPool,name=Code Cache","Usage.used"],{$JMX.MP.USAGE.TIME:"Code Cache"})>(last(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=MemoryPool,name=Code Cache","Usage.max"])*{$JMX.MP.USAGE.MAX:"Code Cache"}/100)'
+      name: 'MemoryPool: Code Cache memory usage more than {$JMX.MP.USAGE.MAX:"Code Cache"}% for {$JMX.MP.USAGE.TIME:"Code Cache"}'
+      priority: WARNING
+    - uuid: 73ac1fedaf0c4561b03f89bd1674c043
+      expression: 'min(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=MemoryPool,name=Tenured Gen","Usage.used"],{$JMX.MP.USAGE.TIME:"Tenured Gen"})>(last(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=MemoryPool,name=Tenured Gen","Usage.max"])*{$JMX.MP.USAGE.MAX:"Tenured Gen"}/100)'
+      name: 'MemoryPool: Tenured Gen memory usage more than {$JMX.MP.USAGE.MAX:"Tenured Gen"}% for {$JMX.MP.USAGE.TIME:"Tenured Gen"}'
+      priority: WARNING
+    - uuid: 7c8d577d7159484bac32786c3be27a60
+      expression: 'min(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=OperatingSystem","OpenFileDescriptorCount"],{$JMX.FILE.DESCRIPTORS.TIME})>(last(/Template-Training_App_Generic_Java_JMX/jmx["java.lang:type=OperatingSystem","MaxFileDescriptorCount"])*{$JMX.FILE.DESCRIPTORS.MAX}/100)'
+      name: 'OperatingSystem: Opened file descriptor count more than {$JMX.FILE.DESCRIPTORS.MAX}% of maximum'
+      priority: WARNING
+  graphs:
+    - uuid: 3d8e23faf6f94a1d800e9b76c1449ddb
+      name: 'ClassLoading: Class Loader'
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=ClassLoading","TotalLoadedClassCount"]'
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=ClassLoading","UnloadedClassCount"]'
+        - sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=ClassLoading","LoadedClassCount"]'
+    - uuid: 8e058d284313498ea276b4096c351655
+      name: 'GarbageCollector: Garbage Collector collections per second'
+      graph_items:
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=GarbageCollector,name=Copy","CollectionCount"]'
+        - sortorder: '3'
+          color: A54F10
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=GarbageCollector,name=MarkSweepCompact","CollectionCount"]'
+    - uuid: 4dcc4d9298594524bb54c8233e022896
+      name: 'MemoryPool: Memory Pool Code Cache'
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=MemoryPool,name=Code Cache","Usage.max"]'
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=MemoryPool,name=Code Cache","Usage.committed"]'
+        - sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=MemoryPool,name=Code Cache","Usage.used"]'
+    - uuid: 07c3fd5ba25f4ba4a0940dee70341a48
+      name: 'MemoryPool: Memory Pool Tenured Gen'
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=MemoryPool,name=Tenured Gen","Usage.max"]'
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=MemoryPool,name=Tenured Gen","Usage.committed"]'
+        - sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=MemoryPool,name=Tenured Gen","Usage.used"]'
+    - uuid: 178ee4500497436ea2ee066578907a05
+      name: 'MySQL: Bandwidth'
+      graph_items:
+        - drawtype: GRADIENT_LINE
+          color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.bytes_received.rate
+        - sortorder: '1'
+          drawtype: GRADIENT_LINE
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.bytes_sent.rate
+    - uuid: 4e00ba43e7c94fdaa4a25dd822b0acec
+      name: 'MySQL: Connections'
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.aborted_clients.rate
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.aborted_connects.rate
+        - sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.connections.rate
+        - sortorder: '3'
+          color: A54F10
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.max_used_connections
+    - uuid: 97c68069788c4e66ac6468e748c9acec
+      name: 'MySQL: InnoDB buffer pool'
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.innodb_buffer_pool_pages_free
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.innodb_buffer_pool_pages_total
+        - sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.innodb_buffer_pool_read_requests.rate
+        - sortorder: '3'
+          color: A54F10
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.innodb_buffer_pool_reads.rate
+    - uuid: 2d0bb87772f643b58c3502aa40f1c3b8
+      name: 'MySQL: Operations'
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.com_delete.rate
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.com_insert.rate
+        - sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.com_select.rate
+        - sortorder: '3'
+          color: A54F10
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.com_update.rate
+    - uuid: 0fc60c6f25bf404eac2e2098bf85e43b
+      name: 'MySQL: Queries'
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.queries.rate
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.questions.rate
+        - sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.slow_queries.rate
+    - uuid: a68a5cd595454fe69b8399a9cce5d006
+      name: 'MySQL: Threads'
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.threads_cached
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.threads_connected
+        - sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.threads_created.rate
+        - sortorder: '3'
+          color: A54F10
+          item:
+            host: Template-Training_MySQL_by_Zabbix_agent_2
+            key: mysql.threads_running
+    - uuid: 1fa6cc0ac699456aa737955b74484dad
+      name: 'OperatingSystem: File Descriptors'
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=OperatingSystem","MaxFileDescriptorCount"]'
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=OperatingSystem","OpenFileDescriptorCount"]'
+    - uuid: 3a33ba6e4618429c9c3fbfaa70e610e5
+      name: 'Threading: Threads'
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=Threading","PeakThreadCount"]'
+        - sortorder: '1'
+          color: 2774A4
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=Threading","DaemonThreadCount"]'
+        - sortorder: '2'
+          color: F63100
+          item:
+            host: Template-Training_App_Generic_Java_JMX
+            key: 'jmx["java.lang:type=Threading","ThreadCount"]'
