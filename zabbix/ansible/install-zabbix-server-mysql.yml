@@ -35,7 +35,7 @@
         zabbix_server_dbname: zabbix
         zabbix_server_dbuser: zabbix
         zabbix_server_dbpassword: "{{ lookup('env','ZABBIX_MYSQL_PASS') }}"
-        zabbix_server_db_host: localhost
+        zabbix_server_dbhost: localhost
         zabbix_server_repo: "zabbix-official"
         zabbix_server_cachesize: "64M"
         zabbix_server_historycachesize: "32M"
