@@ -5,7 +5,7 @@
 # Lukas Maly <Iam@LukasMaly.NET> 14.12.2024
 #
 
-pkg install -y bash joe mc git screen
+pkg install -y bash joe mc git screen jq
 
 ### zbx user add
 openssl rand -base64 32 > /root/zbx-user.pw
@@ -28,6 +28,7 @@ echo "ALLOW_UNSUPPORTED_SYSTEM=yes" >> /etc/make.conf
 
 # update ports
 pkg install -y portsnap portupgrade
+mkdir -p /var/db/portsnap
 portsnap fetch
 portsnap extract
 
@@ -35,7 +36,7 @@ portsnap extract
 cd /usr/ports/devel/p5-JSON-RPC && make install clean
 cd /usr/ports/www/p5-LWP-Protocol-https && make install clean
 
-pkg install -y py39-lxml py39-ansible jq
+pkg install -y py311-lxml py311-ansible jq
 cd /usr/ports/devel/py-pip && make install clean
 cd /usr/ports/net-mgmt/py-pyzabbix && make install clean
 cd /usr/ports/www/p5-HTTP-Tiny && make install clean
