@@ -8,9 +8,14 @@
       vars:
         mysql_users:
           - name: zbx_monitor
-            host: "%"
-            password: "{{ lookup('env','MONITORING_MYSQL_PASS') }}"
+            host: "localhost"
+            password: ZabbixEDU_Monitoring_DB_Pass
             priv: "zbx_monitor.*:ALL"
+        mysql_users:
+          - name: zbx_probe
+            host: "localhost"
+            password: ZabbixEDU_Monitoring_ODBC_DB_Pass
+            priv: "zbx_probe.*:ALL"
     - role: geerlingguy.apache
     - role: geerlingguy.php
       vars:

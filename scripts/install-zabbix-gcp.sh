@@ -2,7 +2,7 @@
 #
 # Install package
 #
-# Lukas Maly <Iam@LukasMaly.NET> 12.12.2024
+# Lukas Maly <Iam@LukasMaly.NET> 14.12.2024
 #
 
 # Post deploy commands
@@ -18,6 +18,7 @@ apt install -y snmp
 apt install -y python3-pip
 apt install -y prometheus-node-exporter
 apt install -y policycoreutils
+apt install -y unixodbc
 
 # Configure SSH
 echo "--- SSHD ---"
@@ -44,17 +45,20 @@ echo "--- MYSQL ROOT ---"
 openssl rand -base64 32 > /root/mysql-root.pw
 MYSQL_ROOT_PASS=`cat /root/mysql-root.pw`
 
-echo "--- Zabbix DB user ---"
-openssl rand -base64 32 > /root/mysql-zabbix.pw
-ZABBIX_MYSQL_PASS=`cat /root/mysql-zabbix.pw`
+#echo "--- Zabbix DB user ---"
+#openssl rand -base64 32 > /root/mysql-zabbix.pw
+#ZABBIX_MYSQL_PASS=`cat /root/mysql-zabbix.pw`
+# ZabbixEDU_DB_Pass
 
-echo "--- ODBC ---"
-openssl rand -base64 32 > /root/mysql-zbx_probe.pw
-ZBX_PROBE_MYSQL_PASS=`cat /root/mysql-zbx_probe.pw`
+#echo "--- ODBC ---"
+#openssl rand -base64 32 > /root/mysql-zbx_probe.pw
+#ZBX_PROBE_MYSQL_PASS=`cat /root/mysql-zbx_probe.pw`
+# ZabbixEDU_Monitoring_ODBC_DB_Pass
 
-echo "--- Monitoring DB user ---"
-openssl rand -base64 32 > /root/mysql-monitoring.pw
-MONITORING_MYSQL_PASS=`cat /root/mysql-monitoring.pw`
+#echo "--- Monitoring DB user ---"
+#openssl rand -base64 32 > /root/mysql-monitoring.pw
+#MONITORING_MYSQL_PASS=`cat /root/mysql-monitoring.pw`
+# ZabbixEDU_Monitoring_DB_Pass
 
 echo "--- ROOT ---"
 #echo ${ROOT_PASS} | passwd root --stdin
@@ -88,8 +92,6 @@ ansible-galaxy role install geerlingguy.php
 
 export ZABBIX_USER=Admin
 export ZABBIX_PASSWORD=zabbix
-export ZBX_PROBE_PASS
-export ZABBIX_MYSQL_PASS
 
 # Install Zabbix server
 sudo ansible-playbook /root/zabbix-edu/zabbix/ansible/install-zabbix-server-mysql.yml > /tmp/install-zabbix-server-mysql.yml.log
