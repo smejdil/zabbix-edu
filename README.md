@@ -40,14 +40,11 @@ gcloud config set project [PROJECT]
 ```console
 ./zabbix-edu/scripts/create_zabbix_vm_machines.sh 01 02 03
 ```
-- Connect to VM Zabbix EDU and run scripts + reboot SELinux disable
+- Connect to VM Zabbix EDU for some reconfiguration
 
 ```console
 gcloud compute ssh zbx01 --zone=europe-west1-c
 sudo su -
-./zabbix-edu/scripts/reconfigure_sshd.sh
-reboot
-./zabbix-edu/scripts/install_zabbix.sh
 ```
 - List Zabbix EDU VM and external IPv4
 

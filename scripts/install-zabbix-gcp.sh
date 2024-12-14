@@ -40,26 +40,22 @@ ROOT_PASS=`cat /root/root-user.pw`
 openssl rand -base64 32 > /root/zbx-user.pw
 ZBX_PASS=`cat /root/zbx-user.pw`
 
-echo "--- ROOT ---"
-#echo ${ROOT_PASS} | passwd root --stdin
-echo "root:${ROOT_PASS}" | chpasswd
-
-echo "--- ZABBIX ---"
-useradd -m -G adm,google-sudoers -p zabbix zbx
-#echo ${ZBX_PASS} | passwd zbx --stdin
-echo "root:${ZBX_PASS}" | chpasswd
-
 echo "--- MYSQL ROOT ---"
 openssl rand -base64 32 > /root/mysql-root.pw
 MYSQL_ROOT_PASS=`cat /root/mysql-root.pw`
 
-# Set up root password
-#echo "--- MaiaDB root pw ---"
-#mysqladmin -u root password ${MYSQL_ROOT_PASS};
-
 echo "--- Zabbix DB user ---"
 openssl rand -base64 32 > /root/mysql-zabbix.pw
 ZABBIX_MYSQL_PASS=`cat /root/mysql-zabbix.pw`
+
+echo "--- ROOT ---"
+#echo ${ROOT_PASS} | passwd root --stdin
+echo "root:${ROOT_PASS}" | sudo chpasswd
+
+echo "--- ZABBIX ---"
+useradd -m -G adm,google-sudoers -p zabbix zbx
+#echo ${ZBX_PASS} | passwd zbx --stdin
+echo "zbx:${ZBX_PASS}" | sudo chpasswd
 
 # ODBC
 echo "--- ODBC ---"
@@ -70,6 +66,10 @@ ZBX_PROBE_MYSQL_PASS=`cat /root/mysql-zbx_probe.pw`
 echo "--- Monitoring DB user ---"
 openssl rand -base64 32 > /root/mysql-monitoring.pw
 MONITORING_MYSQL_PASS=`cat /root/mysql-monitoring.pw`
+
+# Set up root password
+#echo "--- MaiaDB root pw ---"
+#mysqladmin -u root password ${MYSQL_ROOT_PASS};
 
 # disable SELinux
 echo "--- SELinux ---"
