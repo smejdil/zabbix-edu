@@ -34,8 +34,7 @@
         zabbix_server_database: mysql
         zabbix_server_dbname: zabbix
         zabbix_server_dbuser: zabbix
-#       zabbix_server_dbpassword: "{{ lookup('env','ZABBIX_MYSQL_PASS') }}"
-#       zabbix_server_dbpassword: Zabbix-EDU_DB_202xPass!
+        zabbix_server_dbpassword: ZabbixEDU_DB_Pass
         zabbix_server_dbhost: localhost
         zabbix_server_repo: "zabbix-official"
         zabbix_server_cachesize: "64M"
@@ -64,6 +63,10 @@
         zabbix_timezone: Europe/Prague
         zabbix_server_hostname: localhost
         zabbix_server_database: mysql
+        zabbix_server_dbname: zabbix
+        zabbix_server_dbuser: zabbix
+        zabbix_server_dbpassword: ZabbixEDU_DB_Pass
+        zabbix_server_dbhost: localhost
         zabbix_db_type_long: mysql
         zabbix_server_dbport: 3306
 ...
