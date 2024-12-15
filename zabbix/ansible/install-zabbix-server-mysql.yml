@@ -49,17 +49,17 @@
         line: "127.0.1.1 {{ new_hostname }}"
         state: present
 
-    - name: Konfigurace SSH serveru
-      ansible.posix.sshd:
-        options:
-          PermitRootLogin: "prohibit-password"
-          PasswordAuthentication: "yes"
-          ChallengeResponseAuthentication "no"
+#    - name: Konfigurace SSH serveru
+#      ansible.posix.sshd:
+#        options:
+#          PermitRootLogin: "prohibit-password"
+#          PasswordAuthentication: "yes"
+#          ChallengeResponseAuthentication "no"
 
-    - name: Restart SSH
-      ansible.builtin.service:
-        name: sshd
-        state: restarted
+#    - name: Restart SSH
+#      ansible.builtin.service:
+#        name: sshd
+#        state: restarted
 
   roles:
     - role: geerlingguy.mysql

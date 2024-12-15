@@ -26,10 +26,10 @@ cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 
 #sed -i 's/^PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config
 
-#sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-#sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config.d/60-cloudimg-settings.conf
-#sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config
-#echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
+sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config.d/60-cloudimg-settings.conf
+sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config
+echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
 
 diff -u /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 
@@ -87,6 +87,7 @@ diff -u /etc/selinux/config-orig /etc/selinux/config
 # Get repo
 cd /root/ && git clone https://github.com/smejdil/zabbix-edu
 ansible-galaxy collection install community.zabbix --force
+#ansible-galaxy collection install ansible.posix --force
 ansible-galaxy role install geerlingguy.mysql
 ansible-galaxy role install geerlingguy.apache
 ansible-galaxy role install geerlingguy.php
