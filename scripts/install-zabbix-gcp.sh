@@ -19,6 +19,7 @@ apt install -y python3-pip
 apt install -y prometheus-node-exporter
 apt install -y policycoreutils
 apt install -y unixodbc
+apt install -y snmp-mibs-downloader
 
 # Configure SSH
 echo "--- SSHD ---"

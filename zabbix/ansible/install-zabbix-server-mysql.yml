@@ -115,6 +115,9 @@
         zabbix_server_startvmwarecollectors: "1"
         zabbix_server_javagateway: localhost
         zabbix_server_javagatewayport: "10052"
+        zabbix_server_externalscripts:
+         - path: "{{ lookup('first_found', '../../zabbix/externalscripts/date.sh') }}"
+           name: "date.sh"
     - role: community.zabbix.zabbix_javagateway
       vars:
         zabbix_javagateway_version: 7.0
