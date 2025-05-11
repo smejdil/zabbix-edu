@@ -81,6 +81,7 @@ systemctl enable tomcat.service
 cd /etc/tomcat
 echo "CATALINA_OPTS=\"-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=10059 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false\"" >> tomcat.conf
 
+cd
 cp -v /etc/tomcat/server.xml /etc/tomcat/server.xml-orig
 cp -v ./zabbix-edu/files/server.xml.patch /etc/tomcat
 cd /etc/tomcat && patch < server.xml.patch
@@ -115,6 +116,11 @@ docker run --name postgres -e POSTGRES_PASSWORD=123456 -d postgres
 # http://linsrv01.pfsense.cz:8200 - Token RootAkademie-ZabbixEDU202X
 cd /root/zabbix-edu/zabbix/docker-vault
 #docker build -t vault .
+docker-compose -f docker-compose.yml up -d
+
+# install Selenium
+# http://linsrv01.pfsense.cz:4444
+cd /root/zabbix-edu/zabbix/selenium
 docker-compose -f docker-compose.yml up -d
 
 ## Zabbix Docker

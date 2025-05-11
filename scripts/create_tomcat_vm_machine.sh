@@ -30,6 +30,7 @@ for (( j=0; j<argc; j++ )); do
     gcloud compute instances add-tags linsrv${argv[j]} --tags=ipmi --zone=${ZONE}
     gcloud compute instances add-tags linsrv${argv[j]} --tags=node-exporter --zone=${ZONE}
     gcloud compute instances add-tags linsrv${argv[j]} --tags=vault --zone=${ZONE}
+    gcloud compute instances add-tags linsrv${argv[j]} --tags=selenium --zone=${ZONE}
 done
 
 # gcloud compute regions list | grep europe-west
