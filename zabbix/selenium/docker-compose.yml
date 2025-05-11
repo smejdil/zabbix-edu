@@ -1,0 +1,77 @@
+services:
+  selenium-event-bus:
+    image: selenium/event-bus:4.30.0-20250323
+    container_name: selenium-event-bus
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "5557:5557"
+
+  selenium-sessions:
+    image: selenium/sessions:4.30.0-20250323
+    container_name: selenium-sessions
+    ports:
+      - "5556:5556"
+    depends_on:
+      - selenium-event-bus
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-event-bus
+
+  selenium-session-queue:
+    image: selenium/session-queue:4.30.0-20250323
+    container_name: selenium-session-queue
+    ports:
+      - "5559:5559"
+
+  selenium-distributor:
+    image: selenium/distributor:4.30.0-20250323
+    container_name: selenium-distributor
+    ports:
+      - "5553:5553"
+    depends_on:
+      - selenium-event-bus
+      - selenium-sessions
+      - selenium-session-queue
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-event-bus
+      - SE_SESSIONS_MAP_HOST=selenium-sessions
+      - SE_SESSION_QUEUE_HOST=selenium-session-queue
+
+  selenium-router:
+    image: selenium/router:4.30.0-20250323
+    container_name: selenium-router
+    ports:
+      - "4444:4444"
+    depends_on:
+      - selenium-distributor
+      - selenium-sessions
+      - selenium-session-queue
+    environment:
+      - SE_DISTRIBUTOR_HOST=selenium-distributor
+      - SE_SESSIONS_MAP_HOST=selenium-sessions
+      - SE_SESSION_QUEUE_HOST=selenium-session-queue
+
+  chrome:
+    image: selenium/node-chrome:4.30.0-20250323
+    shm_size: 2gb
+    depends_on:
+      - selenium-event-bus
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-event-bus
+      - SE_BROWSER_ARGS=--ignore-certificate-errors
+
+  edge:
+    image: selenium/node-edge:4.30.0-20250323
+    shm_size: 2gb
+    depends_on:
+      - selenium-event-bus
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-event-bus
+
+  firefox:
+    image: selenium/node-firefox:4.30.0-20250323
+    shm_size: 2gb
+    depends_on:
+      - selenium-event-bus
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-event-bus
