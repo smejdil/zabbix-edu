@@ -1,7 +1,6 @@
 {
     "zabbix_export": {
-        "version": "6.0",
-        "date": "2024-10-16T14:30:28Z",
+        "version": "7.0",
         "media_types": [
             {
                 "name": "Email Seznam",
@@ -13,20 +12,21 @@
                 "smtp_security": "SSL_OR_TLS",
                 "smtp_authentication": "PASSWORD",
                 "username": "zabbix-edu@seznam.cz",
-                "password": "3jmHtFiT5p4ngjF004UiuOIAaUPpO6",
-                "content_type": "TEXT",
+                "password": "lpweRn3q9qzz2Kh8YcfrjfJ7UeUNR6ilbBA156VUhr1STjv7Tg",
+                "message_format": "TEXT",
+                "description": "Seznam Media type",
                 "message_templates": [
                     {
                         "event_source": "TRIGGERS",
                         "operation_mode": "PROBLEM",
                         "subject": "Problem: {EVENT.NAME}",
-                        "message": "Problem started at {EVENT.TIME} on {EVENT.DATE}\nProblem name: {EVENT.NAME}\nHost: {HOST.NAME} - {HOST.IP}\nSeverity: {EVENT.SEVERITY}\nOperational data: {EVENT.OPDATA}\nOriginal problem ID: {EVENT.ID}\n{TRIGGER.URL}"
+                        "message": "Problem started at {EVENT.TIME} on {EVENT.DATE}\nProblem name: {EVENT.NAME}\nHost: {HOST.NAME} - {HOST.IP}\nSeverity: {EVENT.SEVERITY}\nOperational data: {EVENT.OPDATA}\nOriginal problem ID: {EVENT.ID}\n{TRIGGER.URL}\n\n\nProblem URL:\nhttp://zbx01.pfsense.cz/zabbix/tr_events.php?triggerid={TRIGGER.ID}&eventid={EVENT.ID}"
                     },
                     {
                         "event_source": "TRIGGERS",
                         "operation_mode": "RECOVERY",
                         "subject": "Resolved in {EVENT.DURATION}: {EVENT.NAME}",
-                        "message": "Problem has been resolved at {EVENT.RECOVERY.TIME} on {EVENT.RECOVERY.DATE}\nProblem name: {EVENT.NAME}\nProblem duration: {EVENT.DURATION}\nHost: {HOST.NAME} - {HOST.IP}\nSeverity: {EVENT.SEVERITY}\nOriginal problem ID: {EVENT.ID}\n{TRIGGER.URL}"
+                        "message": "Problem has been resolved at {EVENT.RECOVERY.TIME} on {EVENT.RECOVERY.DATE}\nProblem name: {EVENT.NAME}\nProblem duration: {EVENT.DURATION}\nHost: {HOST.NAME} - {HOST.IP}\nSeverity: {EVENT.SEVERITY}\nOriginal problem ID: {EVENT.ID}\n{TRIGGER.URL}\n\nProblem URL:\nhttp://zbx01.pfsense.cz/zabbix/tr_events.php?triggerid={TRIGGER.ID}&eventid={EVENT.ID}"
                     },
                     {
                         "event_source": "TRIGGERS",
@@ -45,6 +45,51 @@
                         "operation_mode": "PROBLEM",
                         "subject": "Autoregistration: {HOST.HOST}",
                         "message": "Host name: {HOST.HOST}\nHost IP: {HOST.IP}\nAgent port: {HOST.PORT}"
+                    }
+                ]
+            },
+            {
+                "name": "Email Seznam (HTML)",
+                "type": "EMAIL",
+                "smtp_server": "smtp.seznam.cz",
+                "smtp_port": "465",
+                "smtp_helo": "seznam.cz",
+                "smtp_email": "zabbix-edu@seznam.cz",
+                "smtp_security": "SSL_OR_TLS",
+                "smtp_authentication": "PASSWORD",
+                "username": "zabbix-edu@seznam.cz",
+                "password": "lpweRn3q9qzz2Kh8YcfrjfJ7UeUNR6ilbBA156VUhr1STjv7Tg",
+                "description": "Seznam Media type HTML",
+                "message_templates": [
+                    {
+                        "event_source": "TRIGGERS",
+                        "operation_mode": "PROBLEM",
+                        "subject": "Problem: {EVENT.NAME}",
+                        "message": "<b>Problem started</b> at {{EVENT.TIME}.htmlencode()} on {{EVENT.DATE}.htmlencode()}<br><b>Problem name:</b> {{EVENT.NAME}.htmlencode()}<br><b>Host:</b> {{HOST.NAME}  - {HOST.IP}.htmlencode()}<br><b>Severity:</b> {{EVENT.SEVERITY}.htmlencode()}<br><b>Operational data:</b> {{EVENT.OPDATA}.htmlencode()}<br><b>Original problem ID:</b> {{EVENT.ID}.htmlencode()}<br>{{TRIGGER.URL}.htmlencode()}"
+                    },
+                    {
+                        "event_source": "TRIGGERS",
+                        "operation_mode": "RECOVERY",
+                        "subject": "Resolved in {EVENT.DURATION}: {EVENT.NAME}",
+                        "message": "<b>Problem has been resolved</b> at {{EVENT.RECOVERY.TIME}.htmlencode()} on {{EVENT.RECOVERY.DATE}.htmlencode()}<br><b>Problem name:</b> {{EVENT.NAME} - {HOST.IP}.htmlencode()}<br><b>Problem duration:</b> {{EVENT.DURATION}.htmlencode()}<br><b>Host:</b> {{HOST.NAME}.htmlencode()}<br><b>Severity:</b> {{EVENT.SEVERITY}.htmlencode()}<br><b>Original problem ID:</b> {{EVENT.ID}.htmlencode()}<br>{{TRIGGER.URL}.htmlencode()}"
+                    },
+                    {
+                        "event_source": "TRIGGERS",
+                        "operation_mode": "UPDATE",
+                        "subject": "Updated problem in {EVENT.AGE}: {EVENT.NAME}",
+                        "message": "<b>{{USER.FULLNAME}.htmlencode()} {{EVENT.UPDATE.ACTION}.htmlencode()} problem</b> at {{EVENT.UPDATE.DATE}.htmlencode()} {{EVENT.UPDATE.TIME}.htmlencode()}.<br>{{EVENT.UPDATE.MESSAGE}.htmlencode()}<br><br><b>Current problem status:</b> {{EVENT.STATUS}.htmlencode()}<br><b>Age:</b> {{EVENT.AGE}.htmlencode()}<br><b>Acknowledged:</b> {{EVENT.ACK.STATUS}.htmlencode()}."
+                    },
+                    {
+                        "event_source": "DISCOVERY",
+                        "operation_mode": "PROBLEM",
+                        "subject": "Discovery: {DISCOVERY.DEVICE.STATUS} {DISCOVERY.DEVICE.IPADDRESS}",
+                        "message": "<b>Discovery rule:</b> {{DISCOVERY.RULE.NAME}.htmlencode()}<br><br><b>Device IP:</b> {{DISCOVERY.DEVICE.IPADDRESS}.htmlencode()}<br><b>Device DNS:</b> {{DISCOVERY.DEVICE.DNS}.htmlencode()}<br><b>Device status:</b> {{DISCOVERY.DEVICE.STATUS}.htmlencode()}<br><b>Device uptime:</b> {{DISCOVERY.DEVICE.UPTIME}.htmlencode()}<br><br><b>Device service name:</b> {{DISCOVERY.SERVICE.NAME}.htmlencode()}<br><b>Device service port:</b> {{DISCOVERY.SERVICE.PORT}.htmlencode()}<br><b>Device service status:</b> {{DISCOVERY.SERVICE.STATUS}.htmlencode()}<br><b>Device service uptime:</b> {{DISCOVERY.SERVICE.UPTIME}.htmlencode()}"
+                    },
+                    {
+                        "event_source": "AUTOREGISTRATION",
+                        "operation_mode": "PROBLEM",
+                        "subject": "Autoregistration: {HOST.HOST}",
+                        "message": "<b>Host name:</b> {{HOST.HOST}.htmlencode()}<br><b>Host IP:</b> {{HOST.IP}.htmlencode()}<br><b>Agent port:</b> {{HOST.PORT}.htmlencode()}"
                     }
                 ]
             }

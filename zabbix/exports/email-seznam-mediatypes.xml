@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
-    <version>6.0</version>
-    <date>2024-10-16T14:30:25Z</date>
+    <version>7.0</version>
     <media_types>
         <media_type>
             <name>Email Seznam</name>
@@ -13,8 +12,9 @@
             <smtp_security>SSL_OR_TLS</smtp_security>
             <smtp_authentication>PASSWORD</smtp_authentication>
             <username>zabbix-edu@seznam.cz</username>
-            <password>3jmHtFiT5p4ngjF004UiuOIAaUPpO6</password>
-            <content_type>TEXT</content_type>
+            <password>lpweRn3q9qzz2Kh8YcfrjfJ7UeUNR6ilbBA156VUhr1STjv7Tg</password>
+            <message_format>TEXT</message_format>
+            <description>Seznam Media type</description>
             <message_templates>
                 <message_template>
                     <event_source>TRIGGERS</event_source>
@@ -26,7 +26,11 @@ Host: {HOST.NAME} - {HOST.IP}
 Severity: {EVENT.SEVERITY}
 Operational data: {EVENT.OPDATA}
 Original problem ID: {EVENT.ID}
-{TRIGGER.URL}</message>
+{TRIGGER.URL}
+
+
+Problem URL:
+http://zbx01.pfsense.cz/zabbix/tr_events.php?triggerid={TRIGGER.ID}&amp;eventid={EVENT.ID}</message>
                 </message_template>
                 <message_template>
                     <event_source>TRIGGERS</event_source>
@@ -38,7 +42,10 @@ Problem duration: {EVENT.DURATION}
 Host: {HOST.NAME} - {HOST.IP}
 Severity: {EVENT.SEVERITY}
 Original problem ID: {EVENT.ID}
-{TRIGGER.URL}</message>
+{TRIGGER.URL}
+
+Problem URL:
+http://zbx01.pfsense.cz/zabbix/tr_events.php?triggerid={TRIGGER.ID}&amp;eventid={EVENT.ID}</message>
                 </message_template>
                 <message_template>
                     <event_source>TRIGGERS</event_source>
@@ -72,6 +79,51 @@ Device service uptime: {DISCOVERY.SERVICE.UPTIME}</message>
                     <message>Host name: {HOST.HOST}
 Host IP: {HOST.IP}
 Agent port: {HOST.PORT}</message>
+                </message_template>
+            </message_templates>
+        </media_type>
+        <media_type>
+            <name>Email Seznam (HTML)</name>
+            <type>EMAIL</type>
+            <smtp_server>smtp.seznam.cz</smtp_server>
+            <smtp_port>465</smtp_port>
+            <smtp_helo>seznam.cz</smtp_helo>
+            <smtp_email>zabbix-edu@seznam.cz</smtp_email>
+            <smtp_security>SSL_OR_TLS</smtp_security>
+            <smtp_authentication>PASSWORD</smtp_authentication>
+            <username>zabbix-edu@seznam.cz</username>
+            <password>lpweRn3q9qzz2Kh8YcfrjfJ7UeUNR6ilbBA156VUhr1STjv7Tg</password>
+            <description>Seznam Media type HTML</description>
+            <message_templates>
+                <message_template>
+                    <event_source>TRIGGERS</event_source>
+                    <operation_mode>PROBLEM</operation_mode>
+                    <subject>Problem: {EVENT.NAME}</subject>
+                    <message>&lt;b&gt;Problem started&lt;/b&gt; at {{EVENT.TIME}.htmlencode()} on {{EVENT.DATE}.htmlencode()}&lt;br&gt;&lt;b&gt;Problem name:&lt;/b&gt; {{EVENT.NAME}.htmlencode()}&lt;br&gt;&lt;b&gt;Host:&lt;/b&gt; {{HOST.NAME}  - {HOST.IP}.htmlencode()}&lt;br&gt;&lt;b&gt;Severity:&lt;/b&gt; {{EVENT.SEVERITY}.htmlencode()}&lt;br&gt;&lt;b&gt;Operational data:&lt;/b&gt; {{EVENT.OPDATA}.htmlencode()}&lt;br&gt;&lt;b&gt;Original problem ID:&lt;/b&gt; {{EVENT.ID}.htmlencode()}&lt;br&gt;{{TRIGGER.URL}.htmlencode()}</message>
+                </message_template>
+                <message_template>
+                    <event_source>TRIGGERS</event_source>
+                    <operation_mode>RECOVERY</operation_mode>
+                    <subject>Resolved in {EVENT.DURATION}: {EVENT.NAME}</subject>
+                    <message>&lt;b&gt;Problem has been resolved&lt;/b&gt; at {{EVENT.RECOVERY.TIME}.htmlencode()} on {{EVENT.RECOVERY.DATE}.htmlencode()}&lt;br&gt;&lt;b&gt;Problem name:&lt;/b&gt; {{EVENT.NAME} - {HOST.IP}.htmlencode()}&lt;br&gt;&lt;b&gt;Problem duration:&lt;/b&gt; {{EVENT.DURATION}.htmlencode()}&lt;br&gt;&lt;b&gt;Host:&lt;/b&gt; {{HOST.NAME}.htmlencode()}&lt;br&gt;&lt;b&gt;Severity:&lt;/b&gt; {{EVENT.SEVERITY}.htmlencode()}&lt;br&gt;&lt;b&gt;Original problem ID:&lt;/b&gt; {{EVENT.ID}.htmlencode()}&lt;br&gt;{{TRIGGER.URL}.htmlencode()}</message>
+                </message_template>
+                <message_template>
+                    <event_source>TRIGGERS</event_source>
+                    <operation_mode>UPDATE</operation_mode>
+                    <subject>Updated problem in {EVENT.AGE}: {EVENT.NAME}</subject>
+                    <message>&lt;b&gt;{{USER.FULLNAME}.htmlencode()} {{EVENT.UPDATE.ACTION}.htmlencode()} problem&lt;/b&gt; at {{EVENT.UPDATE.DATE}.htmlencode()} {{EVENT.UPDATE.TIME}.htmlencode()}.&lt;br&gt;{{EVENT.UPDATE.MESSAGE}.htmlencode()}&lt;br&gt;&lt;br&gt;&lt;b&gt;Current problem status:&lt;/b&gt; {{EVENT.STATUS}.htmlencode()}&lt;br&gt;&lt;b&gt;Age:&lt;/b&gt; {{EVENT.AGE}.htmlencode()}&lt;br&gt;&lt;b&gt;Acknowledged:&lt;/b&gt; {{EVENT.ACK.STATUS}.htmlencode()}.</message>
+                </message_template>
+                <message_template>
+                    <event_source>DISCOVERY</event_source>
+                    <operation_mode>PROBLEM</operation_mode>
+                    <subject>Discovery: {DISCOVERY.DEVICE.STATUS} {DISCOVERY.DEVICE.IPADDRESS}</subject>
+                    <message>&lt;b&gt;Discovery rule:&lt;/b&gt; {{DISCOVERY.RULE.NAME}.htmlencode()}&lt;br&gt;&lt;br&gt;&lt;b&gt;Device IP:&lt;/b&gt; {{DISCOVERY.DEVICE.IPADDRESS}.htmlencode()}&lt;br&gt;&lt;b&gt;Device DNS:&lt;/b&gt; {{DISCOVERY.DEVICE.DNS}.htmlencode()}&lt;br&gt;&lt;b&gt;Device status:&lt;/b&gt; {{DISCOVERY.DEVICE.STATUS}.htmlencode()}&lt;br&gt;&lt;b&gt;Device uptime:&lt;/b&gt; {{DISCOVERY.DEVICE.UPTIME}.htmlencode()}&lt;br&gt;&lt;br&gt;&lt;b&gt;Device service name:&lt;/b&gt; {{DISCOVERY.SERVICE.NAME}.htmlencode()}&lt;br&gt;&lt;b&gt;Device service port:&lt;/b&gt; {{DISCOVERY.SERVICE.PORT}.htmlencode()}&lt;br&gt;&lt;b&gt;Device service status:&lt;/b&gt; {{DISCOVERY.SERVICE.STATUS}.htmlencode()}&lt;br&gt;&lt;b&gt;Device service uptime:&lt;/b&gt; {{DISCOVERY.SERVICE.UPTIME}.htmlencode()}</message>
+                </message_template>
+                <message_template>
+                    <event_source>AUTOREGISTRATION</event_source>
+                    <operation_mode>PROBLEM</operation_mode>
+                    <subject>Autoregistration: {HOST.HOST}</subject>
+                    <message>&lt;b&gt;Host name:&lt;/b&gt; {{HOST.HOST}.htmlencode()}&lt;br&gt;&lt;b&gt;Host IP:&lt;/b&gt; {{HOST.IP}.htmlencode()}&lt;br&gt;&lt;b&gt;Agent port:&lt;/b&gt; {{HOST.PORT}.htmlencode()}</message>
                 </message_template>
             </message_templates>
         </media_type>
