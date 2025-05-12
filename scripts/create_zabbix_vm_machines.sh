@@ -2,12 +2,12 @@
 #
 # Create GCP Ubuntu 24.04 VM
 #
-# Lukas Maly <Iam@LukasMaly.NET> 12.12.2024
+# Lukas Maly <Iam@LukasMaly.NET> 12.15.2025
 #
 
 # GCP Set project Zabbix-EDU
 REGION="europe-west1"
-ZONE="europe-west2-c"
+ZONE="europe-west1-c"
 PROJECT="datascript-zabbix-edu"
 
 gcloud config set project ${PROJECT}
