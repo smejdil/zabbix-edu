@@ -2,7 +2,7 @@
 #
 # Create GCP Ubuntu 24.04 VM
 #
-# Lukas Maly <Iam@LukasMaly.NET> 12.15.2025
+# Lukas Maly <Iam@LukasMaly.NET> 24.5.2025
 #
 
 # GCP Set project Zabbix-EDU

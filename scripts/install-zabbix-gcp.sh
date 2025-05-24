@@ -2,7 +2,7 @@
 #
 # Install package
 #
-# Lukas Maly <Iam@LukasMaly.NET> 14.12.2024
+# Lukas Maly <Iam@LukasMaly.NET> 22.5.2025
 #
 
 # Post deploy commands
@@ -35,7 +35,7 @@ echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
 diff -u /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
 
 #systemctl restart sshd.service
-#systemctl restart ssh.service
+systemctl restart ssh.service
 
 openssl rand -base64 32 > /root/root-user.pw
 ROOT_PASS=`cat /root/root-user.pw`
