@@ -15,9 +15,14 @@ ZABBIX_PROXY_MYSQL_PASS=`cat /root/mysql-zabbix-proxy.pw`
 MYSQL_ROOT_PASS=`cat /root/mysql-root.pw`
 
 # Create database and user
-mysql -u root -p${MYSQL_ROOT_PASS} -e "create database zabbix_proxy character set utf8 collate utf8_bin;"
-mysql -u root -p${MYSQL_ROOT_PASS} -e "grant all privileges on zabbix_proxy.* to zabbix_proxy@localhost identified by '${ZABBIX_PROXY_MYSQL_PASS}';"
-mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
+#mysql -u root -p${MYSQL_ROOT_PASS} -e "create database zabbix_proxy character set utf8 collate utf8_bin;"
+#mysql -u root -p${MYSQL_ROOT_PASS} -e "grant all privileges on zabbix_proxy.* to zabbix_proxy@localhost identified by '${ZABBIX_PROXY_MYSQL_PASS}';"
+#mysql -u root -p${MYSQL_ROOT_PASS} -e "FLUSH PRIVILEGES;"
+
+mysql -u root -e "create database zabbix_proxy character set utf8 collate utf8_bin;"
+mysql -u root -e "CREATE USER 'zabbix_proxy'@'localhost' IDENTIFIED BY '${ZABBIX_PROXY_MYSQL_PASS}';"
+mysql -u root -e "GRANT ALL PRIVILEGES ON zabbix_proxy.* TO 'zabbix_proxy'@'localhost';"
+mysql -u root -e "FLUSH PRIVILEGES;"
 
 ### Zabbix proxy
 
@@ -38,6 +43,8 @@ sed -i "s/# Timeout=3/Timeout=30/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/# CacheSize=8M/CacheSize=32M/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/# DBSocket=/DBSocket=\/var\/lib\/mysql\/mysql.sock/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/# StartVMwareCollectors=0/StartVMwareCollectors=1/g" /etc/zabbix/zabbix_proxy.conf
+sed -i "s/DBSocket=\/var\/lib\/mysql\/mysql.sock/DBSocket=\/var\/run\/mysqld\/mysqld.sock/g" /etc/zabbix/zabbix_proxy.conf
+
 diff -u /etc/zabbix/zabbix_proxy.conf-orig /etc/zabbix/zabbix_proxy.conf
 
 # Restart services
