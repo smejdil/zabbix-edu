@@ -2,11 +2,11 @@
 #
 # Zabbix proxy install scpript
 #
-# Lukas Maly <Iam@LukasMaly.NET> 16.11.2023
+# Lukas Maly <Iam@LukasMaly.NET> 26.05.2025
 #
 
-# Install rpm package zabbix-proxy
-dnf -y install zabbix-proxy-mysql
+# Install deb package zabbix-proxy
+apt -y install zabbix-proxy-mysql
 
 echo "--- Zabbix proxy DB user ---"
 openssl rand -base64 32 > /root/mysql-zabbix-proxy.pw
@@ -44,6 +44,5 @@ diff -u /etc/zabbix/zabbix_proxy.conf-orig /etc/zabbix/zabbix_proxy.conf
 echo "--- Restart and enable services ---"
 systemctl enable zabbix-proxy.service
 systemctl restart zabbix-proxy.service
-
 
 ### EOF
