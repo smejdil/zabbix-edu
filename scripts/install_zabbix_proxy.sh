@@ -33,7 +33,7 @@ cat /usr/share/zabbix-sql-scripts/mysql/proxy.sql | mysql -u zabbix_proxy -p${ZA
 # Zabbix configuration
 echo "--- Configure Zabbix proxy config ---"
 cp -v /etc/zabbix/zabbix_proxy.conf /etc/zabbix/zabbix_proxy.conf-orig
-sed -i "s/^# ListenPort=10051/ListenPort=10053/g" /etc/zabbix/zabbix_proxy.conf
+sed -i "s/^# ListenPort=10051/ListenPort=10054/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/Hostname=Zabbix proxy/Hostname=zbxp-local/g" /etc/zabbix/zabbix_proxy.conf
 sed -i "s/# DBHost=localhost/DBHost=localhost/g" /etc/zabbix/zabbix_proxy.conf
 #sed -i "s/^DBName=zabbix_proxy/DBName=zabbix_proxy/g" /etc/zabbix/zabbix_proxy.conf
