@@ -12,21 +12,6 @@
         ansible_user: "{{ lookup('env','ZABBIX_USER') }}"
         ansible_httpapi_pass: "{{ lookup('env','ZABBIX_PASSWORD') }}"
 
-    - name: create a new zabbix user.
-      community.zabbix.zabbix_user:
-        username: zbx_probe
-        name: Zabbix
-        surname: Probe
-        usrgrps:
-          - Zabbix administrators
-        passwd: "{{ lookup('env','ZBX_PROBE_PASS') }}"
-        lang: en_US
-        timezone: Europe/Prague
-        theme: blue-theme
-        autologin: no
-        autologout: '0'
-        refresh: '30'
-        rows_per_page: '200'
-        after_login_url: ''
-        role_name: Super admin role
-        state: present
+    - name: Set default global timezone
+      community.zabbix.zabbix_settings:
+        default_timezone: "Europe/Prague"
