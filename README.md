@@ -43,7 +43,7 @@ gcloud config set project [PROJECT]
 - Connect to VM Zabbix EDU for some reconfiguration
 
 ```console
-gcloud compute ssh zbx01 --zone=europe-west1-c
+gcloud compute ssh zbx01 --zone=europe-west4-c
 sudo su -
 ```
 - List Zabbix EDU VM and external IPv4
