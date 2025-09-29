@@ -20,12 +20,12 @@
         usrgrps:
           - Zabbix administrators
         passwd: "{{ lookup('env','ZBX_PROBE_PASS') }}"
-        lang: en_GB
+        lang: en_US
         theme: blue-theme
         autologin: no
         autologout: '0'
         refresh: '30'
         rows_per_page: '200'
         after_login_url: ''
-        type: Zabbix super admin
+        role_name: Super admin role
         state: present
