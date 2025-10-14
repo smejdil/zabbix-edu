@@ -14,7 +14,7 @@ gcloud config set project ${PROJECT}
 gcloud config set compute/region ${REGION}
 gcloud config set compute/zone ${ZONE}
 
-FBSD="14-2"
+FBSD="14-3"
 #IMAGE_FBD=`gcloud compute images list | grep bsd | awk '{print $1}'`
 # gcloud compute images list --project=freebsd-org-cloud-dev --no-standard-images | grep release-amd64
 # freebsd-14-0-release-amd64-ufs
