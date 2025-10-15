@@ -114,9 +114,14 @@ docker run --name postgres -e POSTGRES_PASSWORD=123456 -d postgres
 
 # Install Vault by HashiCorp
 # http://linsrv01.pfsense.cz:8200 - Token RootAkademie-ZabbixEDU202X
-cd /root/zabbix-edu/zabbix/docker-vault
+#cd /root/zabbix-edu/zabbix/docker-vault
 #docker build -t vault .
-docker-compose -f docker-compose.yml up -d
+#docker-compose -f docker-compose.yml up -d
+yum install -y yum-utils
+yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+yum -y install vault
+systemctl disable vault.service
+systemctl stop vault.service
 
 # install Selenium
 # http://linsrv01.pfsense.cz:4444
