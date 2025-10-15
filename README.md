@@ -71,8 +71,18 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz/zabbix/
 gcloud compute ssh linsrv01 --zone=europe-central2-a
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
-reboot
 ./zabbix-edu/scripts/install_configure_app.sh
+
+systemctl enable vault.service
+systemctl start vault.service
+
+https://linsrv01.pfsense.cz:8200
+Manual Inicialization
+ 1 - 1
+ Initial
+   hvs.XXX
+ Key 1
+   XXX
 ```
 - List Linux servers EDU VM and external IPv4
 
