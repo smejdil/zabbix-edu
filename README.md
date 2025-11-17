@@ -68,7 +68,7 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz/zabbix/
 - Connect to VM Linux + Tomcat and run scripts + reboot SELinux disable
 
 ```console
-gcloud compute ssh linsrv01 --zone=europe-central2-a
+gcloud compute ssh linsrv01 --zone=europe-central2-b
 sudo su -
 ./zabbix-edu/scripts/reconfigure_sshd.sh
 ./zabbix-edu/scripts/install_configure_app.sh
@@ -104,7 +104,7 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | gr
 - Connect to VM FreeBSD
 
 ```console
-gcloud compute ssh fbsdsrv01 --zone=europe-central2-a
+gcloud compute ssh fbsdsrv01 --zone=europe-central2-b
 ```
 - List FreeBSD servers EDU VM and external IPv4
 
