@@ -2,6 +2,13 @@
 - name: Install EDU Zabbix Server with MySQL
   hosts: localhost
   become: true
+  vars:
+    zabbix_web_apache_service_name: apache2
+
+  pre_tasks:
+    - name: Set apache service name for zabbix_web role
+      ansible.builtin.set_fact:
+        _apache_service: "{{ zabbix_web_apache_service_name }}"
 
   tasks:
     - name: Ensure cron is installed
