@@ -6,8 +6,9 @@
 #
 
 # GCP Set project Zabbix-EDU
-REGION="europe-central2"
-ZONE="europe-central2-b"
+
+REGION="europe-west4"
+ZONE="europe-west4-a"
 PROJECT="datascript-zabbix-edu"
 
 gcloud config set project ${PROJECT}
