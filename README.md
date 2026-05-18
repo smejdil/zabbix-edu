@@ -1,6 +1,6 @@
 ## Deploy zabbix servers on GCP
 
-This small project is used for install EDU servers with Zabbix 7.0 LTS on Ubuntu 26.04 LTS.
+This small project is used for install EDU servers with Zabbix 7.0 LTS on Ubuntu 24.04 LTS.
 
 ## Dependencies
 
@@ -14,8 +14,8 @@ By Google Cloud SDK is intalled servers zbx01-0X. After instalation run scripts 
 ## Features
 
 - Install and configure MySQL
-- Install and configure zabbix_server
-- Install and configure zabbix_agent2
+- Install and configure zabbix_server 7.0 LTS
+- Install and configure zabbix_agent2 7.0 LTS
 - Install and configure Apache 2.4 and PHP 8.3
 - Install and configure ODBC driver for MySQL
 - Install and configure Zabbix API scripts Perl and CPAN modul

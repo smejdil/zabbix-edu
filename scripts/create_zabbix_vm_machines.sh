@@ -14,8 +14,8 @@ gcloud config set project ${PROJECT}
 gcloud config set compute/region ${REGION}
 gcloud config set compute/zone ${ZONE}
 
-#IMAGE_UBUNTU=`gcloud compute images list | grep ubuntu-2404-noble-amd64 | awk '{print $1}'`
-IMAGE_UBUNTU=`gcloud compute images list | grep ubuntu-2604-resolute-amd64 | awk '{print $1}'`
+IMAGE_UBUNTU=`gcloud compute images list | grep ubuntu-2404-noble-amd64 | awk '{print $1}'`
+#IMAGE_UBUNTU=`gcloud compute images list | grep ubuntu-2604-resolute-amd64 | awk '{print $1}'`
 
 argc=$#;
 argv=("$@");
