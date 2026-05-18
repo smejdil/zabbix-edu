@@ -1,27 +1,28 @@
 #!/bin/bash
 #
-# Create GCP Ubuntu 24.04 VM
+# Create GCP Ubuntu 26.04 VM
 #
-# Lukas Maly <Iam@LukasMaly.NET> 24.5.2025
+# Lukas Maly <Iam@LukasMaly.NET> 18.5.2026
 #
 
 # GCP Set project Zabbix-EDU
-REGION="europe-west2"
-ZONE="europe-west2-c"
+REGION="europe-central2"
+ZONE="europe-central2-b"
 PROJECT="datascript-zabbix-edu"
 
 gcloud config set project ${PROJECT}
 gcloud config set compute/region ${REGION}
 gcloud config set compute/zone ${ZONE}
 
-IMAGE_UBUNTU2404=`gcloud compute images list | grep ubuntu-2404-noble-amd64 | awk '{print $1}'`
+#IMAGE_UBUNTU=`gcloud compute images list | grep ubuntu-2404-noble-amd64 | awk '{print $1}'`
+IMAGE_UBUNTU=`gcloud compute images list | grep ubuntu-2604-resolute-amd64 | awk '{print $1}'`
 
 argc=$#;
 argv=("$@");
 
 for (( j=0; j<argc; j++ )); do
     echo "zbx${argv[j]}";
-    gcloud compute instances create zbx${argv[j]} --image ${IMAGE_UBUNTU2404} --image-project=ubuntu-os-cloud --zone=${ZONE} --metadata-from-file startup-script=./zabbix-edu/scripts/install-zabbix-gcp.sh
+    gcloud compute instances create zbx${argv[j]} --image ${IMAGE_UBUNTU} --image-project=ubuntu-os-cloud --zone=${ZONE} --metadata-from-file startup-script=./zabbix-edu/scripts/install-zabbix-gcp.sh
     gcloud compute instances add-tags zbx${argv[j]} --tags=http-server --zone=${ZONE}
     gcloud compute instances add-tags zbx${argv[j]} --tags=https-server --zone=${ZONE}
     gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-agent --zone=${ZONE}

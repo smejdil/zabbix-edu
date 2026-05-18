@@ -1,6 +1,6 @@
 ## Deploy zabbix servers on GCP
 
-This small project is used for install EDU servers with Zabbix 7.0 LTS on Ubuntu 24.04 LTS.
+This small project is used for install EDU servers with Zabbix 7.0 LTS on Ubuntu 26.04 LTS.
 
 ## Dependencies
 
@@ -43,7 +43,7 @@ gcloud config set project [PROJECT]
 - Connect to VM Zabbix EDU for some reconfiguration
 
 ```console
-gcloud compute ssh zbx01 --zone=europe-west2-c
+gcloud compute ssh zbx01 --zone=europe-central2-b
 sudo su -
 ```
 - List Zabbix EDU VM and external IPv4
