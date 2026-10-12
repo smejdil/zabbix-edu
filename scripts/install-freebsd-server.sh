@@ -1,62 +1,59 @@
 #!/bin/sh
-#
-# Install FreeBSD packages
-#
-# Lukas Maly <Iam@LukasMaly.NET> 14.12.2024
-#
+# FreeBSD 15.1 training bootstrap. SSH access is configured before packages.
+set -eu
+umask 077
 
-pkg install -y bash joe mc git screen jq
+: "${EDU_SSH_USER:?SSH user was not passed by create_fbsd_vm_machine.sh}"
+: "${EDU_SSH_PUBLIC_KEY:?SSH public key was not passed by create_fbsd_vm_machine.sh}"
+case "$EDU_SSH_USER" in
+    *[!a-z0-9_-]*|'') echo 'Invalid SSH username' >&2; exit 1 ;;
+esac
+case "$EDU_SSH_PUBLIC_KEY" in
+    'ssh-rsa '*|'ssh-ed25519 '*|'ecdsa-sha2-'*) : ;;
+    *) echo 'Invalid SSH public key' >&2; exit 1 ;;
+esac
 
-### zbx user add
-openssl rand -base64 32 > /root/zbx-user.pw
-ZBX_PASS=`cat /root/zbx-user.pw`
+if ! id "$EDU_SSH_USER" >/dev/null 2>&1; then
+    pw useradd "$EDU_SSH_USER" -m -G wheel -s /bin/sh
+fi
+pw groupmod wheel -m "$EDU_SSH_USER" || true
+user_home=$(pw usershow "$EDU_SSH_USER" | cut -d: -f9)
+[ -d "$user_home" ] || { echo "Missing home directory for $EDU_SSH_USER" >&2; exit 1; }
+install -d -o "$EDU_SSH_USER" -m 0700 "$user_home/.ssh"
+touch "$user_home/.ssh/authorized_keys"
+if ! grep -qxF "$EDU_SSH_PUBLIC_KEY" "$user_home/.ssh/authorized_keys"; then
+    printf '%s\n' "$EDU_SSH_PUBLIC_KEY" >> "$user_home/.ssh/authorized_keys"
+fi
+chown "$EDU_SSH_USER" "$user_home/.ssh/authorized_keys"
+chmod 0600 "$user_home/.ssh/authorized_keys"
+/usr/sbin/sshd -t
+service sshd onestart || service sshd restart
+printf 'SSH access prepared for %s\n' "$EDU_SSH_USER"
 
-echo "--- ZABBIX ---"
-pw useradd zbx -m
-pw usermod zbx -g google-sudoers
-echo ${ZBX_PASS} | pw usermod zbx -h 0
+# Install basic tools from binary packages. Do not build the Ports tree at boot.
+pkg update
+pkg install -y sudo bash git joe mc screen jq
+mkdir -p /usr/local/etc/sudoers.d
+printf '%s ALL=(ALL) NOPASSWD: ALL\n' "$EDU_SSH_USER" > /usr/local/etc/sudoers.d/zabbix-edu
+chmod 0440 /usr/local/etc/sudoers.d/zabbix-edu
+if ! grep -q '^#includedir /usr/local/etc/sudoers.d$' /usr/local/etc/sudoers; then
+    printf '\n#includedir /usr/local/etc/sudoers.d\n' >> /usr/local/etc/sudoers
+fi
+/usr/local/sbin/visudo -c
 
-# reconfigure ssh
-cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
-#echo "AuthenticationMethods publickey,password" >> /etc/ssh/sshd_config
-sed -i "" -e 's|#PasswordAuthentication no|PasswordAuthentication yes|g; s|Admin|zbx_probe|g' /etc/ssh/sshd_config
-/etc/rc.d/sshd restart
+if ! id zbx >/dev/null 2>&1; then
+    pw useradd zbx -m -s /bin/sh
+fi
+if [ ! -s /root/zbx-user.pw ]; then
+    openssl rand -base64 32 > /root/zbx-user.pw
+fi
+pw usermod zbx -h 0 < /root/zbx-user.pw
 
-# edit make.conf
-echo "BATCH=yes" > /etc/make.conf
-echo "ALLOW_UNSUPPORTED_SYSTEM=yes" >> /etc/make.conf
-
-# update ports
-pkg install -y portsnap portupgrade
-mkdir -p /var/db/portsnap
-portsnap fetch
-portsnap extract
-
-# install ports
-cd /usr/ports/devel/p5-JSON-RPC && make install clean
-cd /usr/ports/www/p5-LWP-Protocol-https && make install clean
-
-pkg install -y py311-lxml py311-ansible jq
-cd /usr/ports/devel/py-pip && make install clean
-cd /usr/ports/net-mgmt/py-pyzabbix && make install clean
-cd /usr/ports/www/p5-HTTP-Tiny && make install clean
-cd /usr/ports/converters/p5-JSON-MaybeXS && make install clean
-
-pip install zabbix-api
-
-# Zabbix agentd
 pkg install -y zabbix7-agent
-/usr/local/etc/rc.d/zabbix_agentd enable
-cp -v /usr/local/etc/zabbix7/zabbix_agentd.conf /usr/local/etc/zabbix7/zabbix_agentd.conf-orig
-gsed -i 's/Hostname=Zabbix server/#Hostname=Zabbix server/g' /usr/local/etc/zabbix7/zabbix_agentd.conf
-gsed -i 's/Server=127.0.0.1/Server=127.0.0.1,enceladus.pfsense.cz/g' /usr/local/etc/zabbix7/zabbix_agentd.conf
-gsed -i 's/# LogRemoteCommands=0/LogRemoteCommands=1/g' /usr/local/etc/zabbix7/zabbix_agentd.conf
-gsed -i 's/# DenyKey=system.run\[\*\]/AllowKey=system.run\[\*\]/g' /usr/local/etc/zabbix7/zabbix_agentd.conf
-diff -u /usr/local/etc/zabbix7/zabbix_agentd.conf-orig /usr/local/etc/zabbix7/zabbix_agentd.conf
-/usr/local/etc/rc.d/zabbix_agentd restart
-
-# project zabbix-api
-cd /root
-git clone https://github.com/smejdil/zabbix-api
-
-# EOF
+sysrc zabbix_agentd_enable=YES
+agent_conf=/usr/local/etc/zabbix7/zabbix_agentd.conf
+if [ -f "$agent_conf" ]; then
+    sed -i '' -e 's|^Server=127.0.0.1.*|Server=127.0.0.1,enceladus.pfsense.cz|' "$agent_conf"
+fi
+service zabbix_agentd restart
+printf 'FreeBSD training bootstrap complete.\n'

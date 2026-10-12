@@ -174,6 +174,17 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | gr
 ./zabbix-edu/scripts/create_fbsd_vm_machine.sh 01
 ```
 
+The FreeBSD 15.1 startup script creates an SSH account matching your local
+username and installs the public key from `~/.ssh/google_compute_engine.pub`
+before package installation. Override these with `SSH_USER` and
+`SSH_PUBLIC_KEY_FILE` if needed. After VM creation, connect with
+`gcloud compute ssh fbsdsrv01 --zone=europe-west4-a`. The VM creation script
+uses an absolute path to the startup script, so it also works when run from
+the repository directory. The FreeBSD bootstrap installs binary packages and
+Zabbix agent. The former Ports and Python/Perl API build steps were removed
+because they failed on FreeBSD 15.1; add those tools separately after SSH
+access is confirmed.
+
 - Connect to VM FreeBSD
 
 ```console
