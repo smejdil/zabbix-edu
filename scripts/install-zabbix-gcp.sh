@@ -25,7 +25,6 @@ for account in root zbx; do
 done
 export ZABBIX_USER=${ZABBIX_USER:-Admin}
 export ZABBIX_PASSWORD=${ZABBIX_PASSWORD:-zabbix}
-export ZBX_PROBE_PASS=${ZBX_PROBE_PASS:-ZabbixEDU_Probe_Pass}
 ansible-playbook -i localhost, -c local "$REPO/zabbix/ansible/install-zabbix-server-mysql.yml"
 python3 "$REPO/scripts/configure_zabbix_training.py"
 for service in mysql apache2 zabbix-server zabbix-agent2 zabbix-java-gateway; do
@@ -41,5 +40,8 @@ for attempt in {1..30}; do
     sleep 2
 done
 [[ $agent_ready == true ]] || { echo 'Agent 2 did not become ready' >&2; exit 1; }
+sed -i 's/^    Require local$/    Require all granted/' /etc/zabbix/apache.conf
+apache2ctl configtest
+systemctl reload apache2
 printf 'Done %s\n' "$(date -Is)" > /root/Done
 echo 'Training installation completed. Frontend: http://VM_IP/zabbix/'

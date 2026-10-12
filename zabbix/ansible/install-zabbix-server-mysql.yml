@@ -21,43 +21,63 @@
       ansible.builtin.apt:
         deb: "{{ zabbix_repository_deb }}"
 
-    - name: Install database, frontend and training tools
-      ansible.builtin.apt:
-        update_cache: true
-        name:
-          - mysql-server
-          - apache2
-          - php-fpm
-          - php-cli
-          - php-mysql
-          - php-bcmath
-          - php-mbstring
-          - php-gd
-          - php-xml
-          - php-curl
-          - php-ldap
-          - zabbix-server-mysql
-          - zabbix-frontend-php
-          - zabbix-apache-conf
-          - zabbix-sql-scripts
-          - zabbix-agent2
-          - zabbix-java-gateway
-          - zabbix-get
-          - zabbix-sender
-          - cron
-          - snmp
-          - snmp-mibs-downloader
-          # Ubuntu 26.04 mysql-server conflicts with mariadb-common,
-          # pulled in by odbc-mariadb. Keep unixODBC without that driver.
-          - unixodbc
-          - prometheus-node-exporter
-          - ipmitool
-          - bash-completion
-          - joe
-          - vim
-          - mc
-          - wget
-        state: present
+    - name: Check whether service autostart is already managed
+      ansible.builtin.stat:
+        path: /usr/sbin/policy-rc.d
+      register: existing_service_policy
+
+    - name: Keep newly installed services stopped until configuration is complete
+      ansible.builtin.copy:
+        dest: /usr/sbin/policy-rc.d
+        content: "#!/bin/sh\nexit 101\n"
+        mode: '0755'
+      when: not existing_service_policy.stat.exists
+
+    - name: Install training packages
+      block:
+        - name: Install database, frontend and training tools
+          ansible.builtin.apt:
+            update_cache: true
+            name:
+              - mysql-server
+              - apache2
+              - php-fpm
+              - php-cli
+              - php-mysql
+              - php-bcmath
+              - php-mbstring
+              - php-gd
+              - php-xml
+              - php-curl
+              - php-ldap
+              - zabbix-server-mysql
+              - zabbix-frontend-php
+              - zabbix-apache-conf
+              - zabbix-sql-scripts
+              - zabbix-agent2
+              - zabbix-java-gateway
+              - zabbix-get
+              - zabbix-sender
+              - cron
+              - snmp
+              - snmp-mibs-downloader
+              # Ubuntu 26.04 mysql-server conflicts with mariadb-common,
+              # pulled in by odbc-mariadb. Keep unixODBC without that driver.
+              - unixodbc
+              - prometheus-node-exporter
+              - ipmitool
+              - bash-completion
+              - joe
+              - vim
+              - mc
+              - wget
+            state: present
+      always:
+        - name: Restore normal service startup policy
+          ansible.builtin.file:
+            path: /usr/sbin/policy-rc.d
+            state: absent
+          when: not existing_service_policy.stat.exists
 
     - name: Allow password SSH access for training
       ansible.builtin.copy:

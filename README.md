@@ -70,9 +70,35 @@ sudo cat /root/Done
 
 `/root/Done` is written only after installation, API configuration and service
 checks succeed. The frontend is available at `http://VM_IP/zabbix/`, login
-`Admin` / `zabbix`. Training API user: `zbx_probe` / `ZabbixEDU_Probe_Pass`.
+`Admin` with the generated password in `/root/zabbix-admin.pw` (root-only file).
+The initial `Admin` / `zabbix` password is changed automatically through the
+Zabbix API before the rest of the training configuration. During initial setup
+the frontend accepts only local connections; public access opens after the
+password change and final service checks. The `zbx_probe` API user receives a
+separate generated password in `/root/zbx-probe.pw`.
 System passwords are stored in `/root/root-user.pw` and `/root/zbx-user.pw`.
 Passwords are preserved when resuming. Startup skips completed installations.
+After all VMs finish, collect their URLs and passwords on your workstation:
+
+```console
+./zabbix-edu/scripts/collect_zabbix_credentials.sh 01 02 03
+```
+
+With no numbers, the script collects all `zbxNN` VMs in the configured GCP
+project and zone. It writes `files/zabbix-training-credentials.txt` in the
+repository with mode `0600`; the file is ignored by Git. Use `OUTPUT=/path/to/file`
+to choose another destination. Collection requires `/root/Done` on every VM
+and replaces the file only after every VM succeeds.
+To rotate the GUI Admin password and configure training users on an existing
+VM after updating the checkout, run:
+
+```console
+sudo python3 /root/zabbix-edu/scripts/configure_zabbix_training.py
+```
+
+For Admin only, append `--rotate-admin-only`. If Admin was already changed
+manually, supply its current
+password as `ZABBIX_PASSWORD` in the root environment for this one run.
 To retry an interrupted installation after correcting the files on the VM:
 
 ```console

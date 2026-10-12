@@ -3,7 +3,7 @@ ProxyTimeout 300
 <Directory /usr/share/zabbix>
     Options FollowSymLinks
     AllowOverride None
-    Require all granted
+    Require local
     DirectoryIndex index.php
     CGIPassAuth On
     <FilesMatch "\.php$">
