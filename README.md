@@ -174,19 +174,10 @@ gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | gr
 ./zabbix-edu/scripts/create_fbsd_vm_machine.sh 01
 ```
 
-The FreeBSD 15.1 creation script puts your local
-`~/.ssh/google_compute_engine.pub` key directly into the VM's `ssh-keys`
-metadata for the local username and disables OS Login on this VM. Its startup
-script also creates the account and key as a fallback before package installation.
-Override the username or key pair with `SSH_USER`, `SSH_PUBLIC_KEY_FILE`, and
-`SSH_PRIVATE_KEY_FILE` if needed. Use the same private key when connecting, for
-example `gcloud compute ssh fbsdsrv01 --zone=europe-west4-a
---ssh-key-file="$HOME/.ssh/google_compute_engine"`. The VM creation script
-uses an absolute path to the startup script, so it also works when run from
-the repository directory. The FreeBSD bootstrap installs binary packages and
-Zabbix agent. The former Ports and Python/Perl API build steps were removed
-because they failed on FreeBSD 15.1; add those tools separately after SSH
-access is confirmed.
+This creates a FreeBSD 15.0 VM and installs `zabbix7-agent` from binary
+packages during first boot. SSH account and key provisioning are left to the
+FreeBSD GCP image. The startup script does not modify SSH configuration.
+After boot, connect with `gcloud compute ssh fbsdsrv01 --zone=europe-west4-a`.
 
 - Connect to VM FreeBSD
 
@@ -201,13 +192,6 @@ fbsdsrv01 - http://34.107.114.182
 
 gcloud compute instances list | awk '{print $5" - http://"$1".pfsense.cz"}' | grep fbsdsrv0
 34.107.114.182 - http://fbsdsrv01.pfsense.cz
-```
-
-- Post install upgrade
-
-```console
-portsnap fetch && portsnap update && pkg version -v | grep upd
-portupgrade -a
 ```
 
 ## Windows server for EDU
