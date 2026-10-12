@@ -1,53 +1,56 @@
-#
-# Manual configure 
-# Window$ server 2019 Datacenter 
-# Version 1809 
-#
+Windows Server 2019 pro školení Zabbix
+=====================================
 
-# RDP connect
-From win desktop Win https://cloud.google.com/
-Right Console
-Compute Engines / VM instances
-winsrv01 - Set Windows password
-******************
-Download RDP file
-Open by mstsc (asociate .rdp) or Linux Remina connection
-Connect
-Password
-Yes :-)
+1. Příprava stanice, ze které poběží Ansible:
+   - gcloud CLI s přístupem k projektu datascript-zabbix-edu a IAP TCP tunneling
+   - ansible-playbook, kolekce ansible.windows a community.windows, pywinrm
 
-# Zabbix agent
-Server Manager
-Local Server (v levo)
-IE Enhanced Security Configuration Off :-( Fuck Off !!!
-Run IE - Dont Use recomended
-firefox download - install
-total commander download 64bit - install
-firefox download zabbix agent2 - https://www.zabbix.com/
-firefox download putty
-firefox download winscp
-Install zabbix_agent2-7.0.12-windows-amd64-openssl.msi
-	zbx01.pfsense.cz
-Run total commander As Adminnistrator
-"c:\Program Files\Zabbix Agent 2\.." 
-	edit zabbix_agent2.conf
-Server=enceladus.pfsense.cz,zbx01.pfsense.cz,zbx02.pfsense.cz,zbx03.pfsense.cz,zbx04.pfsense.cz,zbx05.pfsense.cz,zbx06.pfsense.cz,zbx07.pfsense.cz,zbx08.pfsense.cz,zbx09.pfsense.cz,zbx10.pfsense.cz,zbx11.pfsense.cz,zbx12.pfsense.cz
-Server Manager - Tools - Computer Management
-	Services
-	Zabbix Agent 2
-		Restart
+   ansible-galaxy collection install ansible.windows community.windows
+   # pywinrm nainstalujte do stejného Python prostředí jako Ansible
 
-tail -f ? Funk Off !!!
+2. Vytvoření VM z kořenového adresáře repozitáře:
 
-Get-Content -Path "C:\Program Files\Zabbix Agent 2\zabbix_agent2.log" -Wait -Tail 10
-	
-# IIS install
-# https://www.zabbix.com/integrations/iis
-Server Manager
-	All Servers
-		WINSRV01
-			Add Role and Features
-			Web Server
-			IIS Management Scripts and Tools
+   ./scripts/create_windows_vm_machine.sh 01
 
-# EOF
+   Skript používá rodinu windows-2019, nikoli výběr image podle textového filtru.
+   PowerShell bootstrap je předán jako sysprep-specialize-script-ps1, takže se
+   spustí při prvním bootu. Vypne IE Enhanced Security Configuration a připraví
+   WinRM přes HTTPS. Skript jednou vytvoří GCP firewall pravidlo pro port 5986,
+   omezené na IAP rozsah 35.235.240.0/20 a tag zabbix-edu-winrm.
+
+3. Až Windows dokončí první boot, vytvořte administrátorský účet a heslo:
+
+   gcloud compute reset-windows-password winsrv01 \
+     --project=datascript-zabbix-edu --zone=europe-west4-a --user=ansible
+
+   Heslo si poznamenejte. Skript pro Ansible se na něj zeptá a neuloží jej do
+   souboru v repozitáři. Účet lze použít také pro RDP. RDP soubor lze stáhnout
+   z Compute Engine konzole a otevřít přes mstsc nebo Remminu.
+
+4. Instalace IIS a Zabbix Agenta 2 přes Ansible:
+
+   ./scripts/install_windows_agent2.sh 01
+
+   Skript otevře lokální IAP tunel na WinRM HTTPS (localhost:15986), počká na
+   dostupnost Windows a spustí zabbix/ansible/install-windows-agent2.yml.
+   Pokud jste v kroku 3 zvolili jiné jméno, nastavte WINDOWS_USER=jmeno.
+   Pro více VM spusťte příkaz zvlášť pro každé číslo.
+
+   Playbook instaluje IIS včetně IIS Management Scripts and Tools, stáhne
+   aktuální Zabbix Agent 2 ze stabilní větve 7.0, nastaví pasivní servery
+   enceladus.pfsense.cz a zbx01-zbx12.pfsense.cz, povolí TCP 10050 ve Windows
+   Firewallu a zajistí spuštěnou službu. MSI se neinstaluje ručně přes RDP.
+   Pravidlo GCP firewallu pro tag zabbix-agent musí umožnit TCP 10050 z vašich
+   Zabbix serverů; toto pravidlo projekt spravuje odděleně.
+
+5. Kontrola přímo ve Windows, případně přes RDP:
+
+   Get-Service 'Zabbix Agent 2'
+   Get-WindowsFeature Web-Server,Web-Scripting-Tools
+   Get-Content -Path 'C:\Program Files\Zabbix Agent 2\zabbix_agent2.log' -Wait -Tail 10
+
+   IIS otestujte na http://<externi-IP-VM>/ .
+
+Firefox, Total Commander, PuTTY a WinSCP z původních poznámek jsou volitelné
+nástroje pro práci přes RDP. Pro instalaci Agenta 2 ani IIS nejsou potřeba;
+instalujte je podle potřeby z jejich oficiálních stránek.

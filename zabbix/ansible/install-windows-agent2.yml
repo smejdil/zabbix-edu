@@ -1,0 +1,80 @@
+---
+- name: Configure Windows EDU server and Zabbix agent 2
+  hosts: all
+  gather_facts: false
+  vars:
+    ansible_connection: winrm
+    ansible_host: 127.0.0.1
+    ansible_port: "{{ lookup('env', 'WINRM_LOCAL_PORT') | default('15986', true) }}"
+    ansible_user: "{{ lookup('env', 'WINDOWS_USER') }}"
+    ansible_password: "{{ lookup('env', 'WINDOWS_PASSWORD') }}"
+    ansible_winrm_scheme: https
+    ansible_winrm_transport: ntlm
+    ansible_winrm_server_cert_validation: ignore
+    zabbix_agent2_url: >-
+      https://cdn.zabbix.com/zabbix/binaries/stable/7.0/latest/zabbix_agent2-7.0-latest-windows-amd64-openssl.msi
+    zabbix_agent2_msi: 'C:\Windows\Temp\zabbix_agent2-7.0-latest-windows-amd64-openssl.msi'
+    zabbix_servers: >-
+      enceladus.pfsense.cz,zbx01.pfsense.cz,zbx02.pfsense.cz,zbx03.pfsense.cz,zbx04.pfsense.cz,zbx05.pfsense.cz,zbx06.pfsense.cz,zbx07.pfsense.cz,zbx08.pfsense.cz,zbx09.pfsense.cz,zbx10.pfsense.cz,zbx11.pfsense.cz,zbx12.pfsense.cz
+
+  tasks:
+    - name: Wait for Windows and WinRM to finish first boot
+      ansible.builtin.wait_for_connection:
+        delay: 10
+        sleep: 10
+        timeout: 900
+
+    - name: Install IIS and IIS Management Scripts and Tools
+      ansible.windows.win_feature:
+        name:
+          - Web-Server
+          - Web-Scripting-Tools
+        state: present
+        include_management_tools: true
+      register: iis_features
+
+    - name: Reboot if IIS installation requires it
+      ansible.windows.win_reboot:
+      when: iis_features.reboot_required
+
+    - name: Download Zabbix agent 2 MSI
+      ansible.windows.win_get_url:
+        url: "{{ zabbix_agent2_url }}"
+        dest: "{{ zabbix_agent2_msi }}"
+        force: false
+
+    - name: Install Zabbix agent 2
+      ansible.windows.win_package:
+        path: "{{ zabbix_agent2_msi }}"
+        arguments: 'SERVER={{ zabbix_servers }} HOSTNAME={{ inventory_hostname }} SKIP=fw'
+        creates_service: 'Zabbix Agent 2'
+        state: present
+
+    - name: Keep passive server list current on reruns
+      community.windows.win_lineinfile:
+        path: 'C:\Program Files\Zabbix Agent 2\zabbix_agent2.conf'
+        regex: '^Server='
+        line: 'Server={{ zabbix_servers }}'
+      register: agent_config
+
+    - name: Allow passive Zabbix checks on TCP 10050
+      community.windows.win_firewall_rule:
+        name: 'Zabbix EDU Agent 2'
+        direction: in
+        action: allow
+        protocol: tcp
+        localport: 10050
+        enabled: true
+        state: present
+
+    - name: Enable and start Zabbix agent 2
+      ansible.windows.win_service:
+        name: 'Zabbix Agent 2'
+        start_mode: auto
+        state: started
+
+    - name: Restart agent when the passive server list changed
+      ansible.windows.win_service:
+        name: 'Zabbix Agent 2'
+        state: restarted
+      when: agent_config.changed
