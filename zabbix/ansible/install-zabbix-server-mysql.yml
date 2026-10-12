@@ -4,6 +4,7 @@
   connection: local
   become: true
   vars:
+    ansible_python_interpreter: /usr/bin/python3
     zabbix_db_password: ZabbixEDU_DB_Pass
     zabbix_monitor_password: ZabbixEDU_Monitoring_DB_Pass
     zabbix_odbc_password: ZabbixEDU_Monitoring_ODBC_DB_Pass
@@ -12,8 +13,8 @@
     - name: Verify supported OS
       ansible.builtin.assert:
         that:
-          - ansible_distribution == 'Ubuntu'
-          - ansible_distribution_version == '26.04'
+          - ansible_facts['distribution'] == 'Ubuntu'
+          - ansible_facts['distribution_version'] == '26.04'
         fail_msg: This installer requires Ubuntu 26.04.
 
     - name: Install Zabbix repository
@@ -40,7 +41,6 @@
           - zabbix-apache-conf
           - zabbix-sql-scripts
           - zabbix-agent2
-          - zabbix-agent2-plugin-mysql
           - zabbix-java-gateway
           - zabbix-get
           - zabbix-sender
