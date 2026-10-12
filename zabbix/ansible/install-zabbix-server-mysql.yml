@@ -47,7 +47,8 @@
           - cron
           - snmp
           - snmp-mibs-downloader
-          - odbc-mariadb
+          # Ubuntu 26.04 mysql-server conflicts with mariadb-common,
+          # pulled in by odbc-mariadb. Keep unixODBC without that driver.
           - unixodbc
           - prometheus-node-exporter
           - ipmitool
@@ -248,17 +249,6 @@
     - name: Validate Apache configuration
       ansible.builtin.command: apache2ctl configtest
       changed_when: false
-
-    - name: Configure ODBC
-      ansible.builtin.copy:
-        dest: /etc/odbc.ini
-        content: |
-          [zabbix]
-          Driver = MariaDB Unicode
-          SERVER = localhost
-          DATABASE = zabbix
-          PORT = 3306
-        mode: '0644'
 
     - name: Install training cron
       ansible.builtin.copy:

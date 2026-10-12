@@ -17,7 +17,7 @@ By Google Cloud SDK is intalled servers zbx01-0X. After instalation run scripts 
 - Install and configure zabbix_server 7.0 LTS
 - Install and configure zabbix_agent2 7.0 LTS
 - Install and configure Apache 2.4 and PHP-FPM (Ubuntu default version)
-- Install and configure ODBC driver for MySQL
+- Install unixODBC tools (MySQL ODBC driver requires separate setup on Ubuntu 26.04)
 - Install and configure Zabbix API scripts Perl and CPAN modul
 - Install and configure with built-in Ansible modules; training setup uses the Zabbix JSON-RPC API
 - Install and configure crontab file
