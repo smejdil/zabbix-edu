@@ -1,0 +1,27 @@
+Alias /zabbix /usr/share/zabbix
+ProxyTimeout 300
+<Directory /usr/share/zabbix>
+    Options FollowSymLinks
+    AllowOverride None
+    Require all granted
+    DirectoryIndex index.php
+    CGIPassAuth On
+    <FilesMatch "\.php$">
+        SetHandler "proxy:unix:/run/php/zabbix.sock|fcgi://localhost"
+    </FilesMatch>
+</Directory>
+<Directory /usr/share/zabbix/conf>
+    Require all denied
+</Directory>
+<Directory /usr/share/zabbix/app>
+    Require all denied
+</Directory>
+<Directory /usr/share/zabbix/include>
+    Require all denied
+</Directory>
+<Directory /usr/share/zabbix/local>
+    Require all denied
+</Directory>
+<Directory /usr/share/zabbix/vendor>
+    Require all denied
+</Directory>

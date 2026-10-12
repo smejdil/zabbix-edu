@@ -1,148 +1,281 @@
 ---
-- name: Install EDU Zabbix Server with MySQL
+- name: Install EDU Zabbix 7.0 on Ubuntu 26.04
   hosts: localhost
+  connection: local
   become: true
   vars:
-    zabbix_web_apache_service_name: apache2
-
-  pre_tasks:
-    - name: Set apache service name for zabbix_web role
-      ansible.builtin.set_fact:
-        _apache_service: "{{ zabbix_web_apache_service_name }}"
-
+    zabbix_db_password: ZabbixEDU_DB_Pass
+    zabbix_monitor_password: ZabbixEDU_Monitoring_DB_Pass
+    zabbix_odbc_password: ZabbixEDU_Monitoring_ODBC_DB_Pass
+    zabbix_repository_deb: https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_7.0-5+ubuntu26.04_all.deb
   tasks:
-    - name: Ensure cron is installed
-      ansible.builtin.package:
-        name: cron
+    - name: Verify supported OS
+      ansible.builtin.assert:
+        that:
+          - ansible_distribution == 'Ubuntu'
+          - ansible_distribution_version == '26.04'
+        fail_msg: This installer requires Ubuntu 26.04.
+
+    - name: Install Zabbix repository
+      ansible.builtin.apt:
+        deb: "{{ zabbix_repository_deb }}"
+
+    - name: Install database, frontend and training tools
+      ansible.builtin.apt:
+        update_cache: true
+        name:
+          - mysql-server
+          - apache2
+          - php-fpm
+          - php-cli
+          - php-mysql
+          - php-bcmath
+          - php-mbstring
+          - php-gd
+          - php-xml
+          - php-curl
+          - php-ldap
+          - zabbix-server-mysql
+          - zabbix-frontend-php
+          - zabbix-apache-conf
+          - zabbix-sql-scripts
+          - zabbix-agent2
+          - zabbix-agent2-plugin-mysql
+          - zabbix-java-gateway
+          - zabbix-get
+          - zabbix-sender
+          - cron
+          - snmp
+          - snmp-mibs-downloader
+          - odbc-mariadb
+          - unixodbc
+          - prometheus-node-exporter
+          - ipmitool
+          - bash-completion
+          - joe
+          - vim
+          - mc
+          - wget
         state: present
 
-    - name: Upload crontab file
+    - name: Allow password SSH access for training
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/00-zabbix-edu.conf
+        content: |
+          PasswordAuthentication yes
+          PermitRootLogin prohibit-password
+        mode: '0644'
+
+    - name: Validate SSH configuration
+      ansible.builtin.command: /usr/sbin/sshd -t
+      changed_when: false
+
+    - name: Reload SSH
+      ansible.builtin.systemd:
+        name: ssh
+        state: reloaded
+
+    - name: Start MySQL
+      ansible.builtin.systemd:
+        name: mysql
+        state: started
+        enabled: true
+
+    - name: Create database and monitoring users
+      ansible.builtin.command: mysql --protocol=socket -uroot
+      args:
+        stdin: |
+          CREATE DATABASE IF NOT EXISTS zabbix CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+          CREATE USER IF NOT EXISTS 'zabbix'@'localhost' IDENTIFIED BY '{{ zabbix_db_password }}';
+          ALTER USER 'zabbix'@'localhost' IDENTIFIED BY '{{ zabbix_db_password }}';
+          GRANT ALL PRIVILEGES ON zabbix.* TO 'zabbix'@'localhost';
+          CREATE USER IF NOT EXISTS 'zbx_monitor'@'localhost' IDENTIFIED BY '{{ zabbix_monitor_password }}';
+          GRANT REPLICATION CLIENT, PROCESS, SHOW DATABASES, SHOW VIEW ON *.* TO 'zbx_monitor'@'localhost';
+          CREATE USER IF NOT EXISTS 'zbx_probe'@'localhost' IDENTIFIED BY '{{ zabbix_odbc_password }}';
+          GRANT SELECT ON zabbix.* TO 'zbx_probe'@'localhost';
+      no_log: true
+      changed_when: false
+
+    - name: Check database initialization
+      ansible.builtin.command: mysql -uroot -N -B -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='zabbix';"
+      register: database_tables
+      changed_when: false
+
+    - name: Import initial schema into empty database
+      when: database_tables.stdout | int == 0
+      block:
+        - name: Allow schema functions
+          ansible.builtin.command: mysql -uroot -e "SET GLOBAL log_bin_trust_function_creators=1;"
+        - name: Import schema
+          ansible.builtin.shell: set -o pipefail; zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uroot zabbix
+          args:
+            executable: /bin/bash
+      always:
+        - name: Disable trust for schema functions
+          ansible.builtin.command: mysql -uroot -e "SET GLOBAL log_bin_trust_function_creators=0;"
+
+    - name: Verify initialized schema (reject partial imports)
+      ansible.builtin.command: mysql -uroot -N -B zabbix -e "SELECT mandatory FROM dbversion; SELECT COUNT(*) FROM users;"
+      register: schema_check
+      changed_when: false
+      failed_when: schema_check.rc != 0 or schema_check.stdout_lines | length != 2 or schema_check.stdout_lines[-1] | int == 0
+
+    - name: Configure Zabbix server
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_server.conf
+        regexp: "^#?\\s*{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      loop:
+        - {key: DBHost, value: localhost}
+        - {key: DBName, value: zabbix}
+        - {key: DBUser, value: zabbix}
+        - {key: DBPassword, value: "{{ zabbix_db_password }}"}
+        - {key: CacheSize, value: 64M}
+        - {key: HistoryCacheSize, value: 32M}
+        - {key: ValueCacheSize, value: 16M}
+        - {key: StartPollers, value: '6'}
+        - {key: StartAgentPollers, value: '3'}
+        - {key: StartPingers, value: '3'}
+        - {key: StartIPMIPollers, value: '1'}
+        - {key: StartVMwareCollectors, value: '1'}
+        - {key: JavaGateway, value: 127.0.0.1}
+        - {key: JavaGatewayPort, value: '10052'}
+        - {key: StartJavaPollers, value: '1'}
+        - {key: Timeout, value: '30'}
+      no_log: true
+
+    - name: Configure Agent 2
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: "^#?\\s*{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      loop:
+        - {key: Server, value: '127.0.0.1,enceladus.pfsense.cz'}
+        - {key: ServerActive, value: 127.0.0.1}
+        - {key: Hostname, value: 'Zabbix server'}
+        - {key: Include, value: '/etc/zabbix/zabbix_agent2.d/*.conf'}
+
+    - name: Install training user parameters
+      ansible.builtin.copy:
+        src: templates/userparameters/training.j2
+        dest: /etc/zabbix/zabbix_agent2.d/training.conf
+        mode: '0644'
+
+    - name: Install external date script
+      ansible.builtin.copy:
+        dest: /usr/lib/zabbix/externalscripts/date.sh
+        content: "#!/bin/sh\nexec /bin/date\n"
+        owner: zabbix
+        group: zabbix
+        mode: '0755'
+
+    - name: Create frontend configuration
+      ansible.builtin.template:
+        src: zabbix.conf.php.j2
+        dest: /etc/zabbix/web/zabbix.conf.php
+        owner: root
+        group: www-data
+        mode: '0640'
+      no_log: true
+
+    - name: Detect installed PHP version
+      ansible.builtin.command: php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;'
+      register: php_version
+      changed_when: false
+
+    - name: Configure PHP for Zabbix
+      ansible.builtin.copy:
+        dest: "/etc/php/{{ php_version.stdout }}/fpm/conf.d/99-zabbix-edu.ini"
+        content: |
+          date.timezone = Europe/Prague
+          memory_limit = 256M
+          max_execution_time = 300
+          max_input_time = 300
+          post_max_size = 32M
+          upload_max_filesize = 16M
+        mode: '0644'
+
+    - name: Configure dedicated Zabbix PHP-FPM pool
+      ansible.builtin.copy:
+        dest: /etc/zabbix/php-fpm.conf
+        content: |
+          [zabbix]
+          user = www-data
+          group = www-data
+          listen = /run/php/zabbix.sock
+          listen.owner = www-data
+          listen.group = www-data
+          pm = dynamic
+          pm.max_children = 10
+          pm.start_servers = 2
+          pm.min_spare_servers = 2
+          pm.max_spare_servers = 4
+          pm.max_requests = 200
+          php_value[session.save_handler] = files
+          php_value[session.save_path] = /var/lib/php/sessions
+          php_value[max_input_vars] = 10000
+        mode: '0644'
+
+    - name: Enable dedicated PHP-FPM pool
+      ansible.builtin.file:
+        src: /etc/zabbix/php-fpm.conf
+        dest: "/etc/php/{{ php_version.stdout }}/fpm/pool.d/zabbix-php-fpm.conf"
+        state: link
+
+    - name: Configure Apache frontend with PHP-FPM
+      ansible.builtin.template:
+        src: zabbix-apache.conf.j2
+        dest: /etc/zabbix/apache.conf
+        mode: '0644'
+
+    - name: Enable Apache configuration file
+      ansible.builtin.file:
+        src: /etc/zabbix/apache.conf
+        dest: /etc/apache2/conf-available/zabbix.conf
+        state: link
+
+    - name: Validate PHP-FPM configuration
+      ansible.builtin.command: "php-fpm{{ php_version.stdout }} -t"
+      changed_when: false
+
+    - name: Enable Apache modules and frontend configuration
+      ansible.builtin.command: "{{ item }}"
+      loop:
+        - a2enmod proxy_fcgi setenvif alias
+        - a2enconf zabbix
+      changed_when: false
+
+    - name: Validate Apache configuration
+      ansible.builtin.command: apache2ctl configtest
+      changed_when: false
+
+    - name: Configure ODBC
+      ansible.builtin.copy:
+        dest: /etc/odbc.ini
+        content: |
+          [zabbix]
+          Driver = MariaDB Unicode
+          SERVER = localhost
+          DATABASE = zabbix
+          PORT = 3306
+        mode: '0644'
+
+    - name: Install training cron
       ansible.builtin.copy:
         src: ../../crontab/zabbix-training
         dest: /etc/cron.d/zabbix-training
-        owner: root
-        group: root
         mode: '0644'
 
-    - name: Ensure correct permissions for cron files
-      ansible.builtin.file:
-        path: /etc/cron.d/zabbix-training
-        mode: '0644'
-        owner: root
-        group: root
-
-    - name: Restart cron service
-      ansible.builtin.service:
-        name: cron
+    - name: Start and enable services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
         state: restarted
         enabled: true
-
-    - name: Získání aktuálního hostname
-      ansible.builtin.command: /bin/hostname
-      register: current_hostname
-
-    - name: Extrakce první části hostname
-      set_fact:
-        new_hostname: "{{ current_hostname.stdout.split('.')[0] }}"
-
-    - name: Nastavení nového hostname
-      ansible.builtin.hostname:
-        name: "{{ new_hostname }}"
-
-    - name: Aktualizace /etc/hosts
-      lineinfile:
-        path: /etc/hosts
-        regexp: "^127\\.0\\.1\\.1"
-        line: "127.0.1.1 {{ new_hostname }}"
-        state: present
-
-#    - name: Konfigurace SSH serveru
-#      ansible.posix.sshd:
-#        options:
-#          PermitRootLogin: "prohibit-password"
-#          PasswordAuthentication: "yes"
-#          ChallengeResponseAuthentication "no"
-
-#    - name: Restart SSH
-#      ansible.builtin.service:
-#        name: sshd
-#        state: restarted
-
-  roles:
-    - role: geerlingguy.mysql
-      vars:
-        mysql_users:
-          - name: zbx_monitor
-            host: "localhost"
-            password: ZabbixEDU_Monitoring_DB_Pass
-            priv: "zbx_monitor.*:ALL"
-        mysql_users:
-          - name: zbx_probe
-            host: "localhost"
-            password: ZabbixEDU_Monitoring_ODBC_DB_Pass
-            priv: "zbx_probe.*:ALL"
-    - role: geerlingguy.apache
-    - role: geerlingguy.php
-      vars:
-        php_memory_limit: "128M"
-        php_max_execution_time: "300"
-        php_upload_max_filesize: "256M"
-    - role: community.zabbix.zabbix_agent
-      vars:
-        zabbix_agent_version: 7.0
-        zabbix_agent2: true
-        zabbix_agent_server: 127.0.0.1,enceladus.pfsense.cz
-        zabbix_agent_serveractive: 127.0.0.1
-        zabbix_agent_logremotecommands: "True"
-        zabbix_agent_userparameters_templates_src: "templates/userparameters"
-        zabbix_agent_include_dir: "/etc/zabbix/zabbix_agent2.d/"
-        zabbix_agent_userparameters:
-          - name: training
-        zabbix_agent_host_state: present
-    - role: community.zabbix.zabbix_server
-      vars:
-        zabbix_server_version: 7.0
-        zabbix_server_database: mysql
-        zabbix_server_dbname: zabbix
-        zabbix_server_dbuser: zabbix
-        zabbix_server_dbpassword: ZabbixEDU_DB_Pass
-        zabbix_server_dbhost: localhost
-        zabbix_server_repo: "zabbix-official"
-        zabbix_server_cachesize: "64M"
-        zabbix_server_historycachesize: "32M"
-        zabbix_server_historyindexcachesize: "8M"
-        zabbix_server_valuecachesize: "16M"
-        zabbix_server_startpollers: "6"
-        zabbix_server_startagentpollers: "3"
-        zabbix_server_startpingers: "3"
-        zabbix_server_startjavapollers: "1"
-        zabbix_server_startipmipollers: "1"
-        zabbix_server_startreportwriters: "0"
-        zabbix_server_startsnmptrapper: "0"
-        zabbix_server_startvmwarecollectors: "1"
-        zabbix_server_javagateway: localhost
-        zabbix_server_javagatewayport: "10052"
-        zabbix_server_externalscripts:
-         - path: "{{ lookup('first_found', '../../zabbix/externalscripts/date.sh') }}"
-           name: "date.sh"
-    - role: community.zabbix.zabbix_javagateway
-      vars:
-        zabbix_javagateway_version: 7.0
-        zabbix_javagateway_listenip: localhost
-        zabbix_javagateway_listenport: "10052"
-        zabbix_javagateway_startpollers: "3"
-    - role: community.zabbix.zabbix_web
-      vars:
-        zabbix_web_version: 7.0
-        zabbix_server_name: "EDU Zabbix"
-        zabbix_web_http_server: apache
-        zabbix_timezone: Europe/Prague
-        zabbix_server_hostname: localhost
-        zabbix_server_database: mysql
-        zabbix_server_dbname: zabbix
-        zabbix_server_dbuser: zabbix
-        zabbix_server_dbpassword: ZabbixEDU_DB_Pass
-        zabbix_server_dbhost: localhost
-        zabbix_db_type_long: mysql
-        zabbix_server_dbport: 3306
-...
+      loop:
+        - "php{{ php_version.stdout }}-fpm"
+        - zabbix-java-gateway
+        - zabbix-server
+        - zabbix-agent2
+        - apache2
+        - cron
+        - prometheus-node-exporter

@@ -1,108 +1,45 @@
-#!/bin/bash
-#
-# Install package
-#
-# Lukas Maly <Iam@LukasMaly.NET> 22.5.2025
-#
-
-# Post deploy commands
-apt update
-apt install -y git
-apt install -y bash-completion
-apt install -y joe vim mc wget
-apt install -y ansible
-apt install -y ipmitool
-apt install -y aptitude
-apt install -y odbc-mariadb
-apt install -y snmp
-apt install -y python3-pip
-apt install -y prometheus-node-exporter
-apt install -y policycoreutils
-apt install -y unixodbc
-apt install -y snmp-mibs-downloader
-
-# Configure SSH
-echo "--- SSHD ---"
-cp /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
-
-#sed -i 's/^PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config
-
-sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config.d/60-cloudimg-settings.conf
-sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config
-echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
-
-diff -u /etc/ssh/sshd_config /etc/ssh/sshd_config-orig
-
-#systemctl restart sshd.service
-systemctl restart ssh.service
-
-openssl rand -base64 32 > /root/root-user.pw
-ROOT_PASS=`cat /root/root-user.pw`
-
-openssl rand -base64 32 > /root/zbx-user.pw
-ZBX_PASS=`cat /root/zbx-user.pw`
-
-echo "--- MYSQL ROOT ---"
-openssl rand -base64 32 > /root/mysql-root.pw
-MYSQL_ROOT_PASS=`cat /root/mysql-root.pw`
-
-#echo "--- Zabbix DB user ---"
-#openssl rand -base64 32 > /root/mysql-zabbix.pw
-#ZABBIX_MYSQL_PASS=`cat /root/mysql-zabbix.pw`
-# ZabbixEDU_DB_Pass
-
-#echo "--- ODBC ---"
-#openssl rand -base64 32 > /root/mysql-zbx_probe.pw
-#ZBX_PROBE_MYSQL_PASS=`cat /root/mysql-zbx_probe.pw`
-# ZabbixEDU_Monitoring_ODBC_DB_Pass
-
-#echo "--- Monitoring DB user ---"
-#openssl rand -base64 32 > /root/mysql-monitoring.pw
-#MONITORING_MYSQL_PASS=`cat /root/mysql-monitoring.pw`
-# ZabbixEDU_Monitoring_DB_Pass
-
-echo "--- ROOT ---"
-#echo ${ROOT_PASS} | passwd root --stdin
-echo "root:${ROOT_PASS}" | sudo chpasswd
-
-echo "--- ZABBIX ---"
-useradd -m -G adm,google-sudoers -p zabbix zbx
-#echo ${ZBX_PASS} | passwd zbx --stdin
-echo "zbx:${ZBX_PASS}" | sudo chpasswd
-
-# Set up root password
-#echo "--- MaiaDB root pw ---"
-#mysqladmin -u root password ${MYSQL_ROOT_PASS};
-
-# disable SELinux
-echo "--- SELinux ---"
-cp /etc/selinux/config /etc/selinux/config-orig
-sed -i 's/^SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-
-diff -u /etc/selinux/config-orig /etc/selinux/config
-
-#echo "--- Reboot ---"
-#reboot
-
-# Get repo
-cd /root/ && git clone https://github.com/smejdil/zabbix-edu
-ansible-galaxy collection install community.zabbix --force
-#ansible-galaxy collection install ansible.posix --force
-ansible-galaxy role install geerlingguy.mysql
-ansible-galaxy role install geerlingguy.apache
-ansible-galaxy role install geerlingguy.php
-
-export ZABBIX_USER=Admin
-export ZABBIX_PASSWORD=zabbix
-
-# Install Zabbix server
-sudo ansible-playbook /root/zabbix-edu/zabbix/ansible/install-zabbix-server-mysql.yml > /tmp/install-zabbix-server-mysql.yml.log
-ansible-playbook /root/zabbix-edu/zabbix/ansible/add-host-group-training.yml
-ansible-playbook /root/zabbix-edu/zabbix/ansible/set-default-timezone.yml
-ansible-playbook /root/zabbix-edu/zabbix/ansible/add-user-zbx_probe.yml
-ansible-playbook /root/zabbix-edu/zabbix/ansible/add-template-training.yml
-
-echo "Done" > /root/Done
-
-# EOF
+#!/usr/bin/env bash
+# First-boot bootstrap; install locally without Galaxy roles or collections.
+set -Eeuo pipefail
+umask 077
+exec > >(tee -a /var/log/zabbix-edu-install.log) 2>&1
+trap 'echo "Installation failed at line $LINENO. See /var/log/zabbix-edu-install.log" >&2' ERR
+exec 9>/var/lock/zabbix-edu-install.lock
+flock -n 9 || exit 0
+[[ ! -f /root/Done ]] || { echo 'Training installation already completed.'; exit 0; }
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -y git ansible ca-certificates curl openssl
+REPO=/root/zabbix-edu
+if [[ ! -d "$REPO/.git" ]]; then
+    git clone https://github.com/smejdil/zabbix-edu "$REPO"
+fi
+# Preserve generated passwords when resuming an interrupted installation.
+for account in root zbx; do
+    password_file="/root/${account}-user.pw"
+    [[ -s "$password_file" ]] || openssl rand -base64 32 > "$password_file"
+    if [[ $account == zbx ]] && ! id zbx >/dev/null 2>&1; then
+        useradd -m -s /bin/bash -G adm,google-sudoers zbx
+    fi
+    printf '%s:%s\n' "$account" "$(cat "$password_file")" | chpasswd
+done
+export ZABBIX_USER=${ZABBIX_USER:-Admin}
+export ZABBIX_PASSWORD=${ZABBIX_PASSWORD:-zabbix}
+export ZBX_PROBE_PASS=${ZBX_PROBE_PASS:-ZabbixEDU_Probe_Pass}
+ansible-playbook -i localhost, -c local "$REPO/zabbix/ansible/install-zabbix-server-mysql.yml"
+python3 "$REPO/scripts/configure_zabbix_training.py"
+for service in mysql apache2 zabbix-server zabbix-agent2 zabbix-java-gateway; do
+    systemctl is-active --quiet "$service"
+done
+curl --fail --silent --show-error http://127.0.0.1/zabbix/ >/dev/null
+agent_ready=false
+for attempt in {1..30}; do
+    if [[ $(zabbix_get -s 127.0.0.1 -k agent.ping 2>/dev/null) == 1 ]]; then
+        agent_ready=true
+        break
+    fi
+    sleep 2
+done
+[[ $agent_ready == true ]] || { echo 'Agent 2 did not become ready' >&2; exit 1; }
+printf 'Done %s\n' "$(date -Is)" > /root/Done
+echo 'Training installation completed. Frontend: http://VM_IP/zabbix/'

@@ -1,6 +1,6 @@
 ## Deploy zabbix servers on GCP
 
-This small project is used for install EDU servers with Zabbix 7.0 LTS on Ubuntu 24.04 LTS.
+This small project is used for install EDU servers with Zabbix 7.0 LTS on Ubuntu 26.04 LTS.
 
 ## Dependencies
 
@@ -16,10 +16,10 @@ By Google Cloud SDK is intalled servers zbx01-0X. After instalation run scripts 
 - Install and configure MySQL
 - Install and configure zabbix_server 7.0 LTS
 - Install and configure zabbix_agent2 7.0 LTS
-- Install and configure Apache 2.4 and PHP 8.3
+- Install and configure Apache 2.4 and PHP-FPM (Ubuntu default version)
 - Install and configure ODBC driver for MySQL
 - Install and configure Zabbix API scripts Perl and CPAN modul
-- Install and configure Ansible collection community.zabbix
+- Install and configure with built-in Ansible modules; training setup uses the Zabbix JSON-RPC API
 - Install and configure crontab file
 - Install and configure Windows server 2019
 - Install and configure Tomcat, PostgreSQL, Memcached, Docker ...
@@ -40,6 +40,53 @@ gcloud config set project [PROJECT]
 ```console
 ./zabbix-edu/scripts/create_zabbix_vm_machines.sh 01 02 03
 ```
+### Automated installation (Ubuntu 26.04)
+
+The VM startup script installs MySQL, Zabbix 7.0, Agent 2, Java Gateway,
+Apache and PHP-FPM. It writes the frontend configuration, imports the initial
+DB schema only into an empty database and configures the training group,
+user, timezone and templates through the API. No Galaxy dependencies are used
+by this installation path. The older API playbooks remain available separately.
+
+Run the creation script from the parent directory as shown above, or run
+`./scripts/create_zabbix_vm_machines.sh 01` from the repository directory.
+Defaults: project `datascript-zabbix-edu`, zone `europe-central2-b`, image family
+`ubuntu-2604-lts-amd64`, machine `e2-medium`, disk `30GB`. Override using
+`PROJECT`, `ZONE`, `IMAGE_FAMILY`, `MACHINE_TYPE`, `BOOT_DISK_SIZE` environment
+variables. Existing GCP network/firewall rules associated with the VM tags
+are required; the script does not create firewall rules.
+
+**Deploy these repository changes to the GitHub repository before creating a VM.**
+The startup script clones `https://github.com/smejdil/zabbix-edu`; local changes
+alone do not update the playbook downloaded by a new VM.
+
+On the VM, monitor installation with:
+
+```console
+sudo tail -f /var/log/zabbix-edu-install.log
+sudo journalctl -u google-startup-scripts.service
+sudo cat /root/Done
+```
+
+`/root/Done` is written only after installation, API configuration and service
+checks succeed. The frontend is available at `http://VM_IP/zabbix/`, login
+`Admin` / `zabbix`. Training API user: `zbx_probe` / `ZabbixEDU_Probe_Pass`.
+System passwords are stored in `/root/root-user.pw` and `/root/zbx-user.pw`.
+Passwords are preserved when resuming. Startup skips completed installations.
+To retry an interrupted installation after correcting the files on the VM:
+
+```console
+sudo bash /root/zabbix-edu/scripts/install-zabbix-gcp.sh
+```
+
+An existing checkout is reused, not automatically updated. Update it explicitly
+before retrying if the fix was published to GitHub. A partial DB schema import
+requires inspection/recovery; the installer does not drop an existing database.
+Imported training templates are available for classroom exercises and are not
+automatically linked to hosts. SNMP trap reception and exercise-specific hosts
+remain classroom configuration steps. Optional Perl API examples and backup
+scheduling are not installed by this path.
+
 - Connect to VM Zabbix EDU for some reconfiguration
 
 ```console

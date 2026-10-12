@@ -1,67 +1,25 @@
-#!/bin/bash
-#
-# Create GCP Ubuntu 26.04 VM
-#
-# Lukas Maly <Iam@LukasMaly.NET> 18.5.2026
-#
-
-# GCP Set project Zabbix-EDU
-REGION="europe-central2"
-ZONE="europe-central2-b"
-PROJECT="datascript-zabbix-edu"
-
-gcloud config set project ${PROJECT}
-gcloud config set compute/region ${REGION}
-gcloud config set compute/zone ${ZONE}
-
-IMAGE_UBUNTU=`gcloud compute images list | grep ubuntu-2404-noble-amd64 | awk '{print $1}'`
-#IMAGE_UBUNTU=`gcloud compute images list | grep ubuntu-2604-resolute-amd64 | awk '{print $1}'`
-
-argc=$#;
-argv=("$@");
-
-for (( j=0; j<argc; j++ )); do
-    echo "zbx${argv[j]}";
-    gcloud compute instances create zbx${argv[j]} --image ${IMAGE_UBUNTU} --image-project=ubuntu-os-cloud --zone=${ZONE} --metadata-from-file startup-script=./zabbix-edu/scripts/install-zabbix-gcp.sh
-    gcloud compute instances add-tags zbx${argv[j]} --tags=http-server --zone=${ZONE}
-    gcloud compute instances add-tags zbx${argv[j]} --tags=https-server --zone=${ZONE}
-    gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-agent --zone=${ZONE}
-    gcloud compute instances add-tags zbx${argv[j]} --tags=zabbix-server --zone=${ZONE}
-    gcloud compute instances add-tags zbx${argv[j]} --tags=node-exporter --zone=${ZONE}
-done 
-
-# gcloud compute regions list | grep europe-west
-
-# europe-west1-b		St. Ghislain, Belgium, Europe
-# europe-west1-c
-# europe-west1-d
-
-# europe-west2-a		London, England, Europe
-# europe-west2-b
-# europe-west2-c
-
-# europe-west3-a		Frankfurt, Germany Europe
-# europe-west3-b
-# europe-west3-c
-
-# europe-west4-a		Eemshaven, Netherlands, Europe
-# europe-west4-b
-# europe-west4-c
-
-# europe-west6-a		Zurich, Switzerland, Europe
-# europe-west6-b
-# europe-west6-c
-
-# europe-west8-a		Milan, Italy, Europe
-# europe-west8-b
-# europe-west8-c
-
-# europe-west9-a 		Paris, France, Europe
-# europe-west9-b
-# europe-west9-c
-
-# europe-central2-a		Warsaw, Poland, Europe
-# europe-central2-b
-# europe-central2-c
-
-# EOF
+#!/usr/bin/env bash
+# Create Ubuntu 26.04 training VMs and run the installer at first boot.
+set -Eeuo pipefail
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+PROJECT=${PROJECT:-datascript-zabbix-edu}
+ZONE=${ZONE:-europe-central2-b}
+IMAGE_FAMILY=${IMAGE_FAMILY:-ubuntu-2604-lts-amd64}
+MACHINE_TYPE=${MACHINE_TYPE:-e2-medium}
+BOOT_DISK_SIZE=${BOOT_DISK_SIZE:-30GB}
+if (( $# == 0 )); then
+    echo "Usage: $0 01 [02 ...]" >&2
+    exit 1
+fi
+command -v gcloud >/dev/null
+for number in "$@"; do
+    [[ $number =~ ^[0-9]{2,3}$ ]] || { echo "Invalid VM number: $number" >&2; exit 1; }
+done
+for number in "$@"; do
+    gcloud compute instances create "zbx${number}" \
+        --project="$PROJECT" --zone="$ZONE" \
+        --image-family="$IMAGE_FAMILY" --image-project=ubuntu-os-cloud \
+        --machine-type="$MACHINE_TYPE" --boot-disk-size="$BOOT_DISK_SIZE" \
+        --tags=http-server,https-server,zabbix-agent,zabbix-server,node-exporter \
+        --metadata-from-file="startup-script=${SCRIPT_DIR}/install-zabbix-gcp.sh"
+done
