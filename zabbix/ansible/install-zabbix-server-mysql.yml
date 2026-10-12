@@ -154,13 +154,30 @@
         - {key: Server, value: '127.0.0.1,enceladus.pfsense.cz'}
         - {key: ServerActive, value: 127.0.0.1}
         - {key: Hostname, value: 'Zabbix server'}
-        - {key: Include, value: '/etc/zabbix/zabbix_agent2.d/*.conf'}
+
+    - name: Remove duplicate Agent 2 include directives from previous installations
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        regexp: '^\s*Include='
+        state: absent
+
+    - name: Include user parameters and plugin configuration exactly once
+      ansible.builtin.blockinfile:
+        path: /etc/zabbix/zabbix_agent2.conf
+        marker: '# {mark} ZABBIX EDU INCLUDES'
+        block: |
+          Include=/etc/zabbix/zabbix_agent2.d/*.conf
+          Include=/etc/zabbix/zabbix_agent2.d/plugins.d/*.conf
 
     - name: Install training user parameters
       ansible.builtin.copy:
         src: templates/userparameters/training.j2
         dest: /etc/zabbix/zabbix_agent2.d/training.conf
         mode: '0644'
+
+    - name: Validate Agent 2 configuration before restarting services
+      ansible.builtin.command: zabbix_agent2 -T -c /etc/zabbix/zabbix_agent2.conf
+      changed_when: false
 
     - name: Install external date script
       ansible.builtin.copy:
